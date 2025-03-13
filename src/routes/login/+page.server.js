@@ -30,6 +30,8 @@ export const actions = {
 			// Set the tenant for the HTTP client
 			httpClient.setTenant(locals.tenant);
 
+			console.log('here');
+
 			// Send the login request using the HTTP client
 			const response = await httpClient.fetch('auth/signin', {
 				method: 'POST',

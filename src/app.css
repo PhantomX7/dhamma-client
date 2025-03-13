@@ -5,16 +5,16 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --color-primary-50: #fff5f2;
-  --color-primary-100: #fff1ee;
-  --color-primary-200: #ffe4de;
-  --color-primary-300: #ffd5cc;
-  --color-primary-400: #ffbcad;
-  --color-primary-500: #fe795d;
-  --color-primary-600: #ef562f;
-  --color-primary-700: #eb4f27;
-  --color-primary-800: #cc4522;
-  --color-primary-900: #a5371b;
+	--color-primary-50: #f0f4fe;
+	--color-primary-100: #dde6fc;
+	--color-primary-200: #c2d4fb;
+	--color-primary-300: #98b9f8;
+	--color-primary-400: #6894f2;
+	--color-primary-500: #537aee;
+	--color-primary-600: #2f50e1;
+	--color-primary-700: #263ccf;
+	--color-primary-800: #2533a8;
+	--color-primary-900: #233085;
 }
 
 @source "../node_modules/flowbite-svelte/dist";

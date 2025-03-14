@@ -7,7 +7,7 @@ import { httpClient } from '$lib/utils/http-client';
 export async function load({ parent }) {
 	const { isAuthenticated } = await parent();
 	if (isAuthenticated) {
-		throw redirect(303, '/');
+		throw redirect(303, '/admin');
 	}
 	// Create a form using the schema
 	const form = await superValidate(zod(loginSchema));
@@ -30,8 +30,6 @@ export const actions = {
 			// Set the tenant for the HTTP client
 			httpClient.setTenant(locals.tenant);
 
-			console.log('here');
-
 			// Send the login request using the HTTP client
 			const response = await httpClient.fetch('auth/signin', {
 				method: 'POST',
@@ -41,32 +39,33 @@ export const actions = {
 				body: JSON.stringify(form.data)
 			});
 
-			const data = await response.json();
+			const { data, status, message } = await response.json();
 
-			console.log(data);
-			if (!data.status) {
-				console.log('hereeee');
+			if (!status) {
 				// If login fails, return the form with an error message
 				return fail(response.status, {
 					form,
-					error: data.error || 'Login failed'
+					error: message || 'Login failed'
 				});
 			}
 
+			console.log(locals);
 			// Set the access token in the locals
-			locals.accessToken = data.accessToken;
-			locals.refreshToken = data.refreshToken;
+			locals.token = {
+				accessToken: data.access_token,
+				refreshToken: data.refresh_token
+			};
 
 			// set cookies
 			// Set the token in the cookie
-			cookies.set('access-token', data.token, {
+			cookies.set('access_token', data.access_token, {
 				path: '/',
 				httpOnly: true,
 				sameSite: 'strict',
 				secure: true
 			});
 
-			cookies.set('refresh-token', data.refreshToken, {
+			cookies.set('refresh_token', data.refresh_token, {
 				path: '/',
 				httpOnly: true,
 				sameSite: 'strict',

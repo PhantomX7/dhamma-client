@@ -4,6 +4,8 @@
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { loginSchema } from '$lib/schema/login';
 	import { goto } from '$app/navigation';
+	import FormInput from '$lib/components/FormInput.svelte';
+	import FormButton from '$lib/components/FormButton.svelte';
 
 	let { data } = $props();
 
@@ -11,14 +13,6 @@
 	const { form, errors, enhance, submitting, message } = superForm(data.form, {
 		validationMethod: 'auto',
 		validator: zodClient(loginSchema),
-		onUpdate: async ({ form }) => {
-			console.log('form', JSON.stringify(form));
-			// Handle successful login
-			if (form.success) {
-				// Redirect to home page using SvelteKit's goto
-				await goto('/', { replaceState: true });
-			}
-		}
 	});
 </script>
 
@@ -57,46 +51,33 @@
 
 			<form class="space-y-6" method="POST" use:enhance>
 				<div class="space-y-4">
-					<div>
-						<Label for="username" class="text-sm font-medium text-gray-700">Username</Label>
-						<Input
-							id="username"
-							type="text"
-							name="username"
-							bind:value={$form.username}
-							placeholder="Enter your username"
-							class="mt-1 block w-full rounded-lg focus:border-primary-500 focus:ring-primary-500"
-							color={$errors.username ? 'red' : undefined}
-						/>
-						{#if $errors.username}
-							<p class="mt-2 text-sm text-red-600">{$errors.username}</p>
-						{/if}
-					</div>
+					<FormInput
+						id="username"
+						label="Username"
+						type="text"
+						name="username"
+						bind:value={$form.username}
+						placeholder="Enter your username"
+						error={$errors.username}
+					/>
 
-					<div>
-						<Label for="password" class="text-sm font-medium text-gray-700">Password</Label>
-						<Input
-							id="password"
-							type="password"
-							name="password"
-							bind:value={$form.password}
-							placeholder="Enter your password"
-							class="mt-1 block w-full rounded-lg focus:border-primary-500 focus:ring-primary-500"
-							color={$errors.password ? 'red' : undefined}
-						/>
-						{#if $errors.password}
-							<p class="mt-2 text-sm text-red-600">{$errors.password}</p>
-						{/if}
-					</div>
+					<FormInput
+						id="password"
+						label="Password"
+						type="password"
+						name="password"
+						bind:value={$form.password}
+						placeholder="Enter your password"
+						error={$errors.password}
+					/>
 				</div>
 
-				<Button
+				<FormButton
 					type="submit"
-					class="w-full rounded-lg bg-primary-600 py-2.5 font-medium text-white transition-colors hover:bg-primary-700"
-					disabled={$submitting}
-				>
-					{$submitting ? 'Signing in...' : 'Sign in'}
-				</Button>
+					loading={$submitting}
+					loadingText="Signing in..."
+					text="Sign in"
+				/>
 
 				<div class="text-center text-sm text-gray-600">
 					<a href="/forgot-password" class="hover:text-primary-600">Forgot your password?</a>

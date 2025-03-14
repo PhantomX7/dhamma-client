@@ -15,7 +15,9 @@
 		DropdownHeader,
 		DropdownDivider
 	} from 'flowbite-svelte';
+	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
 	import { ChartPieOutline, UserOutline, CogOutline } from 'flowbite-svelte-icons';
 
 	let { data, children } = $props();
@@ -78,16 +80,20 @@
 		</NavBrand>
 		<div class="flex items-center gap-4">
 			<DarkMode />
-			<Avatar id="avatar-menu" alt="User settings" >A</Avatar>
+			<Avatar id="avatar-menu" alt="User settings">A</Avatar>
 			<Dropdown triggeredBy="#avatar-menu" class="z-50">
 				<DropdownHeader>
 					<span class="block text-sm">Admin User</span>
 					<span class="block truncate text-sm font-medium">admin@example.com</span>
 				</DropdownHeader>
-				<DropdownItem href="/admin/profile">Profile</DropdownItem>
-				<DropdownItem href="/admin/settings">Settings</DropdownItem>
+				<!-- <DropdownItem href="/admin/profile">Profile</DropdownItem>
+				<DropdownItem href="/admin/settings">Settings</DropdownItem> -->
 				<DropdownDivider />
-				<DropdownItem href="/logout">Sign out</DropdownItem>
+				<form class="cursor-pointer" method="post" action="/admin?/logout" use:enhance>
+					<DropdownItem >
+						<button type="submit">Sign Out</button>
+					</DropdownItem>
+				</form>
 			</Dropdown>
 		</div>
 	</Navbar>

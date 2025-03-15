@@ -22,7 +22,7 @@
 	import {
 		GlobeOutline,
 		// ChartPieOutline,
-		// UserOutline,
+		UserOutline,
 		CogOutline,
 		BarsOutline
 	} from 'flowbite-svelte-icons';
@@ -40,6 +40,7 @@
 	// Sidebar items configuration
 	const sidebarItems = [
 		{ href: '/admin/domain', label: 'Domains', icon: GlobeOutline },
+		{ href: '/admin/user', label: 'Users', icon: UserOutline },
 		// {
 		// 	href: '/admin',
 		// 	label: 'Dashboard',

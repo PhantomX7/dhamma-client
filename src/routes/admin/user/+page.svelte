@@ -21,8 +21,8 @@
 
 <div class="p-4">
 	<div class="mb-4 flex items-center justify-between">
-		<h2 class="text-xl font-bold">Domains</h2>
-		<Button color="blue">Add Domain</Button>
+		<h2 class="text-xl font-bold">users</h2>
+		<Button color="blue">Add User</Button>
 	</div>
 
 	<Table striped={true}>
@@ -35,7 +35,7 @@
 			<TableHeadCell>Actions</TableHeadCell>
 		</TableHead>
 		<TableBody>
-			{#each data.domains as domain}
+			{#each data.users as domain}
 				<TableBodyRow>
 					<TableBodyCell>{domain.name}</TableBodyCell>
 					<TableBodyCell>{domain.code}</TableBodyCell>

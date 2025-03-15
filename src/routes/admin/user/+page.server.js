@@ -8,18 +8,18 @@ export async function load({ locals }) {
 		const { data, meta, status, message } = await response.json();
 
 		if (!status) {
-			throw new Error(message || 'Failed to fetch domains');
+			throw new Error(message || 'Failed to fetch users');
 		}
 
 		return {
-			domains: data,
+			users: data,
 			meta
 		};
 	} catch (error) {
-		console.error('Domain fetch error:', error);
+		console.error('User fetch error:', error);
 		return {
-			domains: [],
-			error: 'Failed to load domains'
+			users: [],
+			error: 'Failed to load users'
 		};
 	}
 }

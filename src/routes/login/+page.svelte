@@ -46,7 +46,7 @@
 			</div>
 
 			{#if $message}
-				<Alert color="red" class="mb-4">{JSON.stringify($message)}</Alert>
+				<Alert color="red" class="mb-4">{$message}</Alert>
 			{/if}
 
 			<form class="space-y-6" method="POST" use:enhance>

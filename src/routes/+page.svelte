@@ -1,13 +1,12 @@
 <script>
-	import { getContext, onMount } from 'svelte';
-	import { goto } from '$app/navigation';
-	import { Input, Label, Helper } from 'flowbite-svelte';
-	let { data } = $props();
+    import { goto } from '$app/navigation';
+    import { onMount } from 'svelte';
 
-	onMount(() => {
-		// Check if user is authenticated 
-		if (data.isAuthenticated) {
-			goto('/admin');
-		}
-	});
+    onMount(() => {
+        goto('/admin');
+    });
 </script>
+
+<div class="flex h-screen items-center justify-center">
+    <p class="text-gray-600">Redirecting...</p>
+</div>

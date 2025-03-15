@@ -1,20 +1,27 @@
+import { redirect } from '@sveltejs/kit';
+
+const unProtectedRoutes = ['/login'];
+
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
 	// Get tokens from cookies
 	const accessToken = event.cookies.get('access_token');
 	const refreshToken = event.cookies.get('refresh_token');
 
+	if (!accessToken && !unProtectedRoutes.includes(event.url.pathname)) {
+		return redirect(302, '/login');
+	}
+
 	// Set tokens in locals
+	event.locals.token = null;
 	if (accessToken) {
 		event.locals.token = {
 			accessToken,
 			refreshToken
 		};
-	} else {
-		event.locals.token = null;
 	}
-	// multi domain handling
 
+	// multi domain handling
 	// Get the host header
 	const host = event.request.headers.get('host');
 	// Extract tenant from subdomain

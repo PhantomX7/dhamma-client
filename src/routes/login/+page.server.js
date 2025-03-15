@@ -5,9 +5,8 @@ import { loginSchema } from '$lib/schema/login';
 import api from '$lib/api';
 
 // Check authentication and prepare form
-export async function load({ parent }) {
-	const { isAuthenticated } = await parent();
-	if (isAuthenticated) {
+export async function load({ locals }) {
+	if (locals.token) {
 		throw redirect(303, '/admin');
 	}
 	return { form: await superValidate(zod(loginSchema)) };
@@ -29,7 +28,9 @@ function setAuthCookies(cookies, { access_token, refresh_token }) {
 
 export const actions = {
 	default: async ({ request, locals, cookies }) => {
+		// Get form data
 		const formData = await request.formData();
+
 		// Validate form
 		const form = await superValidate(formData, zod(loginSchema));
 		if (!form.valid) {

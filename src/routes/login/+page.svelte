@@ -12,23 +12,23 @@
 	// Initialize the form with superForm
 	const { form, errors, enhance, submitting, message } = superForm(data.form, {
 		validationMethod: 'auto',
-		validator: zodClient(loginSchema),
+		validator: zodClient(loginSchema)
 	});
 </script>
 
 <div
-	class="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary-50 to-blue-50 px-4 py-12 sm:px-6 lg:px-8"
+	class="from-primary-50 flex min-h-screen items-center justify-center bg-gradient-to-br to-blue-50 px-4 py-12 sm:px-6 lg:px-8"
 >
 	<div class="w-full max-w-md">
 		<div class="space-y-6 rounded-2xl bg-white p-8 shadow-xl">
 			<div class="text-center">
 				<!-- Add your logo here -->
 				<div
-					class="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-primary-100"
+					class="bg-primary-100 mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
-						class="h-12 w-12 text-primary-600"
+						class="text-primary-600 h-12 w-12"
 						fill="none"
 						viewBox="0 0 24 24"
 						stroke="currentColor"
@@ -46,7 +46,7 @@
 			</div>
 
 			{#if $message}
-				<Alert color="red" class="mb-4">{$message}</Alert>
+				<Alert color="red" class="mb-4">{JSON.stringify($message)}</Alert>
 			{/if}
 
 			<form class="space-y-6" method="POST" use:enhance>

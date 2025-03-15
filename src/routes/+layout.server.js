@@ -1,4 +1,5 @@
 import { redirect } from '@sveltejs/kit';
+import api from '$lib/api';
 
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load({ locals, url }) {
@@ -12,8 +13,23 @@ export async function load({ locals, url }) {
 	}
 
 	// Pass tenant data and auth status to the client
+	let user = null;
+	if (locals.token) {
+		try {
+			api.setTenant(locals.tenant);
+			const response = await api.fetch('auth/me', {}, locals.token);
+
+			const { data } = await response.json();
+
+			user = data;
+		} catch (error) {
+			console.error('Failed to fetch user data:', error);
+		}
+	}
+
 	return {
 		tenant: locals.tenant,
-		isAuthenticated: !!locals.token
+		isAuthenticated: !!locals.token,
+		user
 	};
 }

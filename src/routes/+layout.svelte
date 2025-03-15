@@ -4,6 +4,7 @@
 	let { data, children } = $props();
 
 	setContext('domain', () => data.tenant);
+	setContext('user', () => data.user);
 </script>
 
 

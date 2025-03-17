@@ -15,7 +15,7 @@
 	import { goto } from '$app/navigation';
 	import { formatDate } from '$lib/utils';
 	import Pagination from '$lib/components/Pagination.svelte';
-	import { handlePaginationNavigation } from '$lib/utils/navigation';
+	import { generatePaginationURL } from '$lib/utils/pagination';
 
 	let { data } = $props();
 
@@ -85,7 +85,7 @@
 				offset={data.meta.offset}
 				on:pageChange={(event) => {
 					goto(
-						handlePaginationNavigation({
+						generatePaginationURL({
 							page: event.detail,
 							meta: data.meta
 						}),

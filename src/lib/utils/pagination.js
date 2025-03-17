@@ -15,6 +15,18 @@ export function buildQueryString(params) {
     return searchParams.toString();
 }
 
+export function generatePaginationURL({ page, meta, baseUrl = '', extraParams = {} }) {
+	const offset = (page - 1) * meta.limit;
+	const params = {
+		limit: meta.limit,
+		offset,
+		sort: 'created_at desc',
+		...extraParams
+	};
+
+	return `${baseUrl}?${buildQueryString(params)}`;
+}
+
 export const PREVIOUS_PAGE = 'PREV';
 export const NEXT_PAGE = 'NEXT';
 export const ELLIPSIS = 'ELLIPSIS';

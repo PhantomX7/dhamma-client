@@ -1,16 +1,15 @@
 import api from '$lib/api';
 
 /** @type {import('./$types').LayoutServerLoad} */
-export async function load({ locals }) {
+export async function load(event) {
+	let { locals } = event;
 	let user = null;
 	if (locals.token) {
 		try {
-			api.setTenant(locals.tenant);
-			const response = await api.fetch('auth/me', {}, locals.token);
+			const response = await api.fetch('auth/me', {}, event);
 			const { data } = await response.json();
 			user = data;
 		} catch (error) {
-			console.log(error);
 			// Handle connection errors
 			if (error.cause.code === 'ECONNREFUSED') {
 				return {

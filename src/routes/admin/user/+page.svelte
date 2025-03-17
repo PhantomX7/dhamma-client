@@ -19,13 +19,6 @@
 	import { formatDate } from '$lib/utils';
 
 	const currentUser = getContext('user');
-
-	// Function to check if a field should be rendered based on super admin status
-	function shouldRenderField(fieldName) {
-		const isSuperAdmin = currentUser().is_super_admin;
-		const superAdminOnlyFields = ['id', 'uuid', 'is_super_admin'];
-		return !superAdminOnlyFields.includes(fieldName) || isSuperAdmin;
-	}
 </script>
 
 <div class="p-4">
@@ -36,12 +29,10 @@
 
 	<Table striped={true}>
 		<TableHead>
-			{#if shouldRenderField('id')}
-				<TableHeadCell>ID</TableHeadCell>
-				<TableHeadCell>UUID</TableHeadCell>
-			{/if}
+			<TableHeadCell>ID</TableHeadCell>
+			<TableHeadCell>UUID</TableHeadCell>
 			<TableHeadCell>Username</TableHeadCell>
-			{#if shouldRenderField('is_super_admin')}
+			{#if currentUser().is_super_admin}
 				<TableHeadCell>Super Admin</TableHeadCell>
 			{/if}
 			<TableHeadCell>Status</TableHeadCell>
@@ -53,12 +44,10 @@
 		<TableBody>
 			{#each data.users as user}
 				<TableBodyRow>
-					{#if shouldRenderField('id')}
-						<TableBodyCell>{user.id}</TableBodyCell>
-						<TableBodyCell>{user.uuid}</TableBodyCell>
-					{/if}
+					<TableBodyCell>{user.id}</TableBodyCell>
+					<TableBodyCell>{user.uuid}</TableBodyCell>
 					<TableBodyCell>{user.username}</TableBodyCell>
-					{#if shouldRenderField('is_super_admin')}
+					{#if currentUser().is_super_admin}
 						<TableBodyCell>
 							<Badge rounded color={user.is_super_admin ? 'purple' : 'gray'}>
 								{user.is_super_admin ? 'Yes' : 'No'}

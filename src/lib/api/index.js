@@ -1,8 +1,6 @@
 class HttpClient {
 	constructor() {
 		this.baseUrl = import.meta.env.VITE_API_BASE_URL;
-		this.isRefreshing = false;
-		this.refreshSubscribers = [];
 		this.tenant = null;
 	}
 
@@ -23,8 +21,12 @@ class HttpClient {
 		return `${this.baseUrl}/${this.tenant}/${endpoint}`;
 	}
 
-	async fetch(endpoint, options = {}, tokens = null) {
+	async fetch(endpoint, options = {}, event = null) {
+		if (event?.locals?.tenant) {
+			this.setTenant(event.locals.tenant);
+		}
 		const url = this.buildUrl(endpoint);
+		const tokens = event?.locals?.token;
 
 		// Add authorization header if tokens are provided
 		if (tokens?.accessToken) {
@@ -39,7 +41,7 @@ class HttpClient {
 
 			// If the response is 401 and we have a refresh token, try to refresh
 			if (response.status === 401 && tokens?.refreshToken) {
-				const newTokens = await this.refreshToken(tokens.refreshToken);
+				const newTokens = await this.refreshToken(tokens.refreshToken, event);
 				if (newTokens) {
 					// Retry the original request with the new token
 					options.headers = {
@@ -57,16 +59,7 @@ class HttpClient {
 		}
 	}
 
-	async refreshToken(refreshToken) {
-		// If we're already refreshing, wait for that to complete
-		if (this.isRefreshing) {
-			return new Promise((resolve) => {
-				this.refreshSubscribers.push((tokens) => resolve(tokens));
-			});
-		}
-
-		this.isRefreshing = true;
-
+	async refreshToken(refreshToken, event = null) {
 		try {
 			if (!refreshToken) {
 				return null;
@@ -83,10 +76,6 @@ class HttpClient {
 				})
 			});
 
-			// if (!response.ok) {
-			// 	throw new Error('Token refresh failed');
-			// }
-
 			const { data, status, message } = await response.json();
 			console.log({ data, status, message });
 			if (!status) {
@@ -98,17 +87,23 @@ class HttpClient {
 				refreshToken: data.refresh_token
 			};
 
-			// Notify all subscribers about the new tokens
-			this.refreshSubscribers.forEach((callback) => callback(newTokens));
-			this.refreshSubscribers = [];
+			// Update locals and cookies if event is provided
+			if (event) {
+				event.locals.token = newTokens;
+				const cookieOptions = {
+					path: '/',
+					httpOnly: true,
+					sameSite: 'strict',
+					secure: true
+				};
+				event.cookies.set('access_token', data.access_token, cookieOptions);
+				event.cookies.set('refresh_token', data.refresh_token, cookieOptions);
+			}
 
 			return newTokens;
 		} catch (error) {
 			console.error('Token refresh failed:', error);
-
 			return null;
-		} finally {
-			this.isRefreshing = false;
 		}
 	}
 }

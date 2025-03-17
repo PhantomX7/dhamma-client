@@ -1,9 +1,8 @@
 import api from '$lib/api';
 
-export async function load({ locals }) {
+export async function load(event) {
 	try {
-		api.setTenant(locals.tenant);
-		const response = await api.fetch('domain', {}, locals.token);
+		const response = await api.fetch('domain', {}, event);
 
 		const { data, meta, status, message } = await response.json();
 

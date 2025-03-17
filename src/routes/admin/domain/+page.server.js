@@ -1,6 +1,8 @@
 import api from '$lib/api';
 
 export async function load(event) {
+	await event.parent();
+
 	try {
 		const response = await api.fetch('domain', {}, event);
 

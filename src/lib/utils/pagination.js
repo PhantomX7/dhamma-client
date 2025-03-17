@@ -1,3 +1,7 @@
+export const PREVIOUS_PAGE = 'PREV';
+export const NEXT_PAGE = 'NEXT';
+export const ELLIPSIS = 'ELLIPSIS';
+
 export function getPaginationParams(url) {
     const searchParams = new URL(url).searchParams;
     return {
@@ -7,29 +11,29 @@ export function getPaginationParams(url) {
     };
 }
 
-export function buildQueryString(params) {
-    const searchParams = new URLSearchParams();
-    if (params.limit) searchParams.set('limit', params.limit);
-    if (params.offset) searchParams.set('offset', params.offset);
-    if (params.sort) searchParams.set('sort', params.sort);
-    return searchParams.toString();
+export function generatePaginationURL({ page, meta, filters = {}, baseUrl = '', extraParams = {} }) {
+    const offset = (page - 1) * meta.limit;
+    const params = new URLSearchParams();
+    
+    // Add pagination params
+    params.set('limit', meta.limit);
+    params.set('offset', offset);
+    params.set('sort', 'created_at desc');
+
+    // Add filters
+    Object.entries(filters).forEach(([field, filter]) => {
+        if (filter.value && filter.operator) {
+            params.append(field, `${filter.operator}:${filter.value}`);
+        }
+    });
+
+    // Add extra params
+    Object.entries(extraParams).forEach(([key, value]) => {
+        params.append(key, value);
+    });
+
+    return `${baseUrl}?${params.toString()}`;
 }
-
-export function generatePaginationURL({ page, meta, baseUrl = '', extraParams = {} }) {
-	const offset = (page - 1) * meta.limit;
-	const params = {
-		limit: meta.limit,
-		offset,
-		sort: 'created_at desc',
-		...extraParams
-	};
-
-	return `${baseUrl}?${buildQueryString(params)}`;
-}
-
-export const PREVIOUS_PAGE = 'PREV';
-export const NEXT_PAGE = 'NEXT';
-export const ELLIPSIS = 'ELLIPSIS';
 
 export function generatePaginationItems({ total, limit, offset, maxVisible = 7 }) {
     const currentPage = Math.max(Math.floor(offset / limit) + 1, 1);

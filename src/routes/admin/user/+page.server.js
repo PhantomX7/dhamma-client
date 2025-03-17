@@ -1,22 +1,13 @@
 import api from '$lib/api';
-import { getPaginationParams } from '$lib/utils/pagination';
+import { buildApiQuery } from '$lib/utils/filter';
 
 export async function load(event) {
+	await event.parent();
+
 	try {
-		let { url, locals } = event;
-		const pagination = getPaginationParams(url);
-		api.setTenant(locals.tenant);
+		const { url } = event;
 
-		const response = await api.fetch(
-			`user?${new URLSearchParams({
-				limit: pagination.limit,
-				offset: pagination.offset,
-				sort: pagination.sort
-			})}`,
-			{},
-			event
-		);
-
+		const response = await api.fetch(`user?${buildApiQuery(url)}`, {}, event);
 		const { data, meta } = await response.json();
 
 		return {

@@ -10,6 +10,7 @@ export async function load({ locals }) {
 			const { data } = await response.json();
 			user = data;
 		} catch (error) {
+			console.log(error);
 			// Handle connection errors
 			if (error.cause.code === 'ECONNREFUSED') {
 				return {

@@ -12,10 +12,19 @@
 		TableSearch,
 		Pagination
 	} from 'flowbite-svelte';
+	import { getContext } from 'svelte';
 
 	let { data } = $props();
-	function formatDate(dateString) {
-		return new Date(dateString).toLocaleDateString();
+
+	import { formatDate } from '$lib/utils';
+
+	const currentUser = getContext('user');
+
+	// Function to check if a field should be rendered based on super admin status
+	function shouldRenderField(fieldName) {
+		const isSuperAdmin = currentUser().is_super_admin;
+		const superAdminOnlyFields = ['id', 'uuid', 'is_super_admin'];
+		return !superAdminOnlyFields.includes(fieldName) || isSuperAdmin;
 	}
 </script>
 
@@ -27,25 +36,45 @@
 
 	<Table striped={true}>
 		<TableHead>
-			<TableHeadCell>Name</TableHeadCell>
-			<TableHeadCell>Code</TableHeadCell>
+			{#if shouldRenderField('id')}
+				<TableHeadCell>ID</TableHeadCell>
+				<TableHeadCell>UUID</TableHeadCell>
+			{/if}
+			<TableHeadCell>Username</TableHeadCell>
+			{#if shouldRenderField('is_super_admin')}
+				<TableHeadCell>Super Admin</TableHeadCell>
+			{/if}
 			<TableHeadCell>Status</TableHeadCell>
+			<TableHeadCell>Domains</TableHeadCell>
 			<TableHeadCell>Created At</TableHeadCell>
 			<TableHeadCell>Updated At</TableHeadCell>
 			<TableHeadCell>Actions</TableHeadCell>
 		</TableHead>
 		<TableBody>
-			{#each data.users as domain}
+			{#each data.users as user}
 				<TableBodyRow>
-					<TableBodyCell>{domain.name}</TableBodyCell>
-					<TableBodyCell>{domain.code}</TableBodyCell>
+					{#if shouldRenderField('id')}
+						<TableBodyCell>{user.id}</TableBodyCell>
+						<TableBodyCell>{user.uuid}</TableBodyCell>
+					{/if}
+					<TableBodyCell>{user.username}</TableBodyCell>
+					{#if shouldRenderField('is_super_admin')}
+						<TableBodyCell>
+							<Badge rounded color={user.is_super_admin ? 'purple' : 'gray'}>
+								{user.is_super_admin ? 'Yes' : 'No'}
+							</Badge>
+						</TableBodyCell>
+					{/if}
 					<TableBodyCell>
-						<Badge rounded color={domain.is_active ? 'green' : 'red'}
-							>{domain.is_active ? 'Active' : 'Inactive'}</Badge
-						>
+						<Badge rounded color={user.is_active ? 'green' : 'red'}>
+							{user.is_active ? 'Active' : 'Inactive'}
+						</Badge>
 					</TableBodyCell>
-					<TableBodyCell>{formatDate(domain.created_at)}</TableBodyCell>
-					<TableBodyCell>{formatDate(domain.updated_at)}</TableBodyCell>
+					<TableBodyCell>
+						{user.domains.length ? user.domains.map((d) => d.name).join(', ') : 'None'}
+					</TableBodyCell>
+					<TableBodyCell>{formatDate(user.created_at)}</TableBodyCell>
+					<TableBodyCell>{formatDate(user.updated_at)}</TableBodyCell>
 					<TableBodyCell>
 						<div class="flex gap-2">
 							<Button size="xs" color="blue">Edit</Button>

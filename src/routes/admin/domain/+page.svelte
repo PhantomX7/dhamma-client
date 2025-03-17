@@ -14,9 +14,8 @@
 	} from 'flowbite-svelte';
 
 	let { data } = $props();
-	function formatDate(dateString) {
-		return new Date(dateString).toLocaleDateString();
-	}
+	
+	import { formatDate } from '$lib/utils';
 </script>
 
 <div class="p-4">

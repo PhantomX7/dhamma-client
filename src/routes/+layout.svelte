@@ -10,7 +10,7 @@
 </script>
 
 <div>
-	{#if !data.user || (data.error && data.errorType == 'connection')}
+	{#if (data.error && data.errorType == 'connection')}
 		<section class="container mx-auto p-6 py-12">
 			<div class="my-8 sm:mx-auto sm:w-full sm:max-w-md">
 				<div class="bg-white px-4 pt-2 pb-5 shadow sm:rounded-lg sm:px-10">

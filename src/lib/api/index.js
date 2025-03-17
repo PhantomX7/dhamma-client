@@ -77,7 +77,6 @@ class HttpClient {
 			});
 
 			const { data, status, message } = await response.json();
-			console.log({ data, status, message });
 			if (!status) {
 				throw new Error(message);
 			}

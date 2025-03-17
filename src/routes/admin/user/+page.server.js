@@ -1,24 +1,33 @@
 import api from '$lib/api';
+import { getPaginationParams } from '$lib/utils/pagination';
 
 export async function load(event) {
 	try {
-		const response = await api.fetch('user', {}, event);
+		let { url, locals } = event;
+		const pagination = getPaginationParams(url);
+		api.setTenant(locals.tenant);
 
-		const { data, meta, status, message } = await response.json();
+		const response = await api.fetch(
+			`user?${new URLSearchParams({
+				limit: pagination.limit,
+				offset: pagination.offset,
+				sort: pagination.sort
+			})}`,
+			{},
+			event
+		);
 
-		if (!status) {
-			throw new Error(message || 'Failed to fetch users');
-		}
+		const { data, meta } = await response.json();
 
 		return {
 			users: data,
 			meta
 		};
 	} catch (error) {
-		console.error('User fetch error:', error);
+		console.error('Failed to fetch users:', error);
 		return {
 			users: [],
-			error: 'Failed to load users'
+			meta: null
 		};
 	}
 }

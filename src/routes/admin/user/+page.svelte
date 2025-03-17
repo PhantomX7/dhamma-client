@@ -9,15 +9,17 @@
 		TableBodyCell,
 		TableHead,
 		TableHeadCell,
-		TableSearch,
-		Pagination
+		TableSearch
 	} from 'flowbite-svelte';
-	import { getContext } from 'svelte';
+
+	import { goto } from '$app/navigation';
+	import { formatDate } from '$lib/utils';
+	import Pagination from '$lib/components/Pagination.svelte';
+	import { handlePaginationNavigation } from '$lib/utils/navigation';
 
 	let { data } = $props();
 
-	import { formatDate } from '$lib/utils';
-
+	import { getContext } from 'svelte';
 	const currentUser = getContext('user');
 </script>
 
@@ -74,4 +76,23 @@
 			{/each}
 		</TableBody>
 	</Table>
+
+	{#if data.meta}
+		<div class="mt-4">
+			<Pagination
+				total={data.meta.total}
+				limit={data.meta.limit}
+				offset={data.meta.offset}
+				on:pageChange={(event) => {
+					goto(
+						handlePaginationNavigation({
+							page: event.detail,
+							meta: data.meta
+						}),
+						{ keepFocus: true }
+					);
+				}}
+			/>
+		</div>
+	{/if}
 </div>

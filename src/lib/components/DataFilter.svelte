@@ -53,55 +53,58 @@
 	</div>
 
 	{#if isFilterVisible}
-		<div class="space-y-4 rounded-lg border bg-white p-4 shadow-sm">
-			{#each Object.entries(filterConfig) as [field, config]}
-				<div class="flex items-center gap-2">
-					<span class="w-32">{config.label || field}</span>
+		<div class="space-y-4 rounded-lg border bg-white p-6 shadow-sm">
+			<div class="grid gap-4">
+				{#each Object.entries(filterConfig) as [field, config]}
+					<div class="grid grid-cols-[8rem_10rem_1fr] items-center gap-4">
+						<span class="text-sm font-medium text-gray-700">{config.label || field}</span>
 
-					<Select
-						class="w-40"
-						value={activeFilters[field]?.operator || ''}
-						on:change={(e) =>
-							handleFilterChange(field, e.target.value, activeFilters[field]?.value)}
-					>
-						{#each operatorsByType[config.type] || [] as op}
-							<option value={op.value}>{op.label}</option>
-						{/each}
-					</Select>
-
-					{#if config.type === FilterType.ENUM}
 						<Select
-							class="w-40"
-							value={activeFilters[field]?.value || ''}
+							class="w-full"
+							value={activeFilters[field]?.operator || ''}
 							on:change={(e) =>
-								handleFilterChange(field, activeFilters[field]?.operator, e.target.value)}
+								handleFilterChange(field, e.target.value, activeFilters[field]?.value)}
 						>
-							{#each config.enumValues || [] as value}
-								<option {value}>{value}</option>
+							{#each operatorsByType[config.type] || [] as op}
+								<option value={op.value}>{op.label}</option>
 							{/each}
 						</Select>
-					{:else if config.type === FilterType.BOOL}
-						<Select
-							class="w-40"
-							value={activeFilters[field]?.value || ''}
-							on:change={(e) =>
-								handleFilterChange(field, activeFilters[field]?.operator, e.target.value)}
-						>
-							<option value="true">True</option>
-							<option value="false">False</option>
-						</Select>
-					{:else}
-						<Input
-							type={config.type === FilterType.NUMBER ? 'number' : 'text'}
-							value={activeFilters[field]?.value || ''}
-							on:input={(e) =>
-								handleFilterChange(field, activeFilters[field]?.operator, e.target.value)}
-						/>
-					{/if}
-				</div>
-			{/each}
 
-			<div class="flex gap-2 border-t pt-2">
+						{#if config.type === FilterType.ENUM}
+							<Select
+								class="w-full"
+								value={activeFilters[field]?.value || ''}
+								on:change={(e) =>
+									handleFilterChange(field, activeFilters[field]?.operator, e.target.value)}
+							>
+								{#each config.enumValues || [] as value}
+									<option {value}>{value}</option>
+								{/each}
+							</Select>
+						{:else if config.type === FilterType.BOOL}
+							<Select
+								class="w-full"
+								value={activeFilters[field]?.value || ''}
+								on:change={(e) =>
+									handleFilterChange(field, activeFilters[field]?.operator, e.target.value)}
+							>
+								<option value="true">True</option>
+								<option value="false">False</option>
+							</Select>
+						{:else}
+							<Input
+								type={config.type === FilterType.NUMBER ? 'number' : 'text'}
+								value={activeFilters[field]?.value || ''}
+								class="w-full"
+								on:input={(e) =>
+									handleFilterChange(field, activeFilters[field]?.operator, e.target.value)}
+							/>
+						{/if}
+					</div>
+				{/each}
+			</div>
+
+			<div class="flex gap-2 border-t pt-4 mt-2">
 				<Button color="blue" on:click={applyFilters}>Apply Filters</Button>
 				<Button color="light" on:click={clearFilters}>Clear</Button>
 			</div>

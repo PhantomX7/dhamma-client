@@ -23,6 +23,12 @@
 			{ value: FilterOperator.EQUALS, label: 'Equals' },
 			{ value: FilterOperator.LIKE, label: 'Contains' }
 		],
+		[FilterType.DATE]: [
+			{ value: FilterOperator.EQUALS, label: 'Equals' },
+			// { value: FilterOperator.GT, label: 'After' },
+			// { value: FilterOperator.LT, label: 'Before' },
+			{ value: FilterOperator.BETWEEN, label: 'Between' }
+		],
 		[FilterType.BOOL]: [{ value: FilterOperator.EQUALS, label: 'Equals' }],
 		[FilterType.ENUM]: [
 			{ value: FilterOperator.EQUALS, label: 'Equals' },
@@ -91,6 +97,32 @@
 								<option value="true">True</option>
 								<option value="false">False</option>
 							</Select>
+						{:else if config.type === FilterType.DATE}
+							<div class="flex gap-2 w-full">
+								<Input
+									type="date"
+									class="w-full"
+									value={activeFilters[field]?.value?.split(',')[0] || ''}
+									on:input={(e) => {
+										const currentValue = activeFilters[field]?.value?.split(',') || [];
+										const newValue = activeFilters[field]?.operator === FilterOperator.BETWEEN
+											? [e.target.value, currentValue[1] || ''].join(',')
+											: e.target.value;
+										handleFilterChange(field, activeFilters[field]?.operator, newValue);
+									}}
+								/>
+								{#if activeFilters[field]?.operator === FilterOperator.BETWEEN}
+									<Input
+										type="date"
+										class="w-full"
+										value={activeFilters[field]?.value?.split(',')[1] || ''}
+										on:input={(e) => {
+											const currentValue = activeFilters[field]?.value?.split(',') || [];
+											handleFilterChange(field, activeFilters[field]?.operator, [currentValue[0] || '', e.target.value].join(','));
+										}}
+									/>
+								{/if}
+							</div>
 						{:else}
 							<Input
 								type={config.type === FilterType.NUMBER ? 'number' : 'text'}

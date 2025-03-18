@@ -103,6 +103,13 @@ class HttpClient {
 			return newTokens;
 		} catch (error) {
 			console.error('Token refresh failed:', error);
+			if (event) {
+				event.locals.token = null;
+
+				event.cookies.delete('access_token', { path: '/' });
+				event.cookies.delete('refresh_token', { path: '/' });
+			}
+			
 			return null;
 		}
 	}

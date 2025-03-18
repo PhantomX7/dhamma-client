@@ -25,6 +25,10 @@
         is_active: {
             type: FilterType.BOOL,
             label: 'Status'
+        },
+        created_at: {
+            type: FilterType.DATE,
+            label: 'Created Date'
         }
     };
 </script>

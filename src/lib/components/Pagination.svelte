@@ -1,10 +1,7 @@
 <script>
-    import { createEventDispatcher } from 'svelte';
     import { generatePaginationItems, ELLIPSIS, PREVIOUS_PAGE, NEXT_PAGE } from '$lib/utils/pagination';
 
-    const dispatch = createEventDispatcher();
-    
-    let { total, limit, offset, maxVisible = 7 } = $props();
+    let { total, limit, offset, maxVisible = 7, onPageChange = () => {} } = $props();
 
     const paginationItems = $derived(generatePaginationItems({
         total,
@@ -22,16 +19,16 @@
             if (page.symbol === ELLIPSIS) return;
             
             if (page.symbol === NEXT_PAGE) {
-                dispatch('pageChange', Math.min(currentPage + 1, totalPages));
+                onPageChange(Math.min(currentPage + 1, totalPages));
                 return;
             }
             
             if (page.symbol === PREVIOUS_PAGE) {
-                dispatch('pageChange', Math.max(currentPage - 1, 1));
+                onPageChange(Math.max(currentPage - 1, 1));
                 return;
             }
         }
-        dispatch('pageChange', page.value);
+        onPageChange(page.value);
     }
 </script>
 

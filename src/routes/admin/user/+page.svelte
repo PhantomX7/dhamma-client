@@ -21,6 +21,10 @@
         username: {
             type: FilterType.STRING,
             label: 'Username'
+        },
+        is_active: {
+            type: FilterType.BOOL,
+            label: 'Status'
         }
     };
 </script>

@@ -79,3 +79,13 @@ export function generatePaginationItems({ total, limit, offset, maxVisible = 7 }
 
     return pages;
 }
+
+export function getPaginationInfo(meta) {
+    if (!meta) return { start: 0, end: 0, total: 0 };
+    
+    const start = meta.offset + 1;
+    const end = Math.min(meta.offset + meta.limit, meta.total);
+    const total = meta.total;
+    
+    return { start, end, total };
+}

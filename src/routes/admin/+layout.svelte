@@ -68,7 +68,7 @@
 		class="fixed top-0 left-0 z-40 h-screen border-r border-gray-200 pt-14 transition-transform duration-300 {isSidebarCollapsed
 			? 'w-0 -translate-x-full opacity-0'
 			: 'w-64 translate-x-0 opacity-100'}"
-		activeUrl={$page.url.pathname}
+		activeUrl={sidebarItems.find(item => $page.url.pathname.startsWith(item.href))?.href || $page.url.pathname}
 	>
 		<SidebarWrapper divClass="h-full overflow-y-auto bg-white px-3 py-4">
 			<SidebarGroup>

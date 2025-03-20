@@ -27,7 +27,8 @@ function setAuthCookies(cookies, { access_token, refresh_token }) {
 }
 
 export const actions = {
-	default: async ({ request, locals, cookies }) => {
+	default: async (event) => {
+		let { request, locals, cookies } = event;
 		// Get form data
 		const formData = await request.formData();
 
@@ -40,10 +41,14 @@ export const actions = {
 		try {
 			// Authenticate user
 			api.setTenant(locals.tenant);
-			const response = await api.fetch('auth/signin', {
-				method: 'POST',
-				body: formData
-			});
+			const response = await api.fetch(
+				'/auth/signin',
+				{
+					method: 'POST',
+					body: formData
+				},
+				event
+			);
 
 			const { status, data, error } = await response.json();
 

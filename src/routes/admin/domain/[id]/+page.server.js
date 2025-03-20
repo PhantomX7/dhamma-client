@@ -6,19 +6,19 @@ export async function load(event) {
 
 	try {
 		const { params } = event;
-
-		const response = await api.fetch(`/user/${params.id}`, {}, event);
+		const response = await api.fetch(`/domain/${params.id}`, {}, event);
 		const { data } = await response.json();
 
 		if (!response.ok) {
-			redirect(303, '/admin/user');
+			redirect(303, '/admin/domain');
+			return;
 		}
 
 		return {
-			user: data
+			domain: data
 		};
 	} catch (error) {
-		console.error('Failed to fetch user:', error);
-		redirect(303, '/admin/user');
+		console.error('Failed to fetch domain:', error);
+		redirect(303, '/admin/domain');
 	}
 }

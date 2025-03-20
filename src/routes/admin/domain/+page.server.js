@@ -1,15 +1,18 @@
 import api from '$lib/api';
+import { buildApiQuery } from '$lib/utils/filter';
+import { redirect } from '@sveltejs/kit';
 
 export async function load(event) {
 	await event.parent();
 
 	try {
-		const response = await api.fetch('domain', {}, event);
+		const { url } = event;
 
-		const { data, meta, status, message } = await response.json();
+		const response = await api.fetch(`domain?${buildApiQuery(url)}`, {}, event);
+		const { data, meta } = await response.json();
 
-		if (!status) {
-			throw new Error(message || 'Failed to fetch domains');
+		if (!response.ok) {
+			redirect(303, '/admin');
 		}
 
 		return {
@@ -20,6 +23,7 @@ export async function load(event) {
 		console.error('Domain fetch error:', error);
 		return {
 			domains: [],
+			meta: null,
 			error: 'Failed to load domains'
 		};
 	}

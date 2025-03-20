@@ -1,6 +1,5 @@
 <script>
 	import {
-		Card,
 		Button,
 		Badge,
 		Table,
@@ -8,14 +7,37 @@
 		TableBodyRow,
 		TableBodyCell,
 		TableHead,
-		TableHeadCell,
-		TableSearch,
-		Pagination
+		TableHeadCell
 	} from 'flowbite-svelte';
+	import { getContext } from 'svelte';
+	import { formatDate } from '$lib/utils';
+	import DataTable from '$lib/components/DataTable.svelte';
+	import { FilterType } from '$lib/utils/filter';
 
 	let { data } = $props();
-	
-	import { formatDate } from '$lib/utils';
+
+	const filterConfig = {
+		id: {
+			type: FilterType.ID,
+			label: 'ID'
+		},
+		name: {
+			type: FilterType.STRING,
+			label: 'Name'
+		},
+		code: {
+			type: FilterType.STRING,
+			label: 'Code'
+		},
+		is_active: {
+			type: FilterType.BOOL,
+			label: 'Status Active'
+		},
+		created_at: {
+			type: FilterType.DATE,
+			label: 'Created Date'
+		}
+	};
 </script>
 
 <div class="p-4">
@@ -24,35 +46,39 @@
 		<Button color="blue">Add Domain</Button>
 	</div>
 
-	<Table striped={true}>
-		<TableHead>
-			<TableHeadCell>Name</TableHeadCell>
-			<TableHeadCell>Code</TableHeadCell>
-			<TableHeadCell>Status</TableHeadCell>
-			<TableHeadCell>Created At</TableHeadCell>
-			<TableHeadCell>Updated At</TableHeadCell>
-			<TableHeadCell>Actions</TableHeadCell>
-		</TableHead>
-		<TableBody>
-			{#each data.domains as domain}
-				<TableBodyRow>
-					<TableBodyCell>{domain.name}</TableBodyCell>
-					<TableBodyCell>{domain.code}</TableBodyCell>
-					<TableBodyCell>
-						<Badge rounded color={domain.is_active ? 'green' : 'red'}
-							>{domain.is_active ? 'Active' : 'Inactive'}</Badge
-						>
-					</TableBodyCell>
-					<TableBodyCell>{formatDate(domain.created_at)}</TableBodyCell>
-					<TableBodyCell>{formatDate(domain.updated_at)}</TableBodyCell>
-					<TableBodyCell>
-						<div class="flex gap-2">
-							<Button size="xs" color="blue">Edit</Button>
-							<Button size="xs" color="red">Delete</Button>
-						</div>
-					</TableBodyCell>
-				</TableBodyRow>
-			{/each}
-		</TableBody>
-	</Table>
+	<DataTable data={data.domains} meta={data.meta} {filterConfig}>
+		<Table hoverable={true} divClass="max-h-[70vh] overflow-y-auto">
+			<TableHead class="sticky top-0 z-10 bg-white shadow-sm">
+				<TableHeadCell>ID</TableHeadCell>
+				<TableHeadCell>Name</TableHeadCell>
+				<TableHeadCell>Code</TableHeadCell>
+				<TableHeadCell>Status</TableHeadCell>
+				<TableHeadCell>Description</TableHeadCell>
+				<TableHeadCell>Created At</TableHeadCell>
+				<TableHeadCell>Actions</TableHeadCell>
+			</TableHead>
+			<TableBody>
+				{#each data.domains as domain}
+					<TableBodyRow>
+						<TableBodyCell>{domain.id}</TableBodyCell>
+						<TableBodyCell>{domain.name}</TableBodyCell>
+						<TableBodyCell>{domain.code}</TableBodyCell>
+						<TableBodyCell>
+							<Badge rounded color={domain.is_active ? 'green' : 'red'}>
+								{domain.is_active ? 'Active' : 'Inactive'}
+							</Badge>
+						</TableBodyCell>
+						<TableBodyCell>{domain.description}</TableBodyCell>
+						<TableBodyCell>{formatDate(domain.created_at)}</TableBodyCell>
+						<TableBodyCell>
+							<div class="flex gap-2">
+								<Button size="xs" color="green" href="/admin/domain/{domain.id}">View</Button>
+								<Button size="xs" color="blue" href="/admin/domain/{domain.id}/edit">Edit</Button>
+							</div>
+						</TableBodyCell>
+					</TableBodyRow>
+				{/each}
+			</TableBody>
+		</Table>
+	</DataTable>
 </div>

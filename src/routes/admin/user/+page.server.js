@@ -1,6 +1,6 @@
-import { goto } from '$app/navigation';
 import api from '$lib/api';
 import { buildApiQuery } from '$lib/utils/filter';
+import { redirect } from '@sveltejs/kit';
 
 export async function load(event) {
 	await event.parent();
@@ -12,7 +12,7 @@ export async function load(event) {
 		const { data, meta } = await response.json();
 
 		if (!response.ok) {
-			goto(`/admin`);
+			redirect(303, `/admin`);
 		}
 
 		return {

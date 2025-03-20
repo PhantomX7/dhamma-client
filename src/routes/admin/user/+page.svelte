@@ -24,7 +24,7 @@
         },
         is_active: {
             type: FilterType.BOOL,
-            label: 'Status'
+            label: 'Status Active'
         },
         created_at: {
             type: FilterType.DATE,
@@ -80,8 +80,8 @@
                             <TableBodyCell>
                                 <div class="flex gap-2">
                                     <Button size="xs" color="green" href="/admin/user/{user.id}">View</Button>
-                                    <Button size="xs" color="blue">Edit</Button>
-                                    <Button size="xs" color="red">Delete</Button>
+                                    <!-- <Button size="xs" color="blue" href="/admin/user/{user.id}/edit">Edit</Button>
+                                    <Button size="xs" color="red">Delete</Button> -->
                                 </div>
                             </TableBodyCell>
                         </TableBodyRow>

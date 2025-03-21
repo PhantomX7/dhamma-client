@@ -9,7 +9,10 @@
 <div class="p-4">
 	<div class="mb-6 flex items-center justify-between">
 		<h2 class="text-xl font-bold">Domain Details</h2>
-		<Button color="light" href="/admin/domain">Back to List</Button>
+		<div class="flex gap-2">
+			<Button color="blue" href="/admin/domain/{domain.id}/edit">Edit</Button>
+			<Button color="light" href="/admin/domain">Back to List</Button>
+		</div>
 	</div>
 
 	<div class="space-y-8 rounded-lg border bg-white p-6 shadow-sm">

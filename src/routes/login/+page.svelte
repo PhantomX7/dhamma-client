@@ -1,11 +1,10 @@
 <script>
-	import { Input, Label, Button, Alert } from 'flowbite-svelte';
+	import { Alert } from 'flowbite-svelte';
 	import { superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { loginSchema } from '$lib/schema/login';
 	import { goto } from '$app/navigation';
-	import FormInput from '$lib/components/FormInput.svelte';
-	import FormButton from '$lib/components/FormButton.svelte';
+	import { FormInput, FormButton } from '$lib/components/form';
 
 	let { data } = $props();
 

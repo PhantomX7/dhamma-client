@@ -12,7 +12,7 @@ export async function load(event) {
 		const { data, meta } = await response.json();
 
 		if (!response.ok) {
-			redirect(303, '/admin');
+			throw redirect(303, '/admin');
 		}
 
 		return {

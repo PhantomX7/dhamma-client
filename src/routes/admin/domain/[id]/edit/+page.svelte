@@ -3,23 +3,11 @@
 	import { superForm } from 'sveltekit-superforms/client';
 
 	let { data } = $props();
-	const { form, enhance, errors, message, isTainted } = superForm(data.form, {
-		onSubmit({ formData, cancel }) {
-			// Get all form field names
-			const allFields = Array.from(formData.keys());
-
-			// Delete untainted fields from formData
-			allFields.forEach((key) => {
-				if (!isTainted(key)) {
-					formData.delete(key);
-				}
-			});
-
-			// Cancel if no fields were changed
-			if (Array.from(formData.keys()).length === 0) {
-				cancel();
-				return;
-			}
+	const { form, enhance, errors, message } = superForm(data.form, {
+		onSubmit({ formData }) {
+			// Convert boolean value to string for FormData
+			const isActive = formData.get('is_active');
+			formData.set('is_active', isActive ==='' ? 'true' : 'false');
 		}
 	});
 </script>
@@ -39,6 +27,10 @@
 		{/if}
 
 		<form method="POST" use:enhance class="space-y-6">
+			{JSON.stringify($errors)}
+			{JSON.stringify($form)}
+			<input type="hidden" name="_original" value={JSON.stringify(data.domain)} />
+			
 			<div class="space-y-4">
 				<div>
 					<Label for="name">Name</Label>

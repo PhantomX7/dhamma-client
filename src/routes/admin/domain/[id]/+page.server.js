@@ -10,8 +10,7 @@ export async function load(event) {
 		const { data } = await response.json();
 
 		if (!response.ok) {
-			redirect(303, '/admin/domain');
-			return;
+			throw redirect(303, '/admin/domain');
 		}
 
 		return {
@@ -19,6 +18,6 @@ export async function load(event) {
 		};
 	} catch (error) {
 		console.error('Failed to fetch domain:', error);
-		redirect(303, '/admin/domain');
+		throw redirect(303, '/admin/domain');
 	}
 }

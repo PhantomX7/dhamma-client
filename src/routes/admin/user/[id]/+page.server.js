@@ -11,7 +11,7 @@ export async function load(event) {
 		const { data } = await response.json();
 
 		if (!response.ok) {
-			redirect(303, '/admin/user');
+			throw redirect(303, '/admin/user');
 		}
 
 		return {
@@ -19,6 +19,6 @@ export async function load(event) {
 		};
 	} catch (error) {
 		console.error('Failed to fetch user:', error);
-		redirect(303, '/admin/user');
+		throw redirect(303, '/admin/user');
 	}
 }

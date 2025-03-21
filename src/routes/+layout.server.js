@@ -1,7 +1,8 @@
 import api from '$lib/api';
 
-/** @type {import('./$types').LayoutServerLoad} */
-export async function load(event) {
+import { loadFlash } from 'sveltekit-flash-message/server';
+
+export const load = loadFlash(async (event) => {
 	let { locals } = event;
 	let user = null;
 	if (locals.token) {
@@ -32,4 +33,4 @@ export async function load(event) {
 		isAuthenticated: !!locals.token,
 		user
 	};
-}
+});

@@ -1,8 +1,9 @@
-import { fail, redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
+import { redirect, setFlash } from 'sveltekit-flash-message/server';
 import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
 import { domainSchema } from '$lib/schema/domain';
-import { z } from 'zod';
+import { getChangedFields, setErrors } from '$lib/utils/form';
 import api from '$lib/api';
 
 export async function load(event) {
@@ -14,8 +15,7 @@ export async function load(event) {
 		const { data } = await response.json();
 
 		if (!response.ok) {
-			redirect(303, '/admin/domain');
-			return;
+			// redirect(303, '/admin/domain');
 		}
 
 		const form = await superValidate(data, zod(domainSchema));
@@ -25,43 +25,28 @@ export async function load(event) {
 		};
 	} catch (error) {
 		console.error('Failed to fetch domain:', error);
-		redirect(303, '/admin/domain');
+		// throw redirect(303, '/admin/domain');
 	}
 }
 
 export const actions = {
 	default: async (event) => {
-		const { request, params } = event;
+		const { request, params, cookies } = event;
 		const formData = await request.formData();
-
-		console.log(formData);
-		// Get only tainted fields from the form
-		const taintedFields = Array.from(formData.keys());
-
-		// If no fields were changed, return early
-		if (taintedFields.length === 0) {
-			return fail(400, {
-				form: await superValidate(formData, zod(domainSchema)),
-				message: 'No changes detected'
+		
+		// Get the original domain data and current form data
+		const originalData = JSON.parse(formData.get('_original') || '{}');
+		
+		const form = await superValidate(formData, zod(domainSchema));
+		if (!form.valid) {
+			return fail(400, { 
+				form,
+				message: 'Validation failed'
 			});
 		}
-
-		// Create partial schema with only the tainted fields
-		const partialSchema = z.object(
-			taintedFields.reduce((acc, field) => {
-				if (field in domainSchema.shape) {
-					acc[field] = domainSchema.shape[field];
-				}
-				return acc;
-			}, {})
-		);
-
-		// Validate only the changed fields
-		const form = await superValidate(formData, zod(partialSchema));
-
-		if (!form.valid) {
-			return fail(400, { form });
-		}
+		
+		// Get changed fields using the utility function
+		const changes = getChangedFields(originalData, formData);
 
 		try {
 			// Send only changed fields to API
@@ -69,10 +54,7 @@ export const actions = {
 				`/domain/${params.id}`,
 				{
 					method: 'PATCH',
-					headers: {
-						'Content-Type': 'application/json'
-					},
-					body: JSON.stringify(Object.fromEntries(formData))
+					body: changes
 				},
 				event
 			);
@@ -80,13 +62,14 @@ export const actions = {
 			const { status, error } = await response.json();
 
 			if (!status) {
+				setErrors(form, error);
+				setFlash({ type: 'error', message: "Please check your data." }, cookies);
 				return fail(422, {
 					form,
 					message: error || 'Failed to update domain'
 				});
 			}
 
-			redirect(`/admin/domain/${params.id}`);
 		} catch (error) {
 			console.error('Failed to update domain:', error);
 			return fail(500, {
@@ -94,5 +77,8 @@ export const actions = {
 				message: 'An unexpected error occurred'
 			});
 		}
+
+		redirect(`/admin/domain/${params.id}`, { type: 'success', message: "Domain Updated!" }, cookies);
+
 	}
 };

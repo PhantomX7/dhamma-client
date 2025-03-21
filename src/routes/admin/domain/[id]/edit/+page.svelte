@@ -1,5 +1,7 @@
 <script>
-	import { Button, Input, Label, Toggle, Textarea, Alert } from 'flowbite-svelte';
+	import { Button, Input, Label, Textarea, Alert } from 'flowbite-svelte';
+	import FormInput from '$lib/components/FormInput.svelte';
+	import FormToggle from '$lib/components/FormToggle.svelte';
 	import { superForm } from 'sveltekit-superforms/client';
 
 	let { data } = $props();
@@ -27,19 +29,15 @@
 		{/if}
 
 		<form method="POST" use:enhance class="space-y-6">
-			{JSON.stringify($errors)}
-			{JSON.stringify($form)}
 			<input type="hidden" name="_original" value={JSON.stringify(data.domain)} />
 			
 			<div class="space-y-4">
 				<div>
-					<Label for="name">Name</Label>
-					<Input id="name" name="name" bind:value={$form.name} error={$errors.name?.join(', ')} />
+					<FormInput label="Name" id="name" name="name" bind:value={$form.name} error={$errors.name?.join(', ')} />
 				</div>
 
 				<div>
-					<Label for="code">Code</Label>
-					<Input id="code" name="code" bind:value={$form.code} error={$errors.code?.join(', ')} />
+					<FormInput label="Code" id="code" name="code" bind:value={$form.code} error={$errors.code?.join(', ')} />
 				</div>
 
 				<div>
@@ -54,10 +52,11 @@
 				</div>
 
 				<div>
-					<Label>Status</Label>
-					<Toggle name="is_active" bind:checked={$form.is_active}>
-						{$form.is_active ? 'Active' : 'Inactive'}
-					</Toggle>
+					<FormToggle 
+						label="Status" 
+						name="is_active" 
+						bind:checked={$form.is_active} 
+					/>
 				</div>
 			</div>
 

@@ -1,7 +1,7 @@
 <script>
 	import { Input, Label } from 'flowbite-svelte';
 
-	let { id = '', label = '', type = 'text', name = '', value = '', placeholder = '', error = '' } = $props();
+	let { id = '', label = '', type = 'text', name = '', value = $bindable(''), placeholder = '', error = '' } = $props();
 </script>
 
 <div>

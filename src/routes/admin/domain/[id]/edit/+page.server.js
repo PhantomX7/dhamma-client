@@ -4,29 +4,27 @@ import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
 import { domainSchema } from '$lib/schema/domain';
 import { getChangedFields, setErrors } from '$lib/utils/form';
+import { runPromise } from '$lib/utils';
 import api from '$lib/api';
 
 export async function load(event) {
 	await event.parent();
 
-	try {
-		const { params } = event;
-		const response = await api.fetch(`/domain/${params.id}`, {}, event);
-		const { data } = await response.json();
-
-		if (!response.ok) {
-			// redirect(303, '/admin/domain');
-		}
-
-		const form = await superValidate(data, zod(domainSchema));
-		return {
-			domain: data,
-			form
-		};
-	} catch (error) {
-		console.error('Failed to fetch domain:', error);
-		// throw redirect(303, '/admin/domain');
+	const { params, cookies } = event;
+	const [response, fetchError] = await runPromise(api.fetch(`/domain/${params.id}`, {}, event));
+	
+	if (fetchError || !response.ok) {
+		setFlash({ type: 'error', message: 'Domain not found' }, cookies);
+		throw redirect(303, '/admin/domain');
 	}
+	
+	const data = response.data.data;
+	const form = await superValidate(data, zod(domainSchema));
+	
+	return {
+		domain: data,
+		form
+	};
 }
 
 export const actions = {
@@ -39,46 +37,47 @@ export const actions = {
 		
 		const form = await superValidate(formData, zod(domainSchema));
 		if (!form.valid) {
-			return fail(400, { 
-				form,
-				message: 'Validation failed'
-			});
+			setFlash({ type: 'error', message: 'Validation failed' }, cookies);
+			return fail(400, { form });
 		}
 		
-		// Get changed fields using the utility function
+		// Check if there are any changes
 		const changes = getChangedFields(originalData, formData);
 
-		try {
-			// Send only changed fields to API
-			const response = await api.fetch(
+		// Send only changed fields to API
+		const [response, fetchError] = await runPromise(
+			api.fetch(
 				`/domain/${params.id}`,
 				{
 					method: 'PATCH',
 					body: changes
 				},
 				event
-			);
+			)
+		);
 
-			const { status, error } = await response.json();
-
-			if (!status) {
-				setErrors(form, error);
-				setFlash({ type: 'error', message: "Please check your data." }, cookies);
-				return fail(422, {
-					form,
-					message: error || 'Failed to update domain'
-				});
-			}
-
-		} catch (error) {
-			console.error('Failed to update domain:', error);
-			return fail(500, {
-				form,
-				message: 'An unexpected error occurred'
-			});
+		if (fetchError) {
+			console.error('Failed to update domain:', fetchError);
+			setFlash({ type: 'error', message: 'An unexpected error occurred' }, cookies);
+			return fail(500, { form });
 		}
 
-		redirect(`/admin/domain/${params.id}`, { type: 'success', message: "Domain Updated!" }, cookies);
+		if (!response.ok) {
+			if (response.data?.error) {
+				setErrors(form, response.data.error);
+			}
+			setFlash({ type: 'error', message: "Please check your data." }, cookies);
+			return fail(422, { form });
+		}
 
+		const result = response.data;
+		if (!result.status) {
+			setErrors(form, result.error);
+			setFlash({ type: 'error', message: "Please check your data." }, cookies);
+			return fail(422, { form });
+		}
+
+		setFlash({ type: 'success', message: "Domain Updated!" }, cookies);
+		throw redirect(303, `/admin/domain/${params.id}`);
 	}
 };

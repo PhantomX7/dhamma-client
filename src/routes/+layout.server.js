@@ -1,18 +1,16 @@
 import api from '$lib/api';
-
 import { loadFlash } from 'sveltekit-flash-message/server';
+import { runPromise } from '$lib/utils';
 
 export const load = loadFlash(async (event) => {
 	let { locals } = event;
 	let user = null;
 	if (locals.token) {
-		try {
-			const response = await api.fetch('auth/me', {}, event);
-			const { data } = await response.json();
-			user = data;
-		} catch (error) {
+		const [response, fetchError] = await runPromise(api.fetch('auth/me', {}, event));
+		
+		if (fetchError) {
 			// Handle connection errors
-			if (error.cause.code === 'ECONNREFUSED') {
+			if (fetchError.cause?.code === 'ECONNREFUSED') {
 				return {
 					error: true,
 					errorType: 'connection',
@@ -25,6 +23,10 @@ export const load = loadFlash(async (event) => {
 				errorType: 'unknown',
 				errorMessage: 'An unexpected error occurred'
 			};
+		}
+		
+		if (response.ok) {
+			user = response.data.data;
 		}
 	}
 

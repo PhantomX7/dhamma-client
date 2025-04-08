@@ -48,11 +48,18 @@ class HttpClient {
 						...options.headers,
 						Authorization: `Bearer ${newTokens.accessToken}`
 					};
-					return fetch(url, options);
+					return this.fetch(endpoint, options, event); // Use this.fetch for retry
 				}
 			}
 
-			return response;
+			// Return both the response and parsed JSON data
+			const data = response.ok ? await response.json() : null;
+			return {
+				ok: response.ok,
+				status: response.status,
+				data,
+				response
+			};
 		} catch (error) {
 			console.error('Request failed:', error);
 			throw error;

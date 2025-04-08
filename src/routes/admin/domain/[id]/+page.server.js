@@ -1,23 +1,19 @@
 import api from '$lib/api';
-import { redirect } from '@sveltejs/kit';
+import { redirect, setFlash } from 'sveltekit-flash-message/server';
+import { runPromise } from '$lib/utils';
 
 export async function load(event) {
 	await event.parent();
 
-	try {
-		const { params } = event;
-		const response = await api.fetch(`/domain/${params.id}`, {}, event);
-		const { data } = await response.json();
-
-		if (!response.ok) {
-			throw redirect(303, '/admin/domain');
-		}
-
-		return {
-			domain: data
-		};
-	} catch (error) {
-		console.error('Failed to fetch domain:', error);
+	const { params, cookies } = event;
+	const [response, fetchError] = await runPromise(api.fetch(`/domain/${params.id}`, {}, event));
+	
+	if (fetchError || !response.ok) {
+		setFlash({ type: 'error', message: 'Domain not found' }, cookies);
 		throw redirect(303, '/admin/domain');
 	}
+
+	return {
+		domain: response.data.data
+	};
 }

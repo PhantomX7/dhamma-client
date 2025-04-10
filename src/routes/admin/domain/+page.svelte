@@ -13,8 +13,13 @@
 	import { formatDate } from '$lib/utils';
 	import DataTable from '$lib/components/DataTable.svelte';
 	import { FilterType } from '$lib/utils/filter';
+	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 
 	let { data } = $props();
+
+	const breadcrumbItems = [
+		{ label: 'Domains' }
+	];
 
 	const filterConfig = {
 		id: {
@@ -41,6 +46,8 @@
 </script>
 
 <div class="p-4">
+	<Breadcrumb items={breadcrumbItems} />
+	
 	<div class="mb-4 flex items-center justify-between">
 		<h2 class="text-xl font-bold">Domains</h2>
 		<Button color="blue">Add Domain</Button>

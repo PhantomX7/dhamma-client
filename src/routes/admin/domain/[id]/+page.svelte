@@ -1,12 +1,20 @@
 <script>
 	import { Badge, Button } from 'flowbite-svelte';
 	import { formatDate } from '$lib/utils';
+	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 
 	let { data } = $props();
 	const domain = data.domain;
+
+	const breadcrumbItems = [
+		{ href: '/admin/domain', label: 'Domains' },
+		{ label: domain.name }
+	];
 </script>
 
 <div class="p-4">
+	<Breadcrumb items={breadcrumbItems} />
+	
 	<div class="mb-6 flex items-center justify-between">
 		<h2 class="text-xl font-bold">Domain Details</h2>
 		<div class="flex gap-2">

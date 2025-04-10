@@ -1,9 +1,10 @@
 <script>
-	import { Button, Alert, Breadcrumb, BreadcrumbItem } from 'flowbite-svelte';
+	import { Button, Alert } from 'flowbite-svelte';
 	import { FormInput, FormTextarea, FormToggle, FormButton } from '$lib/components/form';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { ExclamationCircleSolid, HomeSolid, ChevronDoubleRightOutline } from 'flowbite-svelte-icons';
 	import { fade } from 'svelte/transition';
+	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 
 	let { data } = $props();
 	const { form, enhance, errors, message, submitting, delayed, tainted } = superForm(data.form, {
@@ -15,23 +16,16 @@
 		taintedMessage: null
 	});
 
-	// Removed the manual form modification tracking since we're using tainted
+	const breadcrumbItems = [
+		{ href: '/admin/domain', label: 'Domains' },
+		{ href: `/admin/domain/${data.domain.id}`, label: data.domain.name },
+		{ label: 'Edit' }
+	];
 </script>
 
 <!-- Breadcrumb navigation -->
 <div class="p-4">
-	<Breadcrumb class="mb-4">
-		<BreadcrumbItem href="/admin">
-			<svelte:fragment slot="icon">
-				<HomeSolid class="mr-2 h-3 w-3" />
-			</svelte:fragment>
-			Dashboard
-		</BreadcrumbItem>
-		<BreadcrumbItem href="/admin/domain">Domains</BreadcrumbItem>
-		<BreadcrumbItem href="/admin/domain/{data.domain.id}">{data.domain.name}</BreadcrumbItem>
-		<BreadcrumbItem>Edit</BreadcrumbItem>
-	</Breadcrumb>
-
+	<Breadcrumb items={breadcrumbItems} />
 	<div class="mb-6 flex items-center justify-between">
 		<h2 class="text-xl font-bold">Edit Domain</h2>
 		<div class="flex gap-2">

@@ -13,9 +13,14 @@
     import { formatDate } from '$lib/utils';
     import DataTable from '$lib/components/DataTable.svelte';
     import { FilterType } from '$lib/utils/filter';
+    import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 
     let { data } = $props();
     const currentUser = getContext('user');
+
+    const breadcrumbItems = [
+        { label: 'Users' }
+    ];
 
     const filterConfig = {
         username: {
@@ -34,6 +39,8 @@
 </script>
 
 <div class="p-4">
+    <Breadcrumb items={breadcrumbItems} />
+    
     <div class="mb-4 flex items-center justify-between">
         <h2 class="text-xl font-bold">Users</h2>
         <Button color="blue">Add User</Button>

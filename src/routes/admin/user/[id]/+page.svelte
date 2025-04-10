@@ -2,13 +2,21 @@
 	import { Badge, Button } from 'flowbite-svelte';
 	import { getContext } from 'svelte';
 	import { formatDate } from '$lib/utils';
+	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 
 	let { data } = $props();
 	const currentUser = getContext('user');
 	const user = data.user;
+
+	const breadcrumbItems = [
+		{ href: '/admin/user', label: 'Users' },
+		{ label: user.username }
+	];
 </script>
 
 <div class="p-4">
+	<Breadcrumb items={breadcrumbItems} />
+	
 	<div class="mb-6 flex items-center justify-between">
 		<h2 class="text-xl font-bold">User Details</h2>
 		<Button color="light" href="/admin/user">Back to List</Button>

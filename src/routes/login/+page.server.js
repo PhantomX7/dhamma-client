@@ -3,6 +3,7 @@ import { superValidate, message } from 'sveltekit-superforms';
 import { zod } from 'sveltekit-superforms/adapters';
 import { loginSchema } from '$lib/schema/login';
 import api from '$lib/api';
+import { runPromise } from '$lib/utils';
 
 // Check authentication and prepare form
 export async function load({ locals }) {
@@ -38,37 +39,39 @@ export const actions = {
 			return fail(400, { form });
 		}
 
-		try {
-			// Authenticate user
-			api.setTenant(locals.tenant);
-			const response = await api.fetch(
+		// Authenticate user
+		api.setTenant(locals.tenant);
+		const [response, fetchError] = await runPromise(
+			api.fetch(
 				'/auth/signin',
 				{
 					method: 'POST',
 					body: formData
 				},
 				event
-			);
+			)
+		);
 
-			const { status, data, error } = await response.json();
-
-			if (!status) {
-				// Use the error message from API or fallback to the error detail
-				return message(form, error || 'Authentication failed');
-			}
-
-			// Set authentication data
-			locals.token = {
-				accessToken: data.access_token,
-				refreshToken: data.refresh_token
-			};
-
-			setAuthCookies(cookies, data);
-
-			return { form, success: true };
-		} catch (error) {
-			console.error('Login error:', error);
+		// Handle fetch errors
+		if (fetchError) {
+			console.error('Login error:', fetchError);
 			return message(form, 'An unexpected error occurred. Please try again later.');
 		}
+
+		// Handle API response
+		if (!response.ok || !response.data.status) {
+			return message(form, response.data.error || 'Authentication failed');
+		}
+
+		// Set authentication data
+		const data = response.data.data;
+		locals.token = {
+			accessToken: data.access_token,
+			refreshToken: data.refresh_token
+		};
+
+		setAuthCookies(cookies, data);
+
+		return { form, success: true };
 	}
 };

@@ -1,13 +1,29 @@
 <script>
-	import { Button } from 'flowbite-svelte';
+	import { Button, Spinner } from 'flowbite-svelte';
 
-	let { type = 'submit', loading = false, loadingText = 'Loading...', text = 'Submit' } = $props();
+	let { 
+		type = 'submit', 
+		loading = false, 
+		loadingText = 'Loading...', 
+		text = 'Submit',
+		color = 'primary',
+		disabled = false,
+		class: className = ''
+	} = $props();
 </script>
 
 <Button
 	{type}
-	class="w-full rounded-lg bg-primary-600 py-2.5 font-medium text-white transition-colors hover:bg-primary-700"
-	disabled={loading}
+	disabled={disabled || loading}
+	color={color}
+	class="rounded-lg py-2.5 font-medium transition-colors {className}"
 >
-	{loading ? loadingText : text}
+	{#if loading}
+		<div class="flex items-center justify-center gap-2">
+			<Spinner size="sm" color="white" />
+			<span>{loadingText}</span>
+		</div>
+	{:else}
+		{text}
+	{/if}
 </Button>

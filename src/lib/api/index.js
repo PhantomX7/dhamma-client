@@ -53,7 +53,7 @@ class HttpClient {
 			}
 
 			// Return both the response and parsed JSON data
-			const data = response.ok ? await response.json() : null;
+			const data = await response.json();
 			return {
 				ok: response.ok,
 				status: response.status,
@@ -115,7 +115,7 @@ class HttpClient {
 				event.cookies.delete('access_token', { path: '/' });
 				event.cookies.delete('refresh_token', { path: '/' });
 			}
-			
+
 			return null;
 		}
 	}

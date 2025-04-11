@@ -9,7 +9,6 @@
 
 	let { data } = $props();
 	const user = data.user;
-	const allDomains = data.domains;
 
 	// Create a map of domain IDs that are already assigned to the user
 	const userDomainIds = new Set(user.domains.map((d) => d.id));
@@ -84,7 +83,6 @@
 <!-- Use the refactored domain search modal component -->
 <DomainSearchModal 
 	bind:open={showModal} 
-	{allDomains} 
 	{userDomainIds} 
 	bind:selectedDomains={selectedDomains}
 	userId={user.id}

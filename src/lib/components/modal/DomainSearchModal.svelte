@@ -13,10 +13,11 @@
 		Search,
 		Spinner
 	} from 'flowbite-svelte';
+	// Remove api import since we'll use default fetch
+	import { runPromise } from '$lib/utils';
 
 	let {
-		open =  $bindable(false),
-		allDomains = [],
+		open = $bindable(false),
 		userDomainIds = new Set(),
 		selectedDomains = new Set(),
 		userId
@@ -24,46 +25,78 @@
 
 	let searchTerm = $state('');
 	let isSearching = $state(false);
-
-	// Derived state for search results
-	let searchResults = $derived(
-		isSearching ? [] : 
-		searchTerm.trim() === '' 
-			? allDomains.filter(d => !userDomainIds.has(d.id))
-			: allDomains.filter(d => 
-				!userDomainIds.has(d.id) && 
-				(d.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-				d.code.toLowerCase().includes(searchTerm.toLowerCase()))
-			)
-	);
+	let searchResults = $state([]);
+	let error = $state(null);
 
 	$effect(() => {
 		if (open) {
 			searchTerm = '';
+			fetchDomains();
 		}
 	});
+
+	async function fetchDomains(search = '') {
+		isSearching = true;
+		error = null;
+
+		// Build query parameters for server-side filtering
+		const params = new URLSearchParams();
+		params.set('limit', '20');
+		
+		if (search) {
+			params.set('code', search);
+		}
+
+		try {
+			// Use default fetch instead of api.fetch
+			const response = await fetch(`/api/domain?${params.toString()}`);
+
+			if (!response.ok) {
+				throw new Error('Failed to load domains');
+			}
+
+			const data = await response.json();
+			searchResults = data.data;
+		} catch (err) {
+			console.error('Failed to fetch domains:', err);
+			error = 'Failed to load domains. Please try again.';
+			searchResults = [];
+		}
+
+		isSearching = false;
+	}
+
+	function handleSearch() {
+		fetchDomains(searchTerm);
+	}
 
 	function toggleDomain(domainId) {
 		selectedDomains.has(domainId) 
 			? selectedDomains.delete(domainId)
 			: selectedDomains.add(domainId);
 	}
-	
-	function handleSearch() {
-		isSearching = true;
-		setTimeout(() => isSearching = false, 300);
-	}
 </script>
 
-<!-- Template remains exactly the same -->
 <Modal bind:open size="lg" title="Add Domains" autoclose>
 	<div class="mb-4">
-		<Search bind:value={searchTerm} on:input={handleSearch} placeholder="Search domains by name or code..." />
+		<Search 
+			bind:value={searchTerm} 
+			on:input={() => {
+				// Debounce search input
+				clearTimeout(window.searchTimeout);
+				window.searchTimeout = setTimeout(handleSearch, 500);
+			}}
+			placeholder="Search domains by name or code..." 
+		/>
 	</div>
 	
 	{#if isSearching}
 		<div class="flex justify-center py-8">
 			<Spinner size="8" />
+		</div>
+	{:else if error}
+		<div class="py-8 text-center text-red-500">
+			{error}
 		</div>
 	{:else if searchResults.length === 0}
 		<div class="py-8 text-center text-gray-500">

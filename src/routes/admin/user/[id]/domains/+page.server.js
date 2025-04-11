@@ -18,22 +18,12 @@ export async function load(event) {
 		throw redirect(303, '/admin/user');
 	}
 	
-	// Fetch all domains
-	const [domainsResponse, domainsFetchError] = await runPromise(
-		api.fetch(`domain?limit=100`, {}, event)
-	);
-	
-	if (domainsFetchError || !domainsResponse.ok) {
-		setFlash({ type: 'error', message: 'Failed to load domains' }, cookies);
-		throw redirect(303, `/admin/user/${params.id}`);
-	}
-	
 	return {
-		user: userResponse.data.data,
-		domains: domainsResponse.data.data
+		user: userResponse.data.data
 	};
 }
 
+// Keep your existing actions for adding/removing domains
 export const actions = {
 	// Add a single domain
 	addDomain: async (event) => {

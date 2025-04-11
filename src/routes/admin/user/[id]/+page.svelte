@@ -19,7 +19,10 @@
 	
 	<div class="mb-6 flex items-center justify-between">
 		<h2 class="text-xl font-bold">User Details</h2>
-		<Button color="light" href="/admin/user">Back to List</Button>
+		<div class="flex gap-2">
+			<Button color="blue" href="/admin/user/{user.id}/domains">Manage Domains</Button>
+			<Button color="light" href="/admin/user">Back to List</Button>
+		</div>
 	</div>
 
 	<div class="space-y-8 rounded-lg border bg-white p-6 shadow-sm">

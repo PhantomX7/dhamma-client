@@ -45,12 +45,38 @@ export const actions = {
 		);
 
 		if (fetchError || !response.ok) {
-			console.error('Domain assignment failed:', fetchError);
 			setFlash({ type: 'error', message: 'Failed to add domain to user' }, cookies);
 			return fail(400, { error: 'Failed to add domain' });
 		}
 
 		setFlash({ type: 'success', message: 'Domain successfully added to user' }, cookies);
+
+		return { success: true };
+	},
+
+	removeDomain: async (event) => {
+		const { request, params, cookies } = event;
+		const formData = await request.formData();
+
+		// Call your API to remove the domain from the user
+		const [response, fetchError] = await runPromise(
+			api.fetch(
+				`user/${params.id}/remove-domain`,
+				{
+					method: 'POST',
+					body: formData
+				},
+				event
+			)
+		);
+
+		if (fetchError || !response.ok) {
+			console.log(response);
+			setFlash({ type: 'error', message: 'Failed to remove domain from user' }, cookies);
+			return fail(400, { error: 'Failed to remove domain' });
+		}
+
+		setFlash({ type: 'success', message: 'Domain successfully removed from user' }, cookies);
 
 		return { success: true };
 	}

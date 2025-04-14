@@ -18,7 +18,8 @@
 	let {
 		open = $bindable(false),
 		userDomainIds = new Set(),
-		userId
+		userId,
+		handleSubmit = () => () => {} // Default empty function if not provided
 	} = $props();
 
 	let searchTerm = $state('');
@@ -44,10 +45,10 @@
 		try {
 			const response = await fetch(`/api/domain?${params.toString()}`);
 			if (!response.ok) throw new Error('Failed to load domains');
-			
+
 			// Filter out domains that the user already has
 			const allDomains = (await response.json()).data;
-			searchResults = allDomains.filter(domain => !userDomainIds.has(domain.id));
+			searchResults = allDomains.filter((domain) => !userDomainIds.has(domain.id));
 		} catch (err) {
 			console.error('Failed to fetch domains:', err);
 			error = 'Failed to load domains. Please try again.';
@@ -65,13 +66,13 @@
 
 <Modal bind:open size="lg" title="Add Domains" autoclose={false}>
 	<div class="mb-4">
-		<Search 
-			bind:value={searchTerm} 
+		<Search
+			bind:value={searchTerm}
 			on:input={handleSearch}
-			placeholder="Search domains by name or code..." 
+			placeholder="Search domains by name or code..."
 		/>
 	</div>
-	
+
 	{#if isSearching}
 		<div class="flex justify-center py-8">
 			<Spinner size="8" />
@@ -104,8 +105,9 @@
 								{domain.is_active ? 'Active' : 'Inactive'}
 							</Badge>
 						</TableBodyCell>
+						<!-- In the table body cell -->
 						<TableBodyCell>
-							<form method="POST" action="?/addDomain" use:enhance>
+							<form method="POST" action="?/addDomain" use:enhance={handleSubmit}>
 								<input type="hidden" name="domain_id" value={domain.id} />
 								<Button type="submit" size="xs" color="green">Add</Button>
 							</form>
@@ -115,8 +117,8 @@
 			</TableBody>
 		</Table>
 	{/if}
-	
+
 	<svelte:fragment slot="footer">
-		<Button color="alternative" on:click={() => open = false}>Cancel</Button>
+		<Button color="alternative" on:click={() => (open = false)}>Cancel</Button>
 	</svelte:fragment>
 </Modal>

@@ -53,7 +53,7 @@
 		<div class="rounded-lg border bg-white p-6 shadow-sm">
 			<div class="mb-4 flex items-center justify-between">
 				<h3 class="text-lg font-semibold">Current Domains</h3>
-				<Button color="blue" on:click={() => (showModal = true)}>Add Domain</Button>
+				<Button class="bg-primary-600 hover:bg-primary-700 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" on:click={() => (showModal = true)}>Add Domain</Button>
 			</div>
 
 			{#if user.domains.length === 0}
@@ -71,7 +71,7 @@
 								<input type="hidden" name="domain_id" value={domain.id} />
 								<button
 									type="submit"
-									class="cursor-pointer text-red-500 hover:text-red-700"
+									class="cursor-pointer text-red-600 hover:text-red-800 dark:text-red-500 dark:hover:text-red-600"
 									aria-label="Remove domain"
 								>
 									<svg

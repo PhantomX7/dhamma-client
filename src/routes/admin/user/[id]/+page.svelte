@@ -20,7 +20,7 @@
 	<div class="mb-6 flex items-center justify-between">
 		<h2 class="text-xl font-bold">User Details</h2>
 		<div class="flex gap-2">
-			<Button color="blue" href="/admin/user/{user.id}/domains">Manage Domains</Button>
+			<Button class="bg-primary-600 hover:bg-primary-700 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" href="/admin/user/{user.id}/domains">Manage Domains</Button>
 			<Button color="light" href="/admin/user">Back to List</Button>
 		</div>
 	</div>
@@ -73,7 +73,7 @@
 			{#if user.domains.length}
 				<div class="flex flex-wrap gap-2">
 					{#each user.domains as domain}
-						<Badge color="blue">{domain.name}</Badge>
+						<Badge color="gray">{domain.name}</Badge>
 					{/each}
 				</div>
 			{:else}

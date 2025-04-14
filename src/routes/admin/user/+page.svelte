@@ -43,7 +43,7 @@
     
     <div class="mb-4 flex items-center justify-between">
         <h2 class="text-xl font-bold">Users</h2>
-        <Button color="blue">Add User</Button>
+        <Button class="bg-primary-600 hover:bg-primary-700 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Add User</Button>
     </div>
 
     <DataTable data={data.users} meta={data.meta} {filterConfig}>

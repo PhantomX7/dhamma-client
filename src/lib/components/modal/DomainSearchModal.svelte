@@ -13,13 +13,11 @@
 		Search,
 		Spinner
 	} from 'flowbite-svelte';
-	// Remove api import since we'll use default fetch
-	import { runPromise } from '$lib/utils';
+	import { enhance } from '$app/forms';
 
 	let {
 		open = $bindable(false),
 		userDomainIds = new Set(),
-		selectedDomains = new Set(),
 		userId
 	} = $props();
 
@@ -39,53 +37,37 @@
 		isSearching = true;
 		error = null;
 
-		// Build query parameters for server-side filtering
 		const params = new URLSearchParams();
 		params.set('limit', '20');
-		
-		if (search) {
-			params.set('code', search);
-		}
+		if (search) params.set('code', search);
 
 		try {
-			// Use default fetch instead of api.fetch
 			const response = await fetch(`/api/domain?${params.toString()}`);
-
-			if (!response.ok) {
-				throw new Error('Failed to load domains');
-			}
-
-			const data = await response.json();
-			searchResults = data.data;
+			if (!response.ok) throw new Error('Failed to load domains');
+			
+			// Filter out domains that the user already has
+			const allDomains = (await response.json()).data;
+			searchResults = allDomains.filter(domain => !userDomainIds.has(domain.id));
 		} catch (err) {
 			console.error('Failed to fetch domains:', err);
 			error = 'Failed to load domains. Please try again.';
 			searchResults = [];
+		} finally {
+			isSearching = false;
 		}
-
-		isSearching = false;
 	}
 
 	function handleSearch() {
-		fetchDomains(searchTerm);
-	}
-
-	function toggleDomain(domainId) {
-		selectedDomains.has(domainId) 
-			? selectedDomains.delete(domainId)
-			: selectedDomains.add(domainId);
+		clearTimeout(window.searchTimeout);
+		window.searchTimeout = setTimeout(() => fetchDomains(searchTerm), 500);
 	}
 </script>
 
-<Modal bind:open size="lg" title="Add Domains" autoclose>
+<Modal bind:open size="lg" title="Add Domains" autoclose={false}>
 	<div class="mb-4">
 		<Search 
 			bind:value={searchTerm} 
-			on:input={() => {
-				// Debounce search input
-				clearTimeout(window.searchTimeout);
-				window.searchTimeout = setTimeout(handleSearch, 500);
-			}}
+			on:input={handleSearch}
 			placeholder="Search domains by name or code..." 
 		/>
 	</div>
@@ -100,14 +82,12 @@
 		</div>
 	{:else if searchResults.length === 0}
 		<div class="py-8 text-center text-gray-500">
-			No domains found matching your search.
+			No domains found matching your search or all domains are already assigned to this user.
 		</div>
 	{:else}
-		<Table hoverable={true}>
+		<Table hoverable>
 			<TableHead>
-				<TableHeadCell class="w-4">
-					<Checkbox />
-				</TableHeadCell>
+				<TableHeadCell class="w-4"><Checkbox /></TableHeadCell>
 				<TableHeadCell>Name</TableHeadCell>
 				<TableHeadCell>Code</TableHeadCell>
 				<TableHeadCell>Status</TableHeadCell>
@@ -116,12 +96,7 @@
 			<TableBody>
 				{#each searchResults as domain}
 					<TableBodyRow>
-						<TableBodyCell class="w-4">
-							<Checkbox
-								on:change={() => toggleDomain(domain.id)}
-								checked={selectedDomains.has(domain.id)}
-							/>
-						</TableBodyCell>
+						<TableBodyCell class="w-4"><Checkbox /></TableBodyCell>
 						<TableBodyCell>{domain.name}</TableBodyCell>
 						<TableBodyCell>{domain.code}</TableBodyCell>
 						<TableBodyCell>
@@ -130,7 +105,7 @@
 							</Badge>
 						</TableBodyCell>
 						<TableBodyCell>
-							<form method="POST" action="?/addDomain">
+							<form method="POST" action="?/addDomain" use:enhance>
 								<input type="hidden" name="domain_id" value={domain.id} />
 								<Button type="submit" size="xs" color="green">Add</Button>
 							</form>
@@ -142,16 +117,6 @@
 	{/if}
 	
 	<svelte:fragment slot="footer">
-		<div class="flex w-full justify-between">
-			<Button color="alternative" on:click={() => open = false}>Cancel</Button>
-			{#if selectedDomains.size > 0}
-				<form method="POST" action="?/addMultipleDomains">
-					{#each [...selectedDomains] as domainId}
-						<input type="hidden" name="domain_ids" value={domainId} />
-					{/each}
-					<Button type="submit" color="green">Add Selected ({selectedDomains.size})</Button>
-				</form>
-			{/if}
-		</div>
+		<Button color="alternative" on:click={() => open = false}>Cancel</Button>
 	</svelte:fragment>
 </Modal>

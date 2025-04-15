@@ -41,6 +41,7 @@
 	const sidebarItems = [
 		{ href: '/admin/domain', label: 'Domains', icon: GlobeOutline },
 		{ href: '/admin/user', label: 'Users', icon: UserOutline },
+		{ href: '/admin/permission', label: 'Permissions', icon: CogOutline },
 		// {
 		// 	href: '/admin',
 		// 	label: 'Dashboard',

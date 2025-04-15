@@ -32,7 +32,7 @@ export const actions = {
 		let { request, locals, cookies } = event;
 
 		// Validate form
-		const form = await superValidate(request, zod(loginSchema));
+		const form = await superValidate(request, zod(loginSchema), { dataType: 'json' });
 		if (!form.valid) {
 			return fail(400, { form });
 		}

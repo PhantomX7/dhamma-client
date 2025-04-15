@@ -9,7 +9,7 @@
 	let { data } = $props();
 
 	// Create a derived value for user that updates when data changes
-	const user = $derived(data.user);
+	let user = $derived(data.user);
 	const userDomainIds = $derived(new Set(user.domains.map((d) => d.id)));
 
 	// Track selected domains for adding/removing

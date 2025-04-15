@@ -9,7 +9,9 @@
 
 	const { form, errors, enhance, submitting, delayed, tainted } = superForm(data.form, {
 		resetForm: false,
-		taintedMessage: null
+		taintedMessage: null,
+		multipleSubmits: 'prevent',
+		dataType: 'json'
 	});
 
 	const breadcrumbItems = [{ href: '/admin/domain', label: 'Domains' }, { label: 'Add Domain' }];
@@ -76,7 +78,7 @@
 					<FormToggle
 						label="Status"
 						name="is_active"
-						bind:checked={$form.is_active}
+						bind:value={$form.is_active}
 						error={$errors.is_active?.join(', ')}
 					/>
 					<p class="mt-1 text-sm text-gray-500">

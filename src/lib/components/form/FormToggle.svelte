@@ -5,7 +5,7 @@
 		id = '', 
 		label = '', 
 		name = '', 
-		checked = $bindable(false),
+		value = $bindable(false),
 		helperText = '',
 		error = '',
 		required = false
@@ -28,11 +28,11 @@
 		<Toggle 
 			{id} 
 			{name} 
-			bind:checked 
+			checked={value} 
 			class="focus:ring-2 focus:ring-primary-300"
 			color={error ? 'red' : undefined}
 		>
-			{checked ? 'Active' : 'Inactive'}
+			{value ? 'Active' : 'Inactive'}
 		</Toggle>
 	</div>
 	

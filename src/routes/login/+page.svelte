@@ -2,16 +2,14 @@
 	import { Alert } from 'flowbite-svelte';
 	import { superForm } from 'sveltekit-superforms';
 	import { zodClient } from 'sveltekit-superforms/adapters';
-	import { loginSchema } from '$lib/schema/login';
 	import { goto } from '$app/navigation';
 	import { FormInput, FormButton } from '$lib/components/form';
 
 	let { data } = $props();
 
 	const { form, errors, enhance, submitting, message } = superForm(data.form, {
-		validationMethod: 'auto',
-		validator: zodClient(loginSchema),
-		resetForm: false // Add this to prevent form reset
+		resetForm: false,
+		dataType: 'json' // Add JSON data type for better form handling
 	});
 </script>
 

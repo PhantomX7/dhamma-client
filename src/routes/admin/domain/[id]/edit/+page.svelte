@@ -8,10 +8,7 @@
 
 	let { data } = $props();
 	const { form, enhance, errors, message, submitting, delayed, tainted } = superForm(data.form, {
-		onSubmit({ formData }) {
-			const isActive = formData.get('is_active');
-			formData.set('is_active', isActive === '' ? 'true' : 'false');
-		},
+		dataType: 'json',
 		multipleSubmits: 'prevent',
 		taintedMessage: null
 	});
@@ -53,8 +50,6 @@
 
 	<div class="space-y-8 rounded-lg border bg-white p-6 shadow-sm">
 		<form method="POST" use:enhance class="space-y-6">
-			<input type="hidden" name="_original" value={JSON.stringify(data.domain)} />
-
 			<div class="space-y-4">
 				<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
 					<div>

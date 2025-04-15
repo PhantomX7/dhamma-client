@@ -4,11 +4,11 @@
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 
 	let { data } = $props();
-	const domain = data.domain;
+	let domain = data.domain;
 
 	const breadcrumbItems = [
 		{ href: '/admin/domain', label: 'Domains' },
-		{ label: domain.name }
+		{ label: data.domain.name }
 	];
 </script>
 

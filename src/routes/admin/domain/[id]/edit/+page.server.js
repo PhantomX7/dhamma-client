@@ -19,7 +19,8 @@ export async function load(event) {
 	}
 	
 	const data = response.data.data;
-	const form = await superValidate(data, zod(domainSchema));
+	let form = await superValidate(data, zod(domainSchema));
+	form.data._original = JSON.stringify(data);
 	
 	return {
 		domain: data,
@@ -30,17 +31,19 @@ export async function load(event) {
 export const actions = {
 	default: async (event) => {
 		const { request, params, cookies } = event;
-		const formData = await request.formData();
-		
+
 		// Get the original domain data and current form data
-		const originalData = JSON.parse(formData.get('_original') || '{}');
 		
-		const form = await superValidate(formData, zod(domainSchema));
+		// console.log(f)
+		const form = await superValidate(request, zod(domainSchema), { dataType: 'json' });
 		if (!form.valid) {
 			setFlash({ type: 'error', message: 'Validation failed' }, cookies);
 			return fail(400, { form });
 		}
 		
+		const originalData = JSON.parse(form.data._original || '{}');
+		const formData = form.data;
+
 		// Check if there are any changes
 		const changes = getChangedFields(originalData, formData);
 
@@ -50,7 +53,10 @@ export const actions = {
 				`/domain/${params.id}`,
 				{
 					method: 'PATCH',
-					body: changes
+					body: JSON.stringify(changes),
+					headers: {
+						'Content-Type': 'application/json'
+					}
 				},
 				event
 			)

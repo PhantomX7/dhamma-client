@@ -30,23 +30,23 @@ function setAuthCookies(cookies, { access_token, refresh_token }) {
 export const actions = {
 	default: async (event) => {
 		let { request, locals, cookies } = event;
-		// Get form data
-		const formData = await request.formData();
 
 		// Validate form
-		const form = await superValidate(formData, zod(loginSchema));
+		const form = await superValidate(request, zod(loginSchema));
 		if (!form.valid) {
 			return fail(400, { form });
 		}
 
 		// Authenticate user
-		api.setTenant(locals.tenant);
 		const [response, fetchError] = await runPromise(
 			api.fetch(
 				'/auth/signin',
 				{
 					method: 'POST',
-					body: formData
+					body: JSON.stringify(form.data),
+					headers: {
+						'Content-Type': 'application/json'
+					}
 				},
 				event
 			)

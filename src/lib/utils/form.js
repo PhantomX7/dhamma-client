@@ -1,15 +1,17 @@
 export function getChangedFields(original, updated) {
-	updated = Object.fromEntries(updated);
-	const formData = new FormData();
+	const changedFields = {};
 
 	Object.keys(updated).forEach((key) => {
+		// Skip internal fields that start with underscore
 		if (key[0] === '_') return;
+
+		// Compare values and add to result if different
 		if (JSON.stringify(original[key]) !== JSON.stringify(updated[key])) {
-			formData.append(key, updated[key]);
+			changedFields[key] = updated[key];
 		}
 	});
 
-	return formData;
+	return changedFields;
 }
 
 export function setErrors(form, errors) {

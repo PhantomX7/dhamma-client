@@ -24,10 +24,7 @@ export async function load(event) {
 export const actions = {
 	default: async (event) => {
 		const { request, cookies } = event;
-		const formData = await request.formData();
-        console.log(formData);
-
-		const form = await superValidate(formData, zod(domainSchema));
+		const form = await superValidate(request, zod(domainSchema), { dataType: 'json' });
 		if (!form.valid) {
 			setFlash({ type: 'error', message: 'Validation failed' }, cookies);
 			return fail(400, { form });
@@ -39,7 +36,10 @@ export const actions = {
 				'/domain',
 				{
 					method: 'POST',
-					body: formData
+					body: JSON.stringify(form.data),
+					headers: {
+						'Content-Type': 'application/json'
+					}
 				},
 				event
 			)
@@ -51,8 +51,6 @@ export const actions = {
 			return fail(500, { form });
 		}
 
-        // console.log(response);
-        // console.log(form)
 		if (!response.ok) {
 			if (response.data?.error) {
 				setErrors(form, response.data.error);

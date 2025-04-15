@@ -5,7 +5,7 @@
         id = '', 
         label = '', 
         name = '', 
-        value = $bindable(''), 
+        value = $bindable(), 
         rows = 4,
         placeholder = '', 
         error = '',

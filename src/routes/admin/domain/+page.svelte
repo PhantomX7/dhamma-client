@@ -50,7 +50,7 @@
 	
 	<div class="mb-4 flex items-center justify-between">
 		<h2 class="text-xl font-bold">Domains</h2>
-		<Button class="bg-primary-600 hover:bg-primary-700 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Add Domain</Button>
+		<Button class="bg-primary-600 hover:bg-primary-700 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" href="/admin/domain/add">Add Domain</Button>
 	</div>
 
 	<DataTable data={data.domains} meta={data.meta} {filterConfig}>

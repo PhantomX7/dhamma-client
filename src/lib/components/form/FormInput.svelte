@@ -6,7 +6,7 @@
 		label = '', 
 		type = 'text', 
 		name = '', 
-		value = $bindable(''), 
+		value = $bindable(), 
 		placeholder = '', 
 		error = '',
 		helperText = '',

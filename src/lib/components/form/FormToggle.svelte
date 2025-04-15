@@ -5,7 +5,7 @@
 		id = '', 
 		label = '', 
 		name = '', 
-		checked = $bindable(''),
+		checked = $bindable(),
 		helperText = ''
 	} = $props();
 </script>

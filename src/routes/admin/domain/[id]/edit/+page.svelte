@@ -96,7 +96,12 @@
 				</div>
 
 				<div>
-					<FormToggle label="Status" name="is_active" bind:checked={$form.is_active} />
+					<FormToggle 
+						label="Status" 
+						name="is_active" 
+						bind:value={$form.is_active}
+						error={$errors.is_active?.join(', ')} 
+					/>
 					<p class="mt-1 text-sm text-gray-500">
 						{$form.is_active
 							? 'Domain is active and available for use'

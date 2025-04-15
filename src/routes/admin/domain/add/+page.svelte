@@ -6,21 +6,18 @@
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 
 	let { data } = $props();
-	
+
 	const { form, errors, enhance, submitting, delayed, tainted } = superForm(data.form, {
 		resetForm: false,
 		taintedMessage: null
 	});
 
-	const breadcrumbItems = [
-		{ href: '/admin/domain', label: 'Domains' },
-		{ label: 'Add Domain' }
-	];
+	const breadcrumbItems = [{ href: '/admin/domain', label: 'Domains' }, { label: 'Add Domain' }];
 </script>
 
 <div class="p-4">
 	<Breadcrumb items={breadcrumbItems} />
-	
+
 	<div class="mb-6 flex items-center justify-between">
 		<h2 class="text-xl font-bold">Add New Domain</h2>
 		<Button color="light" href="/admin/domain">Back to List</Button>
@@ -76,7 +73,12 @@
 				</div>
 
 				<div>
-					<FormToggle label="Status" name="is_active" bind:checked={$form.is_active} />
+					<FormToggle
+						label="Status"
+						name="is_active"
+						bind:checked={$form.is_active}
+						error={$errors.is_active?.join(', ')}
+					/>
 					<p class="mt-1 text-sm text-gray-500">
 						{$form.is_active
 							? 'Domain is active and available for use'
@@ -95,4 +97,4 @@
 			</div>
 		</form>
 	</div>
-</div> 
+</div>

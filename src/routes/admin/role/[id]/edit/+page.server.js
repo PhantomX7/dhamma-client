@@ -3,10 +3,11 @@ import { redirect, setFlash } from 'sveltekit-flash-message/server';
 import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
 
+import api from '$lib/api';
 import { roleSchema } from '$lib/schema/role'; 
 import { getChangedFields, setErrors } from '$lib/utils/form';
-import { runPromise, loadResourceById } from '$lib/utils'; 
-import api from '$lib/api';
+import { runPromise } from '$lib/utils';
+import { loadResourceById } from '$lib/utils/data';
 
 /**
  * Loads the role data for editing using the loadResourceById utility.

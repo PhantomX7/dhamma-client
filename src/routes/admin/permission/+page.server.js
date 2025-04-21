@@ -1,29 +1,18 @@
-import { redirect, setFlash } from 'sveltekit-flash-message/server';
-import { buildApiQuery } from '$lib/utils/filter';
-import { runPromise } from '$lib/utils';
-import api from '$lib/api';
+import { loadResourceList } from '$lib/utils/data'; // Import the list loading utility
 
+/**
+ * Loads a list of permissions using the reusable loadResourceList utility.
+ * @param {import('./$types').PageServerLoadEvent} event - The SvelteKit load event.
+ * @returns {Promise<object>} - An object containing the permissions list and metadata.
+ */
 export async function load(event) {
 	await event.parent();
 
-	const { url, cookies } = event;
-	const [response, fetchError] = await runPromise(
-		api.fetch(`permission?${buildApiQuery(url)}`, {}, event)
-	);
-
-	if (fetchError) {
-		console.error('Failed to fetch permissions:', fetchError);
-		setFlash({ type: 'error', message: 'Failed to load permissions' }, cookies);
-		throw redirect(303, '/admin');
-	}
-
-	if (!response.ok) {
-		setFlash({ type: 'error', message: 'Failed to load permissions' }, cookies);
-		throw redirect(303, '/admin');
-	}
+	// Use the utility function to load the list of permissions
+	const { list: permissions, meta } = await loadResourceList(event, 'permission', 'permissions', '/admin');
 
 	return {
-		permissions: response.data.data,
-		meta: response.data.meta
+		permissions, // Rename 'list' to 'permissions' for the page component
+		meta
 	};
 }

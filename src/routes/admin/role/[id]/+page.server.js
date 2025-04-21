@@ -1,4 +1,4 @@
-import { loadResourceById } from '$lib/utils';
+import { loadResourceById } from '$lib/utils/data';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {

@@ -1,30 +1,20 @@
-import api from '$lib/api';
-import { buildApiQuery } from '$lib/utils/filter';
-import { redirect } from '@sveltejs/kit';
-import { runPromise } from '$lib/utils';
+import { loadResourceList } from '$lib/utils/data'; // Import the list loading utility
 
+/**
+ * Loads a list of users using the reusable loadResourceList utility.
+ * @param {import('./$types').PageServerLoadEvent} event - The SvelteKit load event.
+ * @returns {Promise<object>} - An object containing the users list and metadata.
+ */
 export async function load(event) {
+	// Ensure parent layout data is loaded
 	await event.parent();
 
-	const { url } = event;
-	const [response, fetchError] = await runPromise(
-		api.fetch(`user?${buildApiQuery(url)}`, {}, event)
-	);
-	
-	if (fetchError) {
-		console.error('Failed to fetch users:', fetchError);
-		return {
-			users: [],
-			meta: null
-		};
-	}
+	// Use the utility function to load the list of users
+	const { list: users, meta } = await loadResourceList(event, 'user', 'Users', '/admin');
 
-	if (!response.ok) {
-		throw redirect(303, `/admin`);
-	}
-
+	// Return the fetched users and metadata for the page component
 	return {
-		users: response.data.data,
-		meta: response.data.meta
+		users, // Rename 'list' to 'users' for clarity in the page component
+		meta
 	};
 }

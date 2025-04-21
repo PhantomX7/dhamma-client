@@ -1,4 +1,4 @@
-import { loadResourceById } from '$lib/utils';
+import { loadResourceById } from '$lib/utils/data';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
@@ -6,5 +6,5 @@ export async function load(event) {
 	await event.parent();
 
 	// Load the permission resource using the utility function
-	return await loadResourceById(event, '/permission', 'Permission', '/admin/permission');
+	return await loadResourceById(event, '/permission', 'permission', '/admin/permission');
 }

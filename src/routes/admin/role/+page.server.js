@@ -1,31 +1,18 @@
-import { redirect, setFlash } from 'sveltekit-flash-message/server';
-import { buildApiQuery } from '$lib/utils/filter';
-import { runPromise } from '$lib/utils';
-import api from '$lib/api';
+import { loadResourceList } from '$lib/utils/data'; // Import the list loading utility
 
+/**
+ * Loads a list of roles using the reusable loadResourceList utility.
+ * @param {import('./$types').PageServerLoadEvent} event - The SvelteKit load event.
+ * @returns {Promise<object>} - An object containing the roles list and metadata.
+ */
 export async function load(event) {
 	await event.parent();
 
-	const { url, cookies } = event;
-	const [response, fetchError] = await runPromise(
-		api.fetch(`role?${buildApiQuery(url)}`, {}, event)
-	);
+	// Use the utility function to load the list of roles
+	const { list: roles, meta } = await loadResourceList(event, 'role', 'roles', '/admin');
 
-	if (fetchError) {
-		console.error('Failed to fetch roles:', fetchError);
-		setFlash({ type: 'error', message: 'Failed to load roles' }, cookies);
-		throw redirect(303, '/admin');
-	}
-
-	if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-		console.error('API error fetching roles:', response.status, errorData.message);
-		setFlash({ type: 'error', message: `Failed to load roles: ${errorData.message || response.statusText}` }, cookies);
-		throw redirect(303, '/admin');
-	}
-
-    return {
-		roles: response.data.data,
-		meta: response.data.meta
+	return {
+		roles, // Rename 'list' to 'roles' for the page component
+		meta
 	};
 }

@@ -1,8 +1,9 @@
-import api from '$lib/api';
 import { fail } from '@sveltejs/kit';
 import { setFlash } from 'sveltekit-flash-message/server';
+
+import api from '$lib/api';
 import { runPromise } from '$lib/utils';
-import { loadResourceById } from '$lib/utils';
+import { loadResourceById } from '$lib/utils/data';
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(event) {

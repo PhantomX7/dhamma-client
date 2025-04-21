@@ -2,39 +2,31 @@ import { fail } from '@sveltejs/kit';
 import { redirect, setFlash } from 'sveltekit-flash-message/server';
 import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
-import { updateRoleSchema } from '$lib/schema/role'; // Changed schema
+
+import { roleSchema } from '$lib/schema/role'; 
 import { getChangedFields, setErrors } from '$lib/utils/form';
-import { runPromise } from '$lib/utils';
+import { runPromise, loadResourceById } from '$lib/utils'; 
 import api from '$lib/api';
 
+/**
+ * Loads the role data for editing using the loadResourceById utility.
+ * @param {import('./$types').PageServerLoadEvent} event - The SvelteKit load event.
+ * @returns {Promise<object>} The role data and the form object.
+ */
 export async function load(event) {
 	await event.parent();
 
-	const { params, cookies } = event;
-	const [response, fetchError] = await runPromise(api.fetch(`/role/${params.id}`, {}, event)); // Changed endpoint
-	
-	if (fetchError) {
-        console.error('Failed to fetch role for edit:', fetchError);
-		setFlash({ type: 'error', message: 'Role not found or failed to load' }, cookies);
-		throw redirect(303, '/admin/role'); // Changed redirect path
-	}
+	// Use loadResourceById to fetch the role
+	const { role } = await loadResourceById(event, 'role', 'role', '/admin/role');
 
-    const responseData = await response.json().catch(() => null);
+	// Initialize the form with the fetched role data
+	let form = await superValidate(role, zod(roleSchema)); 
+	// Store the original data for change detection in actions
+	form.data._original = JSON.stringify(role);
 
-	if (!response.ok || !responseData || !responseData.status) {
-        const message = responseData?.message || 'Role not found or failed to load';
-        console.error('API error fetching role for edit:', response.status, message);
-		setFlash({ type: 'error', message }, cookies);
-		throw redirect(303, '/admin/role'); // Changed redirect path
-	}
-	
-	const data = responseData.data;
-	let form = await superValidate(data, zod(updateRoleSchema)); // Changed schema
-	form.data._original = JSON.stringify(data); // Store original data
-	
 	return {
-		role: data, // Changed key
-		form
+		role, 
+		form 
 	};
 }
 
@@ -42,7 +34,7 @@ export const actions = {
 	default: async (event) => {
 		const { request, params, cookies } = event;
 
-		const form = await superValidate(request, zod(updateRoleSchema), { dataType: 'json' }); // Changed schema
+		const form = await superValidate(request, zod(roleSchema), { dataType: 'json' }); // Changed schema
 		if (!form.valid) {
 			setFlash({ type: 'error', message: 'Validation failed' }, cookies);
 			return fail(400, { form });

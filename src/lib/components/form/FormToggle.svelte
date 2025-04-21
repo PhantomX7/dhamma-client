@@ -5,7 +5,7 @@
 		id = '', 
 		label = '', 
 		name = '', 
-		value = $bindable(false),
+		value = $bindable(),
 		helperText = '',
 		error = '',
 		required = false

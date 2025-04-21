@@ -8,6 +8,3 @@ export const roleSchema = z.object({
 	created_at: z.string().optional(), // Readonly from API
 	updated_at: z.string().optional() // Readonly from API
 });
-
-export const createRoleSchema = roleSchema.omit({ id: true, created_at: true, updated_at: true });
-export const updateRoleSchema = roleSchema.omit({ created_at: true, updated_at: true });

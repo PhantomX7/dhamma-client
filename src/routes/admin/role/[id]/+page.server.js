@@ -8,5 +8,5 @@ export async function load(event) {
 	// Load the role resource using the utility function
 	// Note: The original code had a potential copy-paste error, redirecting to '/admin/domain'.
 	// Corrected to redirect to '/admin/role'.
-	return await loadResourceById(event, '/role', 'Role', '/admin/role');
+	return await loadResourceById(event, '/role', 'role', '/admin/role');
 }

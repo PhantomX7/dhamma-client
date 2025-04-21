@@ -58,7 +58,7 @@
 				</div>
 
 				<div>
-					<FormToggle label="Status" name="is_active" bind:checked={$form.is_active} />
+					<FormToggle label="Status" name="is_active" bind:value={$form.is_active} />
 				</div>
 			</div>
 

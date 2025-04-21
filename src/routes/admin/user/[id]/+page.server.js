@@ -6,5 +6,5 @@ export async function load(event) {
 	await event.parent();
 
 	// Load the user resource using the utility function
-	return await loadResourceById(event, '/user', 'User', '/admin/user');
+	return await loadResourceById(event, '/user', 'user', '/admin/user');
 }

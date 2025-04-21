@@ -6,5 +6,5 @@ export async function load(event) {
 	await event.parent();
 
 	// Load the domain resource using the utility function
-	return await loadResourceById(event, '/domain', 'Domain', '/admin/domain');
+	return await loadResourceById(event, '/domain', 'domain', '/admin/domain');
 }

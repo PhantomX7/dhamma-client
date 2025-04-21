@@ -1,19 +1,12 @@
-import { redirect, setFlash } from 'sveltekit-flash-message/server';
-import { runPromise } from '$lib/utils';
-import api from '$lib/api';
+import { loadResourceById } from '$lib/utils';
 
+/** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
+	// Ensure parent layout data is loaded
 	await event.parent();
 
-	const { params, cookies } = event;
-	const [response, fetchError] = await runPromise(api.fetch(`/role/${params.id}`, {}, event));
-	
-	if (fetchError || !response.ok) {
-		setFlash({ type: 'error', message: 'Domain not found' }, cookies);
-		throw redirect(303, '/admin/domain');
-	}
-
-	return {
-		role: response.data.data
-	};
+	// Load the role resource using the utility function
+	// Note: The original code had a potential copy-paste error, redirecting to '/admin/domain'.
+	// Corrected to redirect to '/admin/role'.
+	return await loadResourceById(event, '/role', 'Role', '/admin/role');
 }

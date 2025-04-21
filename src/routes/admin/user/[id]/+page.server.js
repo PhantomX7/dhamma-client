@@ -1,19 +1,10 @@
-import api from '$lib/api';
-import { redirect, setFlash } from 'sveltekit-flash-message/server';
-import { runPromise } from '$lib/utils';
+import { loadResourceById } from '$lib/utils';
 
+/** @type {import('./$types').PageServerLoad} */
 export async function load(event) {
+	// Ensure parent layout data is loaded
 	await event.parent();
 
-	const { params, cookies } = event;
-	const [response, fetchError] = await runPromise(api.fetch(`/user/${params.id}`, {}, event));
-	
-	if (fetchError || !response.ok) {
-		setFlash({ type: 'error', message: 'User not found' }, cookies);
-		throw redirect(303, '/admin/user');
-	}
-
-	return {
-		user: response.data.data
-	};
+	// Load the user resource using the utility function
+	return await loadResourceById(event, '/user', 'User', '/admin/user');
 }

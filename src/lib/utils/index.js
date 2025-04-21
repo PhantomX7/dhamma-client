@@ -1,5 +1,34 @@
 // import { onDestroy } from 'svelte';
 // import queryString from 'query-string';
+/**
+ * Loads a resource by its ID from the API.
+ * Handles common error scenarios like resource not found and redirects.
+ *
+ * @param {object} event - The SvelteKit load event object.
+ * @param {string} resourcePath - The base API path for the resource (e.g., '/user').
+ * @param {string} resourceName - The singular name of the resource (e.g., 'User').
+ * @param {string} redirectPath - The path to redirect to on failure (e.g., '/admin/user').
+ * @returns {Promise<object>} - A promise that resolves to an object containing the fetched resource data under a key named after the resource (e.g., { user: data }).
+ * @throws {Redirect} - Throws a redirect if the resource is not found or an error occurs.
+ */
+export async function loadResourceById(event, resourcePath, resourceName, redirectPath) {
+	const { params, cookies } = event;
+	const api = await import('$lib/api').then(m => m.default);
+	const { redirect, setFlash } = await import('sveltekit-flash-message/server');
+
+	const [response, fetchError] = await runPromise(
+		api.fetch(`${resourcePath}/${params.id}`, {}, event)
+	);
+
+	if (fetchError || !response?.ok) {
+		setFlash({ type: 'error', message: `${resourceName} not found` }, cookies);
+		throw redirect(303, redirectPath);
+	}
+
+	return {
+		[resourceName.toLowerCase()]: response.data.data
+	};
+}
 
 export function formatDate(dateString) {
 	return new Date(dateString).toLocaleDateString();
@@ -31,61 +60,7 @@ export const clickOutside = (node) => {
 	};
 };
 
-// export function onInterval(callback, milliseconds) {
-// 	const interval = setInterval(callback, milliseconds);
 
-// 	onDestroy(() => {
-// 		clearInterval(interval);
-// 	});
-// }
-
-// export function timeNOW() {
-// 	let today = new Date();
-// 	let currentHours = today.getHours();
-// 	currentHours = ('0' + currentHours).slice(-2);
-// 	let currentMinutes = today.getMinutes();
-// 	currentMinutes = ('0' + currentMinutes).slice(-2);
-// 	let currentSeconds = today.getSeconds();
-// 	currentSeconds = ('0' + currentSeconds).slice(-2);
-// 	return currentHours + ':' + currentMinutes + ':' + currentSeconds;
-// }
-
-//// print
-// export function printDiv(divName) {
-// 	let printContents = document.getElementById(divName).innerHTML;
-
-// 	printContents = '<script src="https://cdn.tailwindcss.com"></script>' + printContents;
-// 	// printContents = '<link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.0.2/tailwind.min.css" rel="stylesheet">' + printContents;
-
-// 	var myWindow = window.open("", "MsgWindow", "width=800,height=1000");
-// 	myWindow.document.write(printContents);
-// 	// myWindow.print();
-// }
-
-// export function generatePaginationUrl(url, page, limit, query) {
-// 	if (query.page) {
-// 		// eslint-disable-next-line no-unused-vars
-// 		let { page, ...otherQuery } = query;
-// 		query = { ...otherQuery };
-// 	}
-// 	if (query.limit) {
-// 		// eslint-disable-next-line no-unused-vars
-// 		let { limit, ...otherQuery } = query;
-// 		query = { ...otherQuery };
-// 	}
-// 	return `${url}?limit=${limit}&page=${parseInt(page)}${
-// 		_.isEmpty(query) || JSON.stringify(query) == '{}' ? '' : `&` + queryString.stringify(query)
-// 	}`;
-// }
-
-// export function serialize(obj) {
-// 	var str = [];
-// 	for (var p in obj)
-// 		if (Object.prototype.hasOwnProperty.call(obj, p)) {
-// 			str.push(encodeURIComponent(p) + '=' + encodeURIComponent(obj[p]));
-// 		}
-// 	return str.join('&');
-// }
 
 // export function generateIndexUrl(path, query = {}) {
 // 	let page = query.page || 1;

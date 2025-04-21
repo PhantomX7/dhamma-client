@@ -21,10 +21,11 @@
 	import { goto } from '$app/navigation';
 	import {
 		GlobeOutline,
-		// ChartPieOutline,
 		UserOutline,
 		CogOutline,
-		BarsOutline
+		BarsOutline,
+		UsersGroupOutline,
+		ApiKeyOutline,
 	} from 'flowbite-svelte-icons';
 
 	let { data, children } = $props();
@@ -41,14 +42,15 @@
 	const sidebarItems = [
 		{ href: '/admin/domain', label: 'Domains', icon: GlobeOutline },
 		{ href: '/admin/user', label: 'Users', icon: UserOutline },
-		{ href: '/admin/permission', label: 'Permissions', icon: CogOutline },
+		{ href: '/admin/role', label: 'Roles', icon: UsersGroupOutline }, // Updated Roles icon
+		{ href: '/admin/permission', label: 'Permissions', icon: ApiKeyOutline }, // Updated Permissions icon
 		// {
 		// 	href: '/admin',
 		// 	label: 'Dashboard',
 		// 	icon: ChartPieOutline,
 		// 	child: [{ href: '/admin/child', label: 'Test' }]
 		// },
-		{ href: '/admin/settings', label: 'Settings', icon: CogOutline }
+		{ href: '/admin/settings', label: 'Settings', icon: CogOutline } // Updated Settings icon
 	];
 
 	// Toggle sidebar for mobile view
@@ -69,7 +71,8 @@
 		class="fixed top-0 left-0 z-40 h-screen border-r border-gray-200 pt-14 transition-transform duration-300 {isSidebarCollapsed
 			? 'w-0 -translate-x-full opacity-0'
 			: 'w-64 translate-x-0 opacity-100'}"
-		activeUrl={sidebarItems.find(item => $page.url.pathname.startsWith(item.href))?.href || $page.url.pathname}
+		activeUrl={sidebarItems.find((item) => $page.url.pathname.startsWith(item.href))?.href ||
+			$page.url.pathname}
 	>
 		<SidebarWrapper divClass="h-full overflow-y-auto bg-white px-3 py-4">
 			<SidebarGroup>

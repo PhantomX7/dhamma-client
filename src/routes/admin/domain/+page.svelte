@@ -9,18 +9,20 @@
 		TableHead,
 		TableHeadCell
 	} from 'flowbite-svelte';
-	import { getContext } from 'svelte';
+	// Added icons for buttons
+	import { PlusOutline, EyeOutline, EditOutline } from 'flowbite-svelte-icons';
 	import { formatDate } from '$lib/utils';
 	import DataTable from '$lib/components/DataTable.svelte';
 	import { FilterType } from '$lib/utils/filter';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 
+	// Component props
 	let { data } = $props();
 
-	const breadcrumbItems = [
-		{ label: 'Domains' }
-	];
+	// Breadcrumb items definition
+	const breadcrumbItems = [{ label: 'Domains' }];
 
+	// Configuration for the DataTable filter component
 	const filterConfig = {
 		id: {
 			type: FilterType.ID,
@@ -45,17 +47,27 @@
 	};
 </script>
 
-<div class="p-4">
-	<Breadcrumb items={breadcrumbItems} />
-	
-	<div class="mb-4 flex items-center justify-between">
-		<h2 class="text-xl font-bold">Domains</h2>
-		<Button class="bg-primary-600 hover:bg-primary-700 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" href="/admin/domain/add">Add Domain</Button>
+<!-- Main page container with standard padding and dark mode background -->
+<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
+	<!-- Breadcrumb navigation with bottom margin -->
+	<Breadcrumb class="mb-6" items={breadcrumbItems} />
+
+	<!-- Page header section with responsive layout and spacing -->
+	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+		<!-- Page title using h1 for semantic structure -->
+		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Domains</h1>
+		<!-- Add Domain button with icon -->
+		<Button href="/admin/domain/add">
+			<PlusOutline class="me-2 h-4 w-4" /> Add Domain
+		</Button>
 	</div>
 
+	<!-- DataTable component wrapping the table -->
 	<DataTable data={data.domains} meta={data.meta} {filterConfig}>
-		<Table hoverable={true} divClass="max-h-[70vh] overflow-y-auto">
-			<TableHead class="sticky top-0 z-10 shadow-sm">
+		<!-- Flowbite Table component with hover effect and constrained height -->
+		<Table hoverable={true} divClass="relative max-h-[70vh] overflow-x-auto overflow-y-auto">
+			<!-- Sticky table header -->
+			<TableHead class="sticky top-0 z-10 bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
 				<TableHeadCell>ID</TableHeadCell>
 				<TableHeadCell>Name</TableHeadCell>
 				<TableHeadCell>Code</TableHeadCell>
@@ -64,25 +76,39 @@
 				<TableHeadCell>Created At</TableHeadCell>
 				<TableHeadCell>Actions</TableHeadCell>
 			</TableHead>
-			<TableBody>
-				{#each data.domains as domain}
-					<TableBodyRow>
-						<TableBodyCell>{domain.id}</TableBodyCell>
+			<!-- Table body containing domain data -->
+			<TableBody class="divide-y divide-gray-200 dark:divide-gray-700">
+				{#each data.domains as domain (domain.id)}
+					<TableBodyRow class="bg-white dark:bg-gray-800">
+						<TableBodyCell class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white">{domain.id}</TableBodyCell>
 						<TableBodyCell>{domain.name}</TableBodyCell>
 						<TableBodyCell>{domain.code}</TableBodyCell>
 						<TableBodyCell>
-							<Badge rounded color={domain.is_active ? 'green' : 'red'}>
+							<!-- Status badge with conditional coloring -->
+							<Badge large rounded color={domain.is_active ? 'green' : 'red'}>
 								{domain.is_active ? 'Active' : 'Inactive'}
 							</Badge>
 						</TableBodyCell>
-						<TableBodyCell>{domain.description}</TableBodyCell>
+						<TableBodyCell class="max-w-sm truncate">{domain.description || 'N/A'}</TableBodyCell>
 						<TableBodyCell>{formatDate(domain.created_at)}</TableBodyCell>
 						<TableBodyCell>
-							<div class="flex gap-2">
-								<Button size="xs" color="green" href="/admin/domain/{domain.id}">View</Button>
-								<Button size="xs" class="bg-primary-600 hover:bg-primary-700 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" href="/admin/domain/{domain.id}/edit">Edit</Button>
+							<!-- Action buttons container -->
+							<div class="flex space-x-2">
+								<!-- View button with icon -->
+								<Button size="xs" color="alternative" href="/admin/domain/{domain.id}">
+									<EyeOutline class="me-1.5 h-3.5 w-3.5" /> View
+								</Button>
+								<!-- Edit button with icon -->
+								<Button size="xs" color="primary" href="/admin/domain/{domain.id}/edit">
+									<EditOutline class="me-1.5 h-3.5 w-3.5" /> Edit
+								</Button>
 							</div>
 						</TableBodyCell>
+					</TableBodyRow>
+				{:else}
+					<!-- Row displayed when there is no data -->
+					<TableBodyRow>
+						<TableBodyCell colspan="7" class="text-center">No domains found.</TableBodyCell>
 					</TableBodyRow>
 				{/each}
 			</TableBody>

@@ -1,51 +1,83 @@
 <script>
-	import { Button } from 'flowbite-svelte';
+	import { Button, Alert } from 'flowbite-svelte';
+	import { InfoCircleSolid, FileLinesOutline, ListOutline } from 'flowbite-svelte-icons';
 	import { FormInput, FormTextarea, FormToggle, FormButton } from '$lib/components/form';
 	import { superForm } from 'sveltekit-superforms/client';
+	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 
 	let { data } = $props();
 	const { form, enhance, errors, message, submitting, delayed } = superForm(data.form, {
 		dataType: 'json',
-        resetForm: false,
-        multipleSubmits: 'prevent'
+		resetForm: false,
+		multipleSubmits: 'prevent'
 	});
+
+	// Define breadcrumb items
+	const breadcrumbItems = [
+		{ href: '/admin/domain', label: 'Domains' },
+		{ href: `/admin/domain/${data.domain.id}`, label: data.domain.name }, // Link back to details
+		{ label: 'Edit' }
+	];
 </script>
 
-<div class="p-4">
-	<div class="mb-6 flex items-center justify-between">
-		<h2 class="text-xl font-bold">Edit Domain</h2>
-		<div class="flex gap-2">
-			<Button color="light" href="/admin/domain/{data.domain.id}">Back to Details</Button>
-			<Button color="light" href="/admin/domain">Back to List</Button>
+<!-- Main page container -->
+<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
+	<!-- Breadcrumb navigation -->
+	<Breadcrumb class="mb-6" items={breadcrumbItems} />
+
+	<!-- Page header -->
+	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Domain: {data.domain.name}</h1>
+		<div class="flex flex-shrink-0 gap-2">
+			<Button color="light" href="/admin/domain/{data.domain.id}">
+				<FileLinesOutline class="me-2 h-4 w-4" /> Back to Details 
+			</Button>
+			<Button color="alternative" href="/admin/domain">
+				<ListOutline class="me-2 h-4 w-4" /> Back to List 
+			</Button>
 		</div>
 	</div>
 
-	<div class="space-y-8 rounded-lg border bg-white p-6 shadow-sm">
+	<!-- Form Card -->
+	<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
 		<form method="POST" use:enhance class="space-y-6">
-			<input type="hidden" name="_original" value={JSON.stringify(data.domain)} />
+			<!-- Hidden field to store original data for comparison -->
+			<input type="hidden" name="_original" bind:value={$form._original} />
 
-			<div class="space-y-4">
-				<div>
-					<FormInput
-						label="Name"
-						id="name"
-						name="name"
-						bind:value={$form.name}
-						error={$errors.name?.join(', ')}
-					/>
-				</div>
+			<!-- General Form Errors Alert -->
+			{#if $errors._errors}
+				<Alert color="red" class="mb-4">
+					<InfoCircleSolid slot="icon" class="h-5 w-5" />
+					<span class="font-medium">Please fix the following errors:</span>
+					<ul class="mt-1.5 list-inside list-disc">
+						{#each $errors._errors as error}
+							<li>{error}</li>
+						{/each}
+					</ul>
+				</Alert>
+			{/if}
 
-				<div>
-					<FormInput
-						label="Code"
-						id="code"
-						name="code"
-						bind:value={$form.code}
-						error={$errors.code?.join(', ')}
-					/>
-				</div>
+			<!-- Form Fields -->
+			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+				<FormInput
+					label="Name"
+					id="name"
+					name="name"
+					bind:value={$form.name}
+					error={$errors.name?.join(', ')}
+					required
+				/>
 
-				<div>
+				<FormInput
+					label="Code"
+					id="code"
+					name="code"
+					bind:value={$form.code}
+					error={$errors.code?.join(', ')}
+					required
+				/>
+
+				<div class="md:col-span-2">
 					<FormTextarea
 						label="Description"
 						id="description"
@@ -53,17 +85,31 @@
 						rows="4"
 						bind:value={$form.description}
 						error={$errors.description?.join(', ')}
+						helperText="Optional: Provide a brief description of the domain."
 					/>
 				</div>
 
-				<div>
-					<FormToggle label="Status" name="is_active" bind:value={$form.is_active} />
+				<div class="md:col-span-2">
+					<FormToggle
+						label="Status"
+						id="is_active"
+						name="is_active"
+						bind:value={$form.is_active}
+						error={$errors.is_active?.join(', ')}
+						helperText="Inactive domains cannot be used."
+					/>
 				</div>
 			</div>
 
-			<div class="flex gap-2">
-				<FormButton type="submit" loading={$submitting || $delayed} text='Save Changes' loadingText="Saving..." /> <!-- Changed button text -->
-				<Button type="button" color="light" href="/admin/domain/{data.domain.id}">Cancel</Button>
+			<!-- Form Actions -->
+			<div class="flex items-center justify-start gap-3 border-t border-gray-200 pt-6 dark:border-gray-700">
+				<FormButton
+					type="submit"
+					loading={$submitting || $delayed}
+					text="Save Changes"
+					loadingText="Saving..."
+				/>
+				<Button type="button" color="alternative" href="/admin/domain/{data.domain.id}">Cancel</Button>
 			</div>
 		</form>
 	</div>

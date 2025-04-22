@@ -10,7 +10,7 @@ export async function load(event) {
 	await event.parent();
 
 	// Load the specific role by ID
-	const { role } = await loadResourceById(event, '/role', 'role', '/admin/role');
+	const { role } = await loadResourceById(event, '/role?limit=1000', 'role', '/admin/role');
 
 	// Load the list of all available permissions
 	const { list: allPermissions } = await loadResourceList(event, 'permission', 'Permissions', '/admin');

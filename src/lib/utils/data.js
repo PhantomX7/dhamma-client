@@ -1,8 +1,12 @@
-import { buildApiQuery } from './filter';
-import { runPromise } from './index';
-import { error } from '@sveltejs/kit';
-import api from '$lib/api';
+import { error, fail } from '@sveltejs/kit';
 import { redirect, setFlash } from 'sveltekit-flash-message/server';
+import { superValidate } from 'sveltekit-superforms/server';
+import { zod } from 'sveltekit-superforms/adapters';
+
+import api from '$lib/api';
+import { buildApiQuery } from '$lib/utils/filter';
+import { runPromise } from '$lib/utils/index';
+import { getChangedFields, setErrors } from '$lib/utils/form';
 
 /**
  * Loads a list of resources from the API, handling filtering, pagination, and errors.
@@ -92,4 +96,100 @@ export async function loadResourceById(event, resourcePath, resourceName, redire
 	return {
 		[resourceName.toLowerCase()]: response.data.data
 	};
+}
+
+/**
+ * Handles updating a resource by its ID via the API.
+ * Validates the form, checks for changes, sends a PATCH request, handles errors, and sets flash messages.
+ *
+ * @param {import('@sveltejs/kit').RequestEvent} event - The SvelteKit request event.
+ * @param {string} resourcePath - The base API path for the resource (e.g., 'domain', 'role').
+ * @param {string} resourceName - The singular name of the resource (e.g., 'Domain', 'Role').
+ * @param {import('zod').ZodSchema} schema - The Zod schema for validation.
+ * @param {string} successRedirectPath - The base path to redirect to on successful update (ID will be appended).
+ * @returns {Promise<import('@sveltejs/kit').ActionResult>} - The result of the action (fail or redirect).
+ */
+export async function updateResourceById(
+	event,
+	resourcePath,
+	resourceName,
+	schema,
+	successRedirectPath
+) {
+	const { request, params, cookies } = event;
+
+	// Validate the form
+	const form = await superValidate(request, zod(schema), { dataType: 'json' });
+	if (!form.valid) {
+		setFlash(
+			{ type: 'error', message: `${resourceName} validation failed. Please check the errors.` },
+			cookies
+		);
+		return fail(400, { form });
+	}
+
+	// Parse original data and get current form data
+	const originalData = JSON.parse(form.data._original || '{}');
+	const formData = { ...form.data }; // Clone form data
+	delete formData._original; // Remove internal field before sending
+	console.log(formData)
+
+	// Check for changes
+	const changes = getChangedFields(originalData, formData);
+	if (Object.keys(changes).length === 0) {
+		setFlash(
+			{ type: 'info', message: `No changes detected for this ${resourceName.toLowerCase()}.` },
+			cookies
+		);
+		// Return form state without making API call, prevents unnecessary requests
+		return { form };
+	}
+
+	// Send only changed fields via PATCH request
+	const [response, fetchError] = await runPromise(
+		api.fetch(
+			`${resourcePath}/${params.id}`,
+			{
+				method: 'PATCH',
+				body: JSON.stringify(changes),
+				headers: { 'Content-Type': 'application/json' }
+			},
+			event
+		)
+	);
+
+	// Handle fetch errors (network issues, etc.)
+	if (fetchError) {
+		console.error(`Failed to update ${resourceName.toLowerCase()}:`, fetchError);
+		setFlash(
+			{
+				type: 'error',
+				message: `An unexpected error occurred while updating the ${resourceName.toLowerCase()}.`
+			},
+			cookies
+		);
+		return fail(500, { form });
+	}
+
+	// Handle API response errors (validation, server errors)
+	const responseData = response.data; // Safely parse JSON
+	if (!response.ok || !responseData || !responseData.status) {
+		const message = responseData?.message || `Failed to update ${resourceName.toLowerCase()}`;
+		console.error(
+			`API error updating ${resourceName.toLowerCase()}:`,
+			response.status,
+			message,
+			responseData?.error
+		);
+		if (responseData?.error) {
+			setErrors(form, responseData.error); // Populate form errors if available
+		}
+		setFlash({ type: 'error', message: `${message}. Please check your data.` }, cookies);
+		// Return 422 for validation errors, 500 for others
+		return fail(response.status === 422 ? 422 : 500, { form });
+	}
+
+	// Success: Set flash message and redirect
+	setFlash({ type: 'success', message: `${resourceName} updated successfully!` }, cookies);
+	throw redirect(303, `${successRedirectPath}/${params.id}`);
 }

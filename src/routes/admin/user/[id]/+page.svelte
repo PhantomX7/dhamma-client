@@ -1,8 +1,10 @@
 <script>
-	import { Badge, Button } from 'flowbite-svelte';
+	import { Badge, Button, Card } from 'flowbite-svelte'; // Added Card
 	import { getContext } from 'svelte';
 	import { formatDate } from '$lib/utils';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+	import DetailItem from '$lib/components/layout/DetailItem.svelte'; // Added DetailItem
+	import { ChevronLeftOutline, EditOutline, CogOutline } from 'flowbite-svelte-icons'; // Added icons
 
 	let { data } = $props();
 	const currentUser = getContext('user');
@@ -14,71 +16,87 @@
 	];
 </script>
 
-<div class="p-4">
-	<Breadcrumb items={breadcrumbItems} />
-	
-	<div class="mb-6 flex items-center justify-between">
-		<h2 class="text-xl font-bold">User Details</h2>
-		<div class="flex gap-2">
-			<Button class="bg-primary-600 hover:bg-primary-700 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" href="/admin/user/{user.id}/domains">Manage Domains</Button>
-			<Button color="light" href="/admin/user">Back to List</Button>
+<!-- Main page container -->
+<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
+	<!-- Breadcrumb navigation -->
+	<Breadcrumb class="mb-6" items={breadcrumbItems} />
+
+	<!-- Page header -->
+	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">User Details</h1>
+		<div class="flex flex-shrink-0 gap-2">
+			{#if currentUser().is_super_admin || currentUser().id === user.id /* Or based on permissions */}
+				<Button href="/admin/user/{user.id}/edit">
+					<EditOutline class="me-2 h-4 w-4" /> Edit User
+				</Button>
+			{/if}
+			<Button href="/admin/user/{user.id}/domains">
+				<CogOutline class="me-2 h-4 w-4" /> Manage Domains
+			</Button>
+			<Button color="light" href="/admin/user">
+				<ChevronLeftOutline class="me-2 h-4 w-4" /> Back to List
+			</Button>
 		</div>
 	</div>
 
-	<div class="space-y-8 rounded-lg border bg-white p-6 shadow-sm">
-		<div class="grid grid-cols-2 gap-x-8 gap-y-6">
-			<div class="rounded-lg bg-gray-50 p-4">
-				<h3 class="text-sm font-medium text-gray-500">Username</h3>
-				<p class="mt-1 text-lg font-medium">{user.username}</p>
-			</div>
+	<!-- General Information Card -->
+	<Card padding="lg" size="2xl" class="mb-8">
+		<h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">General Information</h2>
+		<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+			<DetailItem label="ID">
+				<p class="text-base font-semibold text-gray-900 dark:text-white">{user.id}</p>
+			</DetailItem>
 
-			<div class="rounded-lg bg-gray-50 p-4">
-				<h3 class="text-sm font-medium text-gray-500">UUID</h3>
-				<p class="mt-1 text-lg font-medium">{user.uuid}</p>
-			</div>
+			<DetailItem label="Username">
+				<p class="text-base font-semibold text-gray-900 dark:text-white">{user.username}</p>
+			</DetailItem>
 
-			<div class="rounded-lg bg-gray-50 p-4">
-				<h3 class="text-sm font-medium text-gray-500">Status</h3>
-				<div class="mt-2">
-					<Badge rounded color={user.is_active ? 'green' : 'red'}>
-						{user.is_active ? 'Active' : 'Inactive'}
-					</Badge>
-				</div>
-			</div>
+			<DetailItem label="UUID">
+				<p class="text-base font-mono text-gray-700 dark:text-gray-300">{user.uuid}</p>
+			</DetailItem>
+
+			<DetailItem label="Status">
+				<Badge large rounded color={user.is_active ? 'green' : 'gray'}>
+					{user.is_active ? 'Active' : 'Inactive'}
+				</Badge>
+			</DetailItem>
 
 			{#if currentUser().is_super_admin}
-				<div class="rounded-lg bg-gray-50 p-4">
-					<h3 class="text-sm font-medium text-gray-500">Super Admin</h3>
-					<div class="mt-2">
-						<Badge rounded color={user.is_super_admin ? 'purple' : 'gray'}>
-							{user.is_super_admin ? 'Yes' : 'No'}
-						</Badge>
-					</div>
-				</div>
+				<DetailItem label="Super Admin">
+					<Badge large rounded color={user.is_super_admin ? 'purple' : 'gray'}>
+						{user.is_super_admin ? 'Yes' : 'No'}
+					</Badge>
+				</DetailItem>
 			{/if}
 
-			<div class="rounded-lg bg-gray-50 p-4">
-				<h3 class="text-sm font-medium text-gray-500">Created At</h3>
-				<p class="mt-1">{formatDate(user.created_at)}</p>
-			</div>
+			<DetailItem label="Created At">
+				<p class="text-base text-gray-700 dark:text-gray-300">{formatDate(user.created_at)}</p>
+			</DetailItem>
 
-			<div class="rounded-lg bg-gray-50 p-4">
-				<h3 class="text-sm font-medium text-gray-500">Updated At</h3>
-				<p class="mt-1">{formatDate(user.updated_at)}</p>
-			</div>
+			<DetailItem label="Updated At">
+				<p class="text-base text-gray-700 dark:text-gray-300">{formatDate(user.updated_at)}</p>
+			</DetailItem>
 		</div>
+	</Card>
 
-		<div class="rounded-lg bg-gray-50 p-4">
-			<h3 class="mb-3 text-sm font-medium text-gray-500">Domains</h3>
-			{#if user.domains.length}
-				<div class="flex flex-wrap gap-2">
-					{#each user.domains as domain}
-						<Badge color="gray">{domain.name}</Badge>
-					{/each}
-				</div>
-			{:else}
-				<p class="text-gray-500">No domains assigned</p>
-			{/if}
-		</div>
-	</div>
+	<!-- Assigned Domains Card -->
+	<Card padding="lg" size="2xl">
+		<h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">Assigned Domains</h2>
+		{#if user.domains && user.domains.length > 0}
+			<div class="flex flex-wrap gap-2">
+				{#each user.domains as domain (domain.id)}
+					<Badge large color="indigo">{domain.name} ({domain.code})</Badge>
+				{/each}
+			</div>
+		{:else}
+			<div
+				class="rounded-lg border border-gray-200 bg-gray-100 px-6 py-10 text-center dark:border-gray-700 dark:bg-gray-800"
+			>
+				<p class="text-gray-500 dark:text-gray-400">This user currently has no domains assigned.</p>
+				<Button class="mt-4" size="sm" href="/admin/user/{user.id}/domains">
+					Manage Domains
+				</Button>
+			</div>
+		{/if}
+	</Card>
 </div>

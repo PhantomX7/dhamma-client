@@ -7,7 +7,6 @@
 	let { data } = $props();
 	const { form, enhance, errors, message, submitting, delayed } = superForm(data.form, {
 		dataType: 'json',
-        taintedMessage: null,
         resetForm: false,
         multipleSubmits: 'prevent'
 	});
@@ -73,8 +72,8 @@
 			</div>
 
 			<div class="flex gap-2 border-t pt-4">
-				<FormButton type="submit" loading={$submitting || $delayed} text={$submitting ? 'Saving...' : 'Save Changes'} /> <!-- Changed button text -->
-				<Button type="button" color="light" href="/admin/role/{data.role.id}">Cancel</Button> <!-- Changed link -->
+				<FormButton type="submit" loading={$submitting || $delayed} text='Save Changes' loadingText="Saving..." /> <!-- Changed button text -->
+				<Button type="button" color="light" href="/admin/role/{data.role.id}">Cancel</Button> 
 			</div>
 		</form>
 	</div>

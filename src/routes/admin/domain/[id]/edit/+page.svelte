@@ -4,11 +4,10 @@
 	import { superForm } from 'sveltekit-superforms/client';
 
 	let { data } = $props();
-	const { form, enhance, errors, message, submitting } = superForm(data.form, {
-		onSubmit({ formData }) {
-			const isActive = formData.get('is_active');
-			formData.set('is_active', isActive === '' ? 'true' : 'false');
-		}
+	const { form, enhance, errors, message, submitting, delayed } = superForm(data.form, {
+		dataType: 'json',
+        resetForm: false,
+        multipleSubmits: 'prevent'
 	});
 </script>
 
@@ -63,7 +62,7 @@
 			</div>
 
 			<div class="flex gap-2">
-				<FormButton type="submit" loading={$submitting} text="Save Changes" />
+				<FormButton type="submit" loading={$submitting || $delayed} text='Save Changes' loadingText="Saving..." /> <!-- Changed button text -->
 				<Button type="button" color="light" href="/admin/domain/{data.domain.id}">Cancel</Button>
 			</div>
 		</form>

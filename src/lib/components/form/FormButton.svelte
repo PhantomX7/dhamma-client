@@ -20,8 +20,7 @@
 >
 	{#if loading}
 		<div class="flex items-center justify-center gap-2">
-			<Spinner size="sm" color="white" />
-			<span>{loadingText}</span>
+			{loadingText} <Spinner size="sm" color="white" />
 		</div>
 	{:else}
 		{text}

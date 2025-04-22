@@ -1,19 +1,27 @@
 <script>
-	import { Button, Badge } from 'flowbite-svelte';
-	import { FormButton } from '$lib/components/form';
+	import {
+		Button,
+		Badge,
+		Card, // Added Card
+		Table, // Added Table components
+		TableBody,
+		TableBodyRow,
+		TableBodyCell,
+		TableHead,
+		TableHeadCell
+	} from 'flowbite-svelte';
+	import { ChevronLeftOutline, PlusOutline, CloseOutline } from 'flowbite-svelte-icons'; // Added icons
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 	import DomainSearchModal from '$lib/components/modal/DomainSearchModal.svelte';
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
+	import { formatDate } from '$lib/utils'; // Added formatDate if needed for table
 
 	let { data } = $props();
 
 	// Create a derived value for user that updates when data changes
 	let user = $derived(data.user);
 	const userDomainIds = $derived(new Set(user.domains.map((d) => d.id)));
-
-	// Track selected domains for adding/removing
-	let selectedDomains = $state(new Set());
 
 	// Modal state
 	let showModal = $state(false);
@@ -40,69 +48,91 @@
 	}
 </script>
 
-<div class="p-4">
-	<Breadcrumb items={breadcrumbItems} />
+<!-- Main page container -->
+<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
+	<!-- Breadcrumb navigation -->
+	<Breadcrumb class="mb-6" items={breadcrumbItems} />
 
-	<div class="mb-6 flex items-center justify-between">
-		<h2 class="text-xl font-bold">Manage Domains for {user.username}</h2>
-		<Button color="light" href="/admin/user/{user.id}">Back to User</Button>
+	<!-- Page header -->
+	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+			Manage Domains for {user.username}
+		</h1>
+		<Button color="light" href="/admin/user/{user.id}">
+			<ChevronLeftOutline class="me-2 h-4 w-4" /> Back to User
+		</Button>
 	</div>
 
-	<div class="space-y-8">
-		<!-- Current User Domains -->
-		<div class="rounded-lg border bg-white p-6 shadow-sm">
-			<div class="mb-4 flex items-center justify-between">
-				<h3 class="text-lg font-semibold">Current Domains</h3>
-				<Button class="bg-primary-600 hover:bg-primary-700 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" on:click={() => (showModal = true)}>Add Domain</Button>
-			</div>
-
-			{#if user.domains.length === 0}
-				<p class="text-gray-500">This user has no domains assigned.</p>
-			{:else}
-				<div class="mb-4 flex flex-wrap gap-2">
-					{#each user.domains as domain}
-						<div class="flex items-center gap-2 rounded-lg bg-gray-100 px-3 py-2">
-							<Badge color={domain.is_active ? 'green' : 'red'} class="mr-1">
-								{domain.is_active ? 'Active' : 'Inactive'}
-							</Badge>
-							<span class="font-medium">{domain.name}</span>
-							<span class="text-sm text-gray-500">({domain.code})</span>
-							<form method="POST" action="?/removeDomain" use:enhance={handleSubmit} class="ml-2">
-								<input type="hidden" name="domain_id" value={domain.id} />
-								<button
-									type="submit"
-									class="cursor-pointer text-red-600 hover:text-red-800 dark:text-red-500 dark:hover:text-red-600"
-									aria-label="Remove domain"
-								>
-									<svg
-										xmlns="http://www.w3.org/2000/svg"
-										class="h-4 w-4"
-										fill="none"
-										viewBox="0 0 24 24"
-										stroke="currentColor"
-									>
-										<path
-											stroke-linecap="round"
-											stroke-linejoin="round"
-											stroke-width="2"
-											d="M6 18L18 6M6 6l12 12"
-										/>
-									</svg>
-								</button>
-							</form>
-						</div>
-					{/each}
-				</div>
-			{/if}
+	<!-- Current User Domains Card -->
+	<Card padding="lg" size="2xl">
+		<div class="mb-6 flex items-center justify-between">
+			<h2 class="text-xl font-semibold text-gray-900 dark:text-white">Assigned Domains</h2>
+			<Button onclick={() => (showModal = true)}>
+				<PlusOutline class="me-2 h-4 w-4" /> Add Domain
+			</Button>
 		</div>
-	</div>
+
+		{#if user.domains.length === 0}
+			<div
+				class="rounded-lg border border-gray-200 bg-gray-100 px-6 py-10 text-center dark:border-gray-700 dark:bg-gray-800"
+			>
+				<p class="text-gray-500 dark:text-gray-400">This user has no domains assigned.</p>
+			</div>
+		{:else}
+			<div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm dark:border-gray-700">
+				<Table hoverable={true}>
+					<TableHead
+						class="bg-gray-50 text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400"
+					>
+						<TableHeadCell class="px-6 py-3">Name</TableHeadCell>
+						<TableHeadCell class="px-6 py-3">Code</TableHeadCell>
+						<TableHeadCell class="px-6 py-3">Status</TableHeadCell>
+						<TableHeadCell class="px-6 py-3">Actions</TableHeadCell>
+					</TableHead>
+					<TableBody class="divide-y divide-gray-200 dark:divide-gray-700">
+						{#each user.domains as domain (domain.id)}
+							<TableBodyRow
+								class="bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-600"
+							>
+								<TableBodyCell
+									class="px-6 py-4 font-medium whitespace-nowrap text-gray-900 dark:text-white"
+									>{domain.name}</TableBodyCell
+								>
+								<TableBodyCell class="px-6 py-4 text-gray-600 dark:text-gray-300"
+									>{domain.code}</TableBodyCell
+								>
+								<TableBodyCell class="px-6 py-4">
+									<Badge large rounded color={domain.is_active ? 'green' : 'gray'}>
+										{domain.is_active ? 'Active' : 'Inactive'}
+									</Badge>
+								</TableBodyCell>
+								<TableBodyCell class="px-6 py-4">
+									<form method="POST" action="?/removeDomain" use:enhance={handleSubmit}>
+										<input type="hidden" name="domain_id" value={domain.id} />
+										<Button
+											class="cursor-pointer"
+											type="submit"
+											color="red"
+											size="xs"
+											aria-label="Remove domain {domain.name}"
+										>
+											<CloseOutline class="h-4 w-4" /> Remove Domain
+										</Button>
+									</form>
+								</TableBodyCell>
+							</TableBodyRow>
+						{/each}
+					</TableBody>
+				</Table>
+			</div>
+		{/if}
+	</Card>
 </div>
 
-<!-- Update the DomainSearchModal to use enhance -->
+<!-- Domain Search Modal (remains outside the card) -->
 <DomainSearchModal
 	bind:open={showModal}
 	{userDomainIds}
-	bind:selectedDomains
 	userId={user.id}
 	{handleSubmit}
 />

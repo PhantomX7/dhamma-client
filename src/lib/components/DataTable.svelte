@@ -1,5 +1,5 @@
 <script>
-    import { Table, TableBody, TableHead, Select } from 'flowbite-svelte';
+    import { Select } from 'flowbite-svelte';
     import DataFilter from './DataFilter.svelte';
     import Pagination from './Pagination.svelte';
     import { generatePaginationURL, getPaginationInfo } from '$lib/utils/pagination';

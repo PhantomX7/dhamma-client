@@ -20,9 +20,14 @@
 	const breadcrumbItems = [{ label: 'Roles' }];
 
 	const filterConfig = {
+		// Optional: Add domain name filter if needed
+		'domain_name': {
+			type: FilterType.STRING,
+			label: 'Domain Name'
+		},
 		name: {
 			type: FilterType.STRING,
-			label: 'Name'
+			label: 'Role Name'
 		},
 		is_active: {
 			type: FilterType.BOOL,
@@ -46,10 +51,11 @@
 	</div>
 
 	<DataTable data={data.roles} meta={data.meta} {filterConfig}>
-		<Table>
-			<TableHead>
+		<Table hoverable={true} divClass="max-h-[70vh] overflow-y-auto">
+			<TableHead class="sticky top-0 z-10 shadow-sm">
 				<TableHeadCell>ID</TableHeadCell>
-				<TableHeadCell>Name</TableHeadCell>
+				<TableHeadCell>Domain</TableHeadCell>
+				<TableHeadCell>Role Name</TableHeadCell>
 				<TableHeadCell>Description</TableHeadCell>
 				<TableHeadCell>Active</TableHeadCell>
 				<TableHeadCell>Created At</TableHeadCell>
@@ -59,6 +65,7 @@
 				{#each data.roles as role}
 					<TableBodyRow>
 						<TableBodyCell>{role.id}</TableBodyCell>
+						<TableBodyCell>{role.domain?.name || 'N/A'}</TableBodyCell>
 						<TableBodyCell>{role.name}</TableBodyCell>
 						<TableBodyCell>{role.description || '-'}</TableBodyCell>
 						<TableBodyCell>

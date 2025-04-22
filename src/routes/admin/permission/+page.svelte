@@ -47,8 +47,8 @@
 	</div>
 
 	<DataTable data={data.permissions} meta={data.meta} {filterConfig}>
-		<Table>
-			<TableHead>
+		<Table hoverable={true} divClass="max-h-[70vh] overflow-y-auto">
+			<TableHead class="sticky top-0 z-10 shadow-sm">
 				<TableHeadCell>ID</TableHeadCell>
 				<TableHeadCell>Name</TableHeadCell>
 				<TableHeadCell>Code</TableHeadCell>

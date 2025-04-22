@@ -55,7 +55,7 @@
 
 	<DataTable data={data.domains} meta={data.meta} {filterConfig}>
 		<Table hoverable={true} divClass="max-h-[70vh] overflow-y-auto">
-			<TableHead class="sticky top-0 z-10 bg-white shadow-sm">
+			<TableHead class="sticky top-0 z-10 shadow-sm">
 				<TableHeadCell>ID</TableHeadCell>
 				<TableHeadCell>Name</TableHeadCell>
 				<TableHeadCell>Code</TableHeadCell>

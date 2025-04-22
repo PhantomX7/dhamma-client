@@ -8,17 +8,23 @@
 		TableHead,
 		TableHeadCell
 	} from 'flowbite-svelte';
+	// Added icons
+	import { PlusOutline, EyeOutline, EditOutline } from 'flowbite-svelte-icons';
 	import { formatDate } from '$lib/utils';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 	import DataTable from '$lib/components/DataTable.svelte';
 	import { getContext } from 'svelte';
 	import { FilterType } from '$lib/utils/filter';
 
+	// Component props
 	let { data } = $props();
+	// Get current user context (not used directly here, but kept for consistency)
 	const currentUser = getContext('user');
 
+	// Breadcrumb items definition
 	const breadcrumbItems = [{ label: 'Permissions' }];
 
+	// Configuration for the DataTable filter component
 	const filterConfig = {
 		name: {
 			type: FilterType.STRING,
@@ -33,22 +39,36 @@
 			label: 'Type',
 			enumValues: ['API', 'WEB']
 		}
+		// Add other relevant filters like 'object', 'action', 'is_domain_specific' if needed
 	};
 </script>
 
-<div class="p-4">
-	<Breadcrumb items={breadcrumbItems} />
+<!-- Main page container with standard padding and dark mode background -->
+<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
+	<!-- Breadcrumb navigation with bottom margin -->
+	<Breadcrumb class="mb-6" items={breadcrumbItems} />
 
-	<div class="mb-6 flex items-center justify-between">
-		<h2 class="text-xl font-bold">Permissions</h2>
-		<div class="flex gap-2">
-			<Button href="/admin/permission/add">Add New Permission</Button>
-		</div>
+	<!-- Page header section with responsive layout and spacing -->
+	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+		<!-- Page title using h1 -->
+		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Permissions</h1>
+		<!-- Add Permission button with icon -->
+		<Button href="/admin/permission/add">
+			<PlusOutline class="me-2 h-4 w-4" /> Add New Permission
+		</Button>
 	</div>
 
+	<!-- DataTable component wrapping the table -->
 	<DataTable data={data.permissions} meta={data.meta} {filterConfig}>
-		<Table hoverable={true} divClass="max-h-[70vh] overflow-y-auto">
-			<TableHead class="sticky top-0 z-10 shadow-sm">
+		<!-- Flowbite Table component with hover effect, constrained height, borders, and rounded corners -->
+		<Table
+			hoverable={true}
+			divClass="relative max-h-[70vh] overflow-x-auto overflow-y-auto"
+		>
+			<!-- Sticky table header with standard styling -->
+			<TableHead
+				class="sticky top-0 z-10 bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400"
+			>
 				<TableHeadCell>ID</TableHeadCell>
 				<TableHeadCell>Name</TableHeadCell>
 				<TableHeadCell>Code</TableHeadCell>
@@ -59,32 +79,42 @@
 				<TableHeadCell>Created At</TableHeadCell>
 				<TableHeadCell>Actions</TableHeadCell>
 			</TableHead>
-			<TableBody>
-				{#each data.permissions as permission}
-					<TableBodyRow>
-						<TableBodyCell>{permission.id}</TableBodyCell>
-						<TableBodyCell>{permission.name}</TableBodyCell>
-						<TableBodyCell>{permission.code}</TableBodyCell>
-						<TableBodyCell>{permission.object}</TableBodyCell>
-						<TableBodyCell>{permission.action}</TableBodyCell>
-						<TableBodyCell>{permission.type}</TableBodyCell>
-						<TableBodyCell>
-							<Badge rounded color={permission.is_domain_specific ? 'blue' : 'gray'}>
+			<!-- Table body with dividers -->
+			<TableBody class="divide-y divide-gray-200 dark:divide-gray-700">
+				{#each data.permissions as permission (permission.id)}
+					<!-- Table row with standard background -->
+					<TableBodyRow class="bg-white dark:bg-gray-800">
+						<TableBodyCell class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white">{permission.id}</TableBodyCell>
+						<TableBodyCell class="px-6 py-4">{permission.name}</TableBodyCell>
+						<TableBodyCell class="px-6 py-4">{permission.code}</TableBodyCell>
+						<TableBodyCell class="px-6 py-4">{permission.object}</TableBodyCell>
+						<TableBodyCell class="px-6 py-4">{permission.action}</TableBodyCell>
+						<TableBodyCell class="px-6 py-4">{permission.type}</TableBodyCell>
+						<TableBodyCell class="px-6 py-4">
+							<Badge large rounded color={permission.is_domain_specific ? 'blue' : 'gray'}>
 								{permission.is_domain_specific ? 'Yes' : 'No'}
 							</Badge>
 						</TableBodyCell>
-						<TableBodyCell>{formatDate(permission.created_at)}</TableBodyCell>
-						<TableBodyCell>
-							<div class="flex gap-2">
-								<Button size="xs" color="green" href="/admin/permission/{permission.id}"
-									>View</Button
-								>
-								<Button
-									size="xs"
-									class="bg-primary-600 hover:bg-primary-700 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-									href="/admin/permission/{permission.id}/edit">Edit</Button
-								>
+						<TableBodyCell class="whitespace-nowrap px-6 py-4">{formatDate(permission.created_at)}</TableBodyCell>
+						<TableBodyCell class="px-6 py-4">
+							<!-- Action buttons container -->
+							<div class="flex space-x-2">
+								<!-- View button with icon -->
+								<Button size="xs" color="alternative" href="/admin/permission/{permission.id}">
+									<EyeOutline class="me-1.5 h-3.5 w-3.5" /> View
+								</Button>
+								<!-- Edit button with icon -->
+								<Button size="xs" color="primary" href="/admin/permission/{permission.id}/edit">
+									<EditOutline class="me-1.5 h-3.5 w-3.5" /> Edit
+								</Button>
 							</div>
+						</TableBodyCell>
+					</TableBodyRow>
+				{:else}
+					<!-- Row displayed when there is no data -->
+					<TableBodyRow>
+						<TableBodyCell colspan="9" class="text-center px-6 py-4">
+							No permissions found.
 						</TableBodyCell>
 					</TableBodyRow>
 				{/each}

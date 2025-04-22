@@ -40,7 +40,7 @@
 
 		const params = new URLSearchParams();
 		params.set('limit', '20');
-		if (search) params.set('code', search);
+		if (search) params.set('code', `like:${search}`);
 
 		try {
 			const response = await fetch(`/api/domain?${params.toString()}`);
@@ -88,7 +88,6 @@
 	{:else}
 		<Table hoverable>
 			<TableHead>
-				<TableHeadCell class="w-4"><Checkbox /></TableHeadCell>
 				<TableHeadCell>Name</TableHeadCell>
 				<TableHeadCell>Code</TableHeadCell>
 				<TableHeadCell>Status</TableHeadCell>
@@ -97,7 +96,6 @@
 			<TableBody>
 				{#each searchResults as domain}
 					<TableBodyRow>
-						<TableBodyCell class="w-4"><Checkbox /></TableBodyCell>
 						<TableBodyCell>{domain.name}</TableBodyCell>
 						<TableBodyCell>{domain.code}</TableBodyCell>
 						<TableBodyCell>
@@ -109,7 +107,7 @@
 						<TableBodyCell>
 							<form method="POST" action="?/addDomain" use:enhance={handleSubmit}>
 								<input type="hidden" name="domain_id" value={domain.id} />
-								<Button type="submit" size="xs" color="green">Add</Button>
+								<Button class="cursor-pointer" type="submit" size="xs" color="green">Add</Button>
 							</form>
 						</TableBodyCell>
 					</TableBodyRow>
@@ -119,6 +117,6 @@
 	{/if}
 
 	<svelte:fragment slot="footer">
-		<Button color="alternative" on:click={() => (open = false)}>Cancel</Button>
+		<Button class="cursor-pointer" color="alternative" on:click={() => (open = false)}>Cancel</Button>
 	</svelte:fragment>
 </Modal>

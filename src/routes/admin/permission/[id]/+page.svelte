@@ -1,6 +1,6 @@
 <script>
 	import { Badge, Button, Card } from 'flowbite-svelte'; 
-	import { ChevronLeftOutline, EditOutline } from 'flowbite-svelte-icons'; 
+	import { ListOutline, EditOutline } from 'flowbite-svelte-icons'; 
 	import { formatDate } from '$lib/utils';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 	import DetailItem from '$lib/components/layout/DetailItem.svelte'; 
@@ -29,7 +29,7 @@
 				<EditOutline class="me-2 h-4 w-4" /> Edit Permission
 			</Button>
 			<Button color="light" href="/admin/permission">
-				<ChevronLeftOutline class="me-2 h-4 w-4" /> Back to List
+				<ListOutline class="me-2 h-4 w-4" /> Back to List
 			</Button>
 		</div>
 	</div>

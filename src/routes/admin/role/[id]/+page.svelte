@@ -10,7 +10,7 @@
 		TableHeadCell,
 		Card
 	} from 'flowbite-svelte';
-	import { ChevronLeftOutline, EditOutline } from 'flowbite-svelte-icons';
+	import { ListOutline, EditOutline } from 'flowbite-svelte-icons';
 	
 	import { formatDate } from '$lib/utils';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
@@ -37,7 +37,7 @@
 				<EditOutline class="me-2 h-4 w-4" /> Edit Role
 			</Button>
 			<Button color="light" href="/admin/role">
-				<ChevronLeftOutline class="me-2 h-4 w-4" /> Back to List
+				<ListOutline class="me-2 h-4 w-4" /> Back to List
 			</Button>
 		</div>
 	</div>

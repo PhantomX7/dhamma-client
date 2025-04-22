@@ -4,7 +4,7 @@
 	import { formatDate } from '$lib/utils';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 	import DetailItem from '$lib/components/layout/DetailItem.svelte'; // Added DetailItem
-	import { ChevronLeftOutline, EditOutline, CogOutline } from 'flowbite-svelte-icons'; // Added icons
+	import { ListOutline, EditOutline, CogOutline } from 'flowbite-svelte-icons'; // Added icons
 
 	let { data } = $props();
 	const currentUser = getContext('user');
@@ -34,7 +34,7 @@
 				<CogOutline class="me-2 h-4 w-4" /> Manage Domains
 			</Button>
 			<Button color="light" href="/admin/user">
-				<ChevronLeftOutline class="me-2 h-4 w-4" /> Back to List
+				<ListOutline class="me-2 h-4 w-4" /> Back to List
 			</Button>
 		</div>
 	</div>

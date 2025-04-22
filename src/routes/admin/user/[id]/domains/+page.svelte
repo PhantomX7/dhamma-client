@@ -12,7 +12,7 @@
 	} from 'flowbite-svelte';
 	import { ChevronLeftOutline, PlusOutline, CloseOutline } from 'flowbite-svelte-icons'; // Added icons
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-	import DomainSearchModal from '$lib/components/modal/DomainSearchModal.svelte';
+	import AssignDomainModal from '$lib/components/modal/AssignDomainModal.svelte';
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
 	import { formatDate } from '$lib/utils'; // Added formatDate if needed for table
@@ -67,7 +67,7 @@
 	<Card padding="lg" size="2xl">
 		<div class="mb-6 flex items-center justify-between">
 			<h2 class="text-xl font-semibold text-gray-900 dark:text-white">Assigned Domains</h2>
-			<Button onclick={() => (showModal = true)}>
+			<Button class="cursor-pointer" onclick={() => (showModal = true)}>
 				<PlusOutline class="me-2 h-4 w-4" /> Add Domain
 			</Button>
 		</div>
@@ -130,7 +130,7 @@
 </div>
 
 <!-- Domain Search Modal (remains outside the card) -->
-<DomainSearchModal
+<AssignDomainModal
 	bind:open={showModal}
 	{userDomainIds}
 	userId={user.id}

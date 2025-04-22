@@ -1,4 +1,4 @@
-import { error, fail } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import { redirect, setFlash } from 'sveltekit-flash-message/server';
 import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -29,38 +29,7 @@ export async function loadResourceList(
 
 	if (fetchError) {
 		console.error(`${resourceNamePlural} list fetch error:`, fetchError);
-		// Use SvelteKit's error helper for server/network issues
-		error(500, {
-			message: `Failed to load ${resourceNamePlural.toLowerCase()} due to a server issue.`
-		});
-	}
-
-	if (!response.ok) {
-		// Use SvelteKit's error helper for API errors
-		const errorData = await response.json().catch(() => ({ message: 'Unknown API error' }));
-		console.error(
-			`API error fetching ${resourceNamePlural.toLowerCase()}:`,
-			response.status,
-			errorData.message
-		);
-		// Redirect for common errors like unauthorized, otherwise show specific error
-		if (response.status === 401 || response.status === 403) {
-			throw redirect(303, errorRedirectPath);
-		}
-		error(response.status, {
-			message: `Failed to load ${resourceNamePlural.toLowerCase()}: ${errorData.message || response.statusText}`
-		});
-	}
-
-	// Ensure data structure is as expected
-	if (!response.data || !Array.isArray(response.data.data)) {
-		console.error(
-			`Unexpected API response structure for ${resourceNamePlural.toLowerCase()}:`,
-			response.data
-		);
-		error(500, {
-			message: `Received invalid data structure while loading ${resourceNamePlural.toLowerCase()}.`
-		});
+		throw redirect(303, errorRedirectPath);
 	}
 
 	return {
@@ -130,12 +99,14 @@ export async function updateResourceById(
 
 	// Parse original data and get current form data
 	const originalData = JSON.parse(form.data._original || '{}');
+	// console.log(`Original ${resourceName.toLowerCase()}:`, originalData);
 	const formData = { ...form.data }; // Clone form data
+	// console.log(`Form data for ${resourceName.toLowerCase()}:`, formData);
 	delete formData._original; // Remove internal field before sending
-	console.log(formData)
 
 	// Check for changes
 	const changes = getChangedFields(originalData, formData);
+	// console.log(`Changes detected for ${resourceName.toLowerCase()}:`, changes);
 	if (Object.keys(changes).length === 0) {
 		setFlash(
 			{ type: 'info', message: `No changes detected for this ${resourceName.toLowerCase()}.` },
@@ -172,7 +143,7 @@ export async function updateResourceById(
 	}
 
 	// Handle API response errors (validation, server errors)
-	const responseData = response.data; // Safely parse JSON
+	const responseData = response.data; 
 	if (!response.ok || !responseData || !responseData.status) {
 		const message = responseData?.message || `Failed to update ${resourceName.toLowerCase()}`;
 		console.error(
@@ -192,4 +163,21 @@ export async function updateResourceById(
 	// Success: Set flash message and redirect
 	setFlash({ type: 'success', message: `${resourceName} updated successfully!` }, cookies);
 	throw redirect(303, `${successRedirectPath}/${params.id}`);
+}
+
+/**
+ * Loads a list of data from the API.
+ * @param {import('@sveltejs/kit').RequestEvent} event - The SvelteKit request event.
+ * @param {string} resourcePath - The base API path for the resource (e.g., 'domain', 'user').
+ * @returns {Promise<{list: Array<any>}>} - An object containing the list of resources.
+ */
+export async function loadData(event, resourcePath) {
+	const [response, fetchError] = await runPromise(api.fetch(resourcePath, {}, event));
+
+	if (fetchError) {
+		console.error(`${resourcePath} list fetch error:`, fetchError);
+		return [];
+	}
+
+	return response.data.data;
 }

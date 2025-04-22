@@ -1,4 +1,4 @@
-import { loadResourceList } from '$lib/utils/data'; // Import the list loading utility
+import { loadResourceList } from '$lib/utils/data';
 
 /**
  * Loads a list of users using the reusable loadResourceList utility.
@@ -10,7 +10,7 @@ export async function load(event) {
 	await event.parent();
 
 	// Use the utility function to load the list of users
-	const { list: users, meta } = await loadResourceList(event, 'user', 'Users', '/admin');
+	const { list: users, meta } = await loadResourceList(event, '/user', 'users', '/admin');
 
 	// Return the fetched users and metadata for the page component
 	return {

@@ -1,13 +1,9 @@
-import { fail } from '@sveltejs/kit';
-import { redirect, setFlash } from 'sveltekit-flash-message/server';
 import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
 
-import api from '$lib/api';
-import { roleSchema } from '$lib/schema/role'; 
-import { getChangedFields, setErrors } from '$lib/utils/form';
-import { runPromise } from '$lib/utils';
-import { loadResourceById } from '$lib/utils/data';
+import { roleSchema } from '$lib/schema/role';
+// Import the necessary utility functions
+import { loadResourceById, updateResourceById } from '$lib/utils/data';
 
 /**
  * Loads the role data for editing using the loadResourceById utility.
@@ -15,80 +11,42 @@ import { loadResourceById } from '$lib/utils/data';
  * @returns {Promise<object>} The role data and the form object.
  */
 export async function load(event) {
+	// Ensure parent layout data is loaded (if any)
 	await event.parent();
 
 	// Use loadResourceById to fetch the role
-	const { role } = await loadResourceById(event, 'role', 'role', '/admin/role');
+	const { role } = await loadResourceById(event, 'role', 'Role', '/admin/role');
 
 	// Initialize the form with the fetched role data
-	let form = await superValidate(role, zod(roleSchema)); 
+	let form = await superValidate(role, zod(roleSchema));
 	// Store the original data for change detection in actions
 	form.data._original = JSON.stringify(role);
+	console.log('form.data._original', form.data._original);
 
 	return {
-		role, 
-		form 
+		role,
+		form
 	};
 }
 
+/**
+ * Defines the server-side actions for the role edit page.
+ */
 export const actions = {
+	/**
+	 * Handles the default form submission (updating the role).
+	 * Uses the updateResourceById utility function for consistency and maintainability.
+	 * @param {import('./$types').RequestEvent} event - The SvelteKit request event.
+	 * @returns {Promise<import('@sveltejs/kit').ActionResult>} The result of the action (fail or redirect).
+	 */
 	default: async (event) => {
-		const { request, params, cookies } = event;
-
-		const form = await superValidate(request, zod(roleSchema), { dataType: 'json' }); // Changed schema
-		if (!form.valid) {
-			setFlash({ type: 'error', message: 'Validation failed' }, cookies);
-			return fail(400, { form });
-		}
-		
-		const originalData = JSON.parse(form.data._original || '{}');
-		const formData = { ...form.data }; // Clone form data
-        delete formData._original; // Remove internal field before sending
-
-		// Check if there are any changes
-		const changes = getChangedFields(originalData, formData);
-
-        if (Object.keys(changes).length === 0) {
-            setFlash({ type: 'info', message: 'No changes detected.' }, cookies);
-            // Optionally redirect back or just return the form state
-            // throw redirect(303, `/admin/role/${params.id}`); 
-            return { form }; // Return form state without making API call
-        }
-
-		// Send only changed fields to API
-		const [response, fetchError] = await runPromise(
-			api.fetch(
-				`/role/${params.id}`, // Changed endpoint
-				{
-					method: 'PATCH',
-					body: JSON.stringify(changes),
-					headers: {
-						'Content-Type': 'application/json'
-					}
-				},
-				event
-			)
+		// Delegate the update logic to the reusable utility function
+		return await updateResourceById(
+			event,
+			'/role', // Resource path (e.g., 'domain', 'role')
+			'role', // Resource name
+			roleSchema, // Zod schema for validation
+			'/admin/role' // Base path for success redirect (ID will be appended)
 		);
-
-		if (fetchError) {
-			console.error('Failed to update role:', fetchError); // Changed log message
-			setFlash({ type: 'error', message: 'An unexpected error occurred while updating the role' }, cookies);
-			return fail(500, { form });
-		}
-
-        const responseData = await response.json().catch(() => null);
-
-		if (!response.ok || !responseData || !responseData.status) {
-            const message = responseData?.message || 'Failed to update role';
-            console.error('API error updating role:', response.status, message);
-			if (responseData?.error) {
-				setErrors(form, responseData.error);
-			}
-			setFlash({ type: 'error', message: `Failed to update role: ${message}. Please check your data.` }, cookies);
-			return fail(response.status === 422 ? 422 : 500, { form }); // Use 422 for validation errors
-		}
-
-		setFlash({ type: 'success', message: 'Role Updated Successfully!' }, cookies); // Changed success message
-		throw redirect(303, `/admin/role/${params.id}`); // Changed redirect path
 	}
 };

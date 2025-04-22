@@ -1,4 +1,4 @@
-import { loadResourceById, loadResourceList } from '$lib/utils/data'; // Corrected import path
+import { loadResourceById, loadData } from '$lib/utils/data'; // Corrected import path
 
 /**
  * Loads the role details and associated full permission objects.
@@ -10,10 +10,10 @@ export async function load(event) {
 	await event.parent();
 
 	// Load the specific role by ID
-	const { role } = await loadResourceById(event, '/role?limit=1000', 'role', '/admin/role');
+	const { role } = await loadResourceById(event, '/role', 'role', '/admin/role');
 
 	// Load the list of all available permissions
-	const { list: allPermissions } = await loadResourceList(event, 'permission', 'Permissions', '/admin');
+	const allPermissions = await loadData(event, 'permission?limit=1000');
 
 	// Create a map for quick lookup of permissions by their code (or ID, adjust if necessary)
 	const permissionMap = new Map(allPermissions.map(p => [p.code, p])); // Use p.id if matching by ID

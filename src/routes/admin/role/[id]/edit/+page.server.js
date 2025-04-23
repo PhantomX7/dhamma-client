@@ -21,7 +21,6 @@ export async function load(event) {
 	let form = await superValidate(role, zod(roleSchema));
 	// Store the original data for change detection in actions
 	form.data._original = JSON.stringify(role);
-	console.log('form.data._original', form.data._original);
 
 	return {
 		role,

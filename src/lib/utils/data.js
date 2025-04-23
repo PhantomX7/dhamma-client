@@ -99,9 +99,7 @@ export async function updateResourceById(
 
 	// Parse original data and get current form data
 	const originalData = JSON.parse(form.data._original || '{}');
-	// console.log(`Original ${resourceName.toLowerCase()}:`, originalData);
 	const formData = { ...form.data }; // Clone form data
-	// console.log(`Form data for ${resourceName.toLowerCase()}:`, formData);
 	delete formData._original; // Remove internal field before sending
 
 	// Check for changes

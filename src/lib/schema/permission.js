@@ -8,5 +8,6 @@ export const permissionSchema = z.object({
     type: z.string().min(1, { message: 'Type is required' }),
     description: z.string().optional(),
     is_domain_specific: z.boolean().default(false),
-    domain_id: z.number().nullable().optional()
+    domain_id: z.number().nullable().optional(),
+	_original: z.string().optional()
 });

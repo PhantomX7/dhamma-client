@@ -47,10 +47,11 @@
 	<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
 		<!-- Form element with POST method and superForm enhancement -->
 		<form method="POST" use:enhance class="space-y-6">
+
 			<!-- Hidden input to store original data for change detection -->
 			<input type="hidden" name="_original" bind:value={$form._original} />
 
-			<!-- General Form Errors Alert, added like the reference -->
+			<!-- General Form Errors Alert -->
 			{#if $errors._errors}
 				<Alert color="red" class="mb-4">
 					<InfoCircleSolid slot="icon" class="h-5 w-5" />

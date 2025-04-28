@@ -1,6 +1,5 @@
 <script>
-	import { Alert, Button } from 'flowbite-svelte';
-	// Added ListOutline icon
+	import { Alert, Button, Card } from 'flowbite-svelte';
 	import { ExclamationCircleSolid, ListOutline } from 'flowbite-svelte-icons';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { FormInput, FormTextarea, FormToggle, FormButton } from '$lib/components/form';
@@ -34,14 +33,12 @@
 		</Button>
 	</div>
 
-	<!-- Form container card with styling and dark mode support -->
-	<div
-		class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
-	>
+	<!-- Use Card component as the form container -->
+	<Card padding="lg" size="2xl" class="mb-8">
 		<form method="POST" use:enhance class="flex flex-col space-y-6">
 			<!-- General form errors display -->
 			{#if $errors._errors}
-				<Alert color="red" class="mb-0"> 
+				<Alert color="red" class="mb-0">
 					<svelte:fragment slot="icon">
 						<ExclamationCircleSolid class="h-5 w-5" />
 					</svelte:fragment>
@@ -113,5 +110,5 @@
 				<Button type="button" color="alternative" href="/admin/domain">Cancel</Button>
 			</div>
 		</form>
-	</div>
+	</Card>
 </div>

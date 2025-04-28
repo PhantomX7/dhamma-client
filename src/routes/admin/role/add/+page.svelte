@@ -1,12 +1,14 @@
 <script>
-	import { Alert, Button } from 'flowbite-svelte';
-	import { ExclamationCircleSolid } from 'flowbite-svelte-icons';
+	import { Alert, Button, Card } from 'flowbite-svelte';
+	import { ExclamationCircleSolid, ListOutline } from 'flowbite-svelte-icons';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { FormInput, FormTextarea, FormToggle, FormButton } from '$lib/components/form';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 
+	// Component props
 	let { data } = $props();
 
+	// Initialize SuperForm
 	const { form, errors, enhance, submitting, delayed, tainted } = superForm(data.form, {
 		resetForm: false,
 		taintedMessage: null,
@@ -14,26 +16,35 @@
 		dataType: 'json'
 	});
 
+	// Breadcrumb items definition
 	const breadcrumbItems = [{ href: '/admin/role', label: 'Roles' }, { label: 'Add Role' }];
 </script>
 
-<div class="p-4">
-	<Breadcrumb items={breadcrumbItems} />
+<!-- Main page container -->
+<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
+	<!-- Breadcrumb navigation -->
+	<Breadcrumb class="mb-6" items={breadcrumbItems} />
 
-	<div class="mb-6 flex items-center justify-between">
-		<h2 class="text-xl font-bold">Add New Role</h2>
-		<Button color="light" href="/admin/role">Back to List</Button>
+	<!-- Page header -->
+	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Add New Role</h1>
+		<Button color="alternative" href="/admin/role">
+			<ListOutline class="me-2 h-4 w-4" /> Back to List
+		</Button>
 	</div>
 
-	<div class="rounded-lg border bg-white p-6 shadow-sm">
-		<form method="POST" use:enhance>
+	<!-- Use Card component for the form container -->
+	<Card padding="lg" size="2xl" class="mb-8">
+		<form method="POST" use:enhance class="flex flex-col space-y-6">
+			<!-- General form errors display -->
 			{#if $errors._errors}
-				<Alert color="red" class="mb-4">
+				<Alert color="red" class="mb-0">
 					<svelte:fragment slot="icon">
-						<ExclamationCircleSolid class="h-4 w-4" />
+						<!-- Ensure icon size is consistent -->
+						<ExclamationCircleSolid class="h-5 w-5" />
 					</svelte:fragment>
-					<p class="font-medium">Please fix the following errors:</p>
-					<ul class="mt-1 list-inside list-disc">
+					<span class="font-medium">Please fix the following errors:</span>
+					<ul class="mt-1.5 list-inside list-disc">
 						{#each $errors._errors as error}
 							<li>{error}</li>
 						{/each}
@@ -41,51 +52,59 @@
 				</Alert>
 			{/if}
 
-			<div class="mb-6 space-y-6">
-				<div>
+			<!-- Form fields grid layout -->
+			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+				<!-- Name Input -->
+				<div class="md:col-span-2">
 					<FormInput
 						label="Name"
+						id="name"
 						name="name"
 						bind:value={$form.name}
-						error={$errors.name}
+						error={$errors.name?.join(', ')}
 						required
 						placeholder="Enter role name"
 					/>
 				</div>
 
-				<div>
+				<!-- Description Textarea -->
+				<div class="md:col-span-2">
 					<FormTextarea
 						label="Description"
+						id="description"
 						name="description"
 						bind:value={$form.description}
-						error={$errors.description}
-						placeholder="Enter role description"
+						error={$errors.description?.join(', ')} 
+						placeholder="Enter role description (optional)"
+						rows={3} 
+						helperText="Optional: Provide a brief description of the role." 
 					/>
 				</div>
 
-				<div>
+				<!-- Status Toggle -->
+				<div class="md:col-span-2">
 					<FormToggle
 						label="Status"
+						id="is_active"
 						name="is_active"
 						bind:value={$form.is_active}
 						error={$errors.is_active?.join(', ')}
+						helperText="Inactive roles cannot be assigned." 
 					/>
-					<p class="mt-1 text-sm text-gray-500">
-						{$form.is_active
-							? 'Role is active and available for use'
-							: 'Role is inactive and unavailable'}
-					</p>
+					<!-- Removed the extra paragraph -->
 				</div>
 			</div>
 
-			<div class="flex gap-2 border-t pt-4">
+			<!-- Form actions section with border and padding -->
+			<div class="flex items-center justify-start gap-3 border-t border-gray-200 pt-6 dark:border-gray-700">
 				<FormButton
 					type="submit"
 					loading={$submitting || $delayed}
-					text={$submitting ? 'Creating...' : 'Create Role'}
+					text="Create Role"
+					loadingText="Creating..."
 				/>
-				<Button type="button" color="light" href="/admin/role">Cancel</Button>
+				<Button type="button" color="alternative" href="/admin/role">Cancel</Button>
 			</div>
 		</form>
-	</div>
+	</Card>
 </div>

@@ -45,6 +45,9 @@
 	<Card padding="lg" size="2xl" class="mb-8">
 		<h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">General Information</h2>
 		<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+			<DetailItem label="Domain">
+				<p class="text-base font-semibold text-gray-900 dark:text-white">{role.domain.name}</p>
+			</DetailItem>
 			<DetailItem label="ID">
 				<p class="text-base font-semibold text-gray-900 dark:text-white">{role.id}</p>
 			</DetailItem>

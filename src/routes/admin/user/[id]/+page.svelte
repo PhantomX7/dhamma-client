@@ -25,11 +25,11 @@
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">User Details</h1>
 		<div class="flex flex-shrink-0 gap-2">
-			{#if currentUser().is_super_admin || currentUser().id === user.id /* Or based on permissions */}
+			<!-- {#if currentUser().is_super_admin || currentUser().id === user.id /* Or based on permissions */}
 				<Button href="/admin/user/{user.id}/edit">
 					<EditOutline class="me-2 h-4 w-4" /> Edit User
 				</Button>
-			{/if}
+			{/if} -->
 			<Button href="/admin/user/{user.id}/domains">
 				<CogOutline class="me-2 h-4 w-4" /> Manage Domains
 			</Button>

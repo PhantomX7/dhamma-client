@@ -1,12 +1,13 @@
-import { fail } from '@sveltejs/kit';
-import { redirect, setFlash } from 'sveltekit-flash-message/server';
 import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
 import { domainSchema } from '$lib/schema/domain';
-import { setErrors } from '$lib/utils/form';
-import { runPromise } from '$lib/utils';
-import api from '$lib/api';
+import { createResource } from '$lib/utils/data';
 
+/**
+ * Loads initial data for the add domain page.
+ * @param {import('./$types').PageServerLoadEvent} event - The SvelteKit load event.
+ * @returns {Promise<object>} - An object containing the form.
+ */
 export async function load(event) {
 	await event.parent();
 
@@ -21,52 +22,19 @@ export async function load(event) {
 	};
 }
 
+/**
+ * Handles the default form submission for creating a new domain.
+ */
 export const actions = {
 	default: async (event) => {
-		const { request, cookies } = event;
-		const form = await superValidate(request, zod(domainSchema), { dataType: 'json' });
-		if (!form.valid) {
-			setFlash({ type: 'error', message: 'Validation failed' }, cookies);
-			return fail(400, { form });
-		}
-
-		// Send form data to API
-		const [response, fetchError] = await runPromise(
-			api.fetch(
-				'/domain',
-				{
-					method: 'POST',
-					body: JSON.stringify(form.data),
-					headers: {
-						'Content-Type': 'application/json'
-					}
-				},
-				event
-			)
+		// Use the createResource utility function to handle creation
+		return await createResource(
+			event,
+			'/domain', // API path for domains
+			'domain', // Resource name for messages
+			domainSchema, // Zod schema for validation
+			'/admin/domain', // Fallback redirect path (list page)
+			'/admin/domain' // Detail page base path (ID will be appended)
 		);
-
-		if (fetchError) {
-			console.error('Failed to create domain:', fetchError);
-			setFlash({ type: 'error', message: 'An unexpected error occurred' }, cookies);
-			return fail(500, { form });
-		}
-
-		if (!response.ok) {
-			if (response.data?.error) {
-				setErrors(form, response.data.error);
-			}
-			setFlash({ type: 'error', message: 'Please check your data.' }, cookies);
-			return fail(422, { form });
-		}
-
-		const result = response.data;
-		if (!result.status) {
-			setErrors(form, result.error);
-			setFlash({ type: 'error', message: 'Please check your data.' }, cookies);
-			return fail(422, { form });
-		}
-
-		setFlash({ type: 'success', message: 'Domain Created Successfully!' }, cookies);
-		throw redirect(303, `/admin/domain/${result.data.id}`);
 	}
 };

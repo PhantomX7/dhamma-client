@@ -2,7 +2,7 @@ import { fail } from '@sveltejs/kit';
 import { redirect, setFlash } from 'sveltekit-flash-message/server';
 import { superValidate } from 'sveltekit-superforms/server';
 import { zod } from 'sveltekit-superforms/adapters';
-import { createRoleSchema } from '$lib/schema/role'; // Use role schema
+import { roleSchema } from '$lib/schema/role'; // Use role schema
 import { setErrors } from '$lib/utils/form';
 import { runPromise } from '$lib/utils';
 import api from '$lib/api';
@@ -11,7 +11,7 @@ export async function load(event) {
 	await event.parent();
 
 	// Initialize an empty form using the role schema
-	const form = await superValidate(zod(createRoleSchema));
+	const form = await superValidate(zod(roleSchema));
 
 	// Set default values if needed (e.g., is_active)
 	form.data.is_active = true;
@@ -24,7 +24,7 @@ export async function load(event) {
 export const actions = {
 	default: async (event) => {
 		const { request, cookies } = event;
-		const form = await superValidate(request, zod(createRoleSchema), { dataType: 'json' });
+		const form = await superValidate(request, zod(roleSchema), { dataType: 'json' });
 		if (!form.valid) {
 			setFlash({ type: 'error', message: 'Validation failed' }, cookies);
 			return fail(400, { form });

@@ -164,6 +164,94 @@ export async function updateResourceById(
 }
 
 /**
+ * Handles creating a new resource via the API.
+ * Validates the form, sends a POST request, handles errors, sets flash messages, and redirects.
+ *
+ * @param {import('@sveltejs/kit').RequestEvent} event - The SvelteKit request event.
+ * @param {string} resourcePath - The base API path for the resource (e.g., 'domain', 'user').
+ * @param {string} resourceName - The singular name of the resource (e.g., 'Domain', 'User').
+ * @param {import('zod').ZodSchema} schema - The Zod schema for validation.
+ * @param {string} successRedirectPath - The path to redirect to on successful creation (e.g., '/admin/user').
+ * @param {string} [detailRedirectPathBase] - Optional base path to redirect to the detail page of the created resource (ID will be appended). If provided, takes precedence over successRedirectPath.
+ * @returns {Promise<import('@sveltejs/kit').ActionResult>} - The result of the action (fail or redirect).
+ */
+export async function createResource(
+	event,
+	resourcePath,
+	resourceName,
+	schema,
+	successRedirectPath,
+	detailRedirectPathBase = null
+) {
+	const { request, cookies } = event;
+
+	// Validate the form
+	const form = await superValidate(request, zod(schema), { dataType: 'json' });
+	if (!form.valid) {
+		setFlash(
+			{ type: 'error', message: `${resourceName} validation failed. Please check the errors.` },
+			cookies
+		);
+		return fail(400, { form });
+	}
+
+	// Send POST request to create the resource
+	const [response, fetchError] = await runPromise(
+		api.fetch(
+			resourcePath, // Use the base path for creation
+			{
+				method: 'POST',
+				body: JSON.stringify(form.data),
+				headers: { 'Content-Type': 'application/json' }
+			},
+			event
+		)
+	);
+
+	// Handle fetch errors (network issues, etc.)
+	if (fetchError) {
+		console.error(`Failed to create ${resourceName.toLowerCase()}:`, fetchError);
+		setFlash(
+			{
+				type: 'error',
+				message: `An unexpected error occurred while creating the ${resourceName.toLowerCase()}.`
+			},
+			cookies
+		);
+		return fail(500, { form });
+	}
+
+	// Handle API response errors (validation, server errors)
+	const responseData = response.data; // Assuming api.fetch wrapper provides parsed data
+	if (!response.ok || !responseData || !responseData.status) {
+		const message = responseData?.message || `Failed to create ${resourceName.toLowerCase()}`;
+		console.error(
+			`API error creating ${resourceName.toLowerCase()}:`,
+			response.status,
+			message,
+			responseData?.error
+		);
+		if (responseData?.error) {
+			setErrors(form, responseData.error); // Populate form errors if available
+		}
+		setFlash({ type: 'error', message: `${message}. Please check your data.` }, cookies);
+		// Return 422 for validation errors, 500 for others
+		return fail(response.status === 422 ? 422 : 500, { form });
+	}
+
+	// Success: Set flash message and redirect
+	setFlash({ type: 'success', message: `${resourceName} created successfully!` }, cookies);
+
+	// Determine redirect target
+	let redirectTarget = successRedirectPath;
+	if (detailRedirectPathBase && responseData.data?.id) {
+		redirectTarget = `${detailRedirectPathBase}/${responseData.data.id}`;
+	}
+
+	throw redirect(303, redirectTarget);
+}
+
+/**
  * Loads a list of data from the API.
  * @param {import('@sveltejs/kit').RequestEvent} event - The SvelteKit request event.
  * @param {string} resourcePath - The base API path for the resource (e.g., 'domain', 'user').

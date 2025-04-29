@@ -180,6 +180,7 @@
 								<TableHead>
 									<TableHeadCell class="w-16">ID</TableHeadCell>
 									<TableHeadCell>Role Name</TableHeadCell>
+									<TableHeadCell>Description</TableHeadCell>
 									<TableHeadCell>Status</TableHeadCell>
 									<TableHeadCell>Assigned On</TableHeadCell>
 								</TableHead>
@@ -192,11 +193,9 @@
 												<div class="font-medium text-gray-900 dark:text-white">
 													{role.name}
 												</div>
-												{#if role.description}
-													<div class="text-sm text-gray-500 dark:text-gray-400">
-														{role.description}
-													</div>
-												{/if}
+											</TableBodyCell>
+											<TableBodyCell class="text-sm text-gray-500 dark:text-gray-400">
+												{role.description || '—'}
 											</TableBodyCell>
 											<TableBodyCell>
 												<Badge color={role.is_active ? 'green' : 'gray'} class="px-2.5 py-0.5">

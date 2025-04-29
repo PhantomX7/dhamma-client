@@ -10,7 +10,12 @@
 		TableHead,
 		TableHeadCell
 	} from 'flowbite-svelte';
-	import { ChevronLeftOutline, PlusOutline, CloseOutline, InfoCircleOutline } from 'flowbite-svelte-icons';
+	import {
+		ChevronLeftOutline,
+		PlusOutline,
+		CloseOutline,
+		InfoCircleOutline
+	} from 'flowbite-svelte-icons';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 	import AssignRoleModal from '$lib/components/modal/AssignRoleModal.svelte';
 	import { enhance } from '$app/forms';
@@ -130,9 +135,7 @@
 		>
 			<InfoCircleOutline class="mb-3 h-8 w-8 text-gray-400 dark:text-gray-500" />
 			<p class="text-gray-500 dark:text-gray-400">This user has no roles assigned in any domain.</p>
-			<p class="mt-2 text-sm text-gray-400 dark:text-gray-500">
-				Click "Add Role" to assign one.
-			</p>
+			<p class="mt-2 text-sm text-gray-400 dark:text-gray-500">Click "Add Role" to assign one.</p>
 		</div>
 	{:else}
 		<!-- Iterate through domains -->
@@ -152,7 +155,7 @@
 					divClass="relative max-h-[60vh] overflow-x-auto overflow-y-auto"
 				>
 					<TableHead
-						class="sticky top-0 z-10 bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400"
+						class="sticky top-0 z-10 bg-gray-50 text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400"
 					>
 						<TableHeadCell>Role Name</TableHeadCell>
 						<TableHeadCell>Description</TableHeadCell>
@@ -163,7 +166,7 @@
 					<TableBody class="divide-y divide-gray-200 dark:divide-gray-700">
 						{#each domainData.roles as userRole (userRole.id)}
 							<TableBodyRow>
-								<TableBodyCell class="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+								<TableBodyCell class="font-medium whitespace-nowrap text-gray-900 dark:text-white">
 									{userRole.role.name}
 								</TableBodyCell>
 								<TableBodyCell class="text-sm text-gray-500 dark:text-gray-400">
@@ -185,12 +188,12 @@
 										use:enhance={handleRemoveSubmit()}
 										class="inline-block"
 									>
-										<input type="hidden" name="userRoleId" value={userRole.id} />
+										<input type="hidden" name="role_id" value={userRole.role_id} />
 										<Button
 											type="submit"
 											color="red"
 											size="xs"
-											class="cursor-pointer focus:outline-none focus:ring-4 focus:ring-red-300 dark:focus:ring-red-900"
+											class="cursor-pointer focus:ring-4 focus:ring-red-300 focus:outline-none dark:focus:ring-red-900"
 											aria-label="Remove role"
 										>
 											<CloseOutline class="h-3 w-3" />
@@ -207,6 +210,6 @@
 
 	<!-- Assign Role Modal -->
 	{#if showModal}
-		<AssignRoleModal {user} bind:open={showModal} handleSubmit={handleAddSubmit()} />
+		<AssignRoleModal {user} bind:open={showModal} handleSubmit={handleAddSubmit} />
 	{/if}
 </div>

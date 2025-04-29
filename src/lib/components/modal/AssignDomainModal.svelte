@@ -19,7 +19,6 @@
 		open = $bindable(false),
 		userDomainIds = new Set(),
 		userId,
-		handleSubmit = () => () => {} // Default empty function if not provided
 	} = $props();
 
 	let searchTerm = $state('');

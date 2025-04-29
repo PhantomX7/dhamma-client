@@ -62,7 +62,6 @@ export const actions = {
 		);
 
 		if (fetchError || !response.ok) {
-			console.log(response);
 			setFlash({ type: 'error', message: 'Failed to remove domain from user' }, cookies);
 			return fail(400, { error: 'Failed to remove domain' });
 		}

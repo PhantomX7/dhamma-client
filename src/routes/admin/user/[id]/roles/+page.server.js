@@ -19,22 +19,16 @@ export const actions = {
 	assignRole: async (event) => {
 		const { request, params, cookies } = event;
 
-		// Extract the form data
+		// Extract the role_id from the form submissio
 		const formData = await request.formData();
-		const domainId = formData.get('domain_id');
-		const roleId = formData.get('role_id');
-		
-		if (!domainId || !roleId) {
-			setFlash({ type: 'error', message: 'Domain and role are required' }, cookies);
-			return fail(400, { error: 'Domain and role are required' });
-		}
 
-		// Call API to assign the role
+		// Call your API to assign the role
 		const [response, fetchError] = await runPromise(
 			api.fetch(
 				`user/${params.id}/assign-role`,
 				{
 					method: 'POST',
+
 					body: formData
 				},
 				event
@@ -42,11 +36,11 @@ export const actions = {
 		);
 
 		if (fetchError || !response.ok) {
-			setFlash({ type: 'error', message: 'Failed to assign role to user' }, cookies);
-			return fail(400, { error: 'Failed to assign role' });
+			setFlash({ type: 'error', message: 'Failed to add role to user' }, cookies);
+			return fail(400, { error: 'Failed to add role' });
 		}
 
-		setFlash({ type: 'success', message: 'Role successfully assigned to user' }, cookies);
+		setFlash({ type: 'success', message: 'role successfully added to user' }, cookies);
 
 		return { success: true };
 	},
@@ -54,19 +48,14 @@ export const actions = {
 	removeRole: async (event) => {
 		const { request, params, cookies } = event;
 		const formData = await request.formData();
-		const userRoleId = formData.get('userRoleId');
-		
-		if (!userRoleId) {
-			setFlash({ type: 'error', message: 'User role ID is required' }, cookies);
-			return fail(400, { error: 'User role ID is required' });
-		}
 
-		// Call API to remove the role from the user
+		// Call your API to remove the role from the user
 		const [response, fetchError] = await runPromise(
 			api.fetch(
-				`user/${params.id}/assign-role`,
+				`user/${params.id}/remove-role`,
 				{
-					method: 'DELETE'
+					method: 'POST',
+					body: formData
 				},
 				event
 			)
@@ -77,7 +66,7 @@ export const actions = {
 			return fail(400, { error: 'Failed to remove role' });
 		}
 
-		setFlash({ type: 'success', message: 'Role successfully removed from user' }, cookies);
+		setFlash({ type: 'success', message: 'role successfully removed from user' }, cookies);
 
 		return { success: true };
 	}

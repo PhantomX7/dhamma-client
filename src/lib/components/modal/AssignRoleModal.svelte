@@ -5,10 +5,9 @@
 
 	// --- Props ---
 	// Use $props() to declare and access component properties
-	let { user, onClose = () => {} } = $props();
+	let { user, open = $bindable(false) } = $props();
 
 	// --- State ---
-	let showModal = $state(true);
 	let selectedDomainId = $state(null);
 	let selectedRoleId = $state(null);
 	let availableRoles = $state([]);
@@ -129,7 +128,7 @@
 	 */
 	function closeModal() {
 		// Access showModal prop directly
-		showModal = false;
+		open = false;
 		resetState();
 		// Access onClose prop directly
 		onClose(); // Call the provided onClose handler
@@ -137,7 +136,7 @@
 </script>
 
 <Modal
-	bind:open={showModal}
+	bind:open
 	size="md"
 	autoclose={false}
 	on:close={resetState}
@@ -209,7 +208,7 @@
 		</div>
 
 		<!-- Hidden user ID field (Consider if needed, server action already has user context via params.id) -->
-		<!-- <input type="hidden" name="user_id" value={user.id} /> -->
+		<input type="hidden" name="role_id" value={selectedRoleId} />
 
 		<!-- Form Actions -->
 		<div

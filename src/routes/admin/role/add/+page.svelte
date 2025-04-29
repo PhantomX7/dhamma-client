@@ -2,18 +2,22 @@
 	import { Alert, Button, Card } from 'flowbite-svelte';
 	import { ExclamationCircleSolid, ListOutline } from 'flowbite-svelte-icons';
 	import { superForm } from 'sveltekit-superforms/client';
-	import { FormInput, FormTextarea, FormToggle, FormButton } from '$lib/components/form';
+	// Import the new component and remove FormTextarea if no longer needed elsewhere
+	import { FormInput, FormTextarea, FormToggle, FormButton, FormSearchSelect } from '$lib/components/form';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 
 	// Component props
 	let { data } = $props();
 
 	// Initialize SuperForm
-	const { form, errors, enhance, submitting, delayed, tainted } = superForm(data.form, {
-		resetForm: false,
+	// Ensure the server load function initializes form with domain_id: null or appropriate default
+	const { form, errors, enhance, submitting, delayed } = superForm(data.form, {
+		resetForm: false, // Keep false or set to true depending on desired behavior after creation
 		taintedMessage: null,
 		multipleSubmits: 'prevent',
-		dataType: 'json'
+		dataType: 'json',
+        invalidateAll: true, // Invalidate data on success/error to reflect changes
+        applyAction: true // Apply server action results (errors, etc.)
 	});
 
 	// Breadcrumb items definition
@@ -40,7 +44,6 @@
 			{#if $errors._errors}
 				<Alert color="red" class="mb-0">
 					<svelte:fragment slot="icon">
-						<!-- Ensure icon size is consistent -->
 						<ExclamationCircleSolid class="h-5 w-5" />
 					</svelte:fragment>
 					<span class="font-medium">Please fix the following errors:</span>
@@ -54,6 +57,24 @@
 
 			<!-- Form fields grid layout -->
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <!-- Domain Selection -->
+				<div class="md:col-span-2">
+                    <FormSearchSelect
+                        label="Domain"
+                        id="domain_id"
+                        name="domain_id"
+                        bind:value={$form.domain_id}
+                        error={$errors.domain_id?.join(', ')}
+                        required
+                        placeholder="Click to select Domain" 
+                        apiPath="/api/domain"
+                        searchParam="code"
+                        displayField="name" 
+                        valueField="id"  
+                        helperText="Select the domain this role belongs to."
+                    />
+                </div>
+
 				<!-- Name Input -->
 				<div class="md:col-span-2">
 					<FormInput
@@ -74,10 +95,10 @@
 						id="description"
 						name="description"
 						bind:value={$form.description}
-						error={$errors.description?.join(', ')} 
+						error={$errors.description?.join(', ')}
 						placeholder="Enter role description (optional)"
-						rows={3} 
-						helperText="Optional: Provide a brief description of the role." 
+						rows={3}
+						helperText="Optional: Provide a brief description of the role."
 					/>
 				</div>
 
@@ -89,9 +110,8 @@
 						name="is_active"
 						bind:value={$form.is_active}
 						error={$errors.is_active?.join(', ')}
-						helperText="Inactive roles cannot be assigned." 
+						helperText="Inactive roles cannot be assigned."
 					/>
-					<!-- Removed the extra paragraph -->
 				</div>
 			</div>
 

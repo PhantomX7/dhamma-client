@@ -27,7 +27,7 @@
 	// Configuration for the DataTable filter component
 	const filterConfig = {
 		// Optional: Add domain name filter if needed
-		'domain.name': { // Adjusted key for potential nested filtering if DataTable supports it
+		'domain_name': { // Adjusted key for potential nested filtering if DataTable supports it
 			type: FilterType.STRING,
 			label: 'Domain Name'
 		},
@@ -66,6 +66,7 @@
 		<!-- Flowbite Table component with hover effect, constrained height, borders, and rounded corners -->
 		<Table
 			hoverable={true}
+			shadow
 			divClass="relative max-h-[70vh] overflow-x-auto overflow-y-auto"
 		>
 			<!-- Sticky table header with standard styling -->

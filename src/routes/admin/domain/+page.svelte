@@ -65,9 +65,11 @@
 	<!-- DataTable component wrapping the table -->
 	<DataTable data={data.domains} meta={data.meta} {filterConfig}>
 		<!-- Flowbite Table component with hover effect and constrained height -->
-		<Table hoverable={true} divClass="relative max-h-[70vh] overflow-x-auto overflow-y-auto">
+		<Table hoverable={true} shadow divClass="relative max-h-[70vh] overflow-x-auto overflow-y-auto">
 			<!-- Sticky table header -->
-			<TableHead class="sticky top-0 z-10 bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+			<TableHead
+				class="sticky top-0 z-10 bg-gray-50 text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400"
+			>
 				<TableHeadCell>ID</TableHeadCell>
 				<TableHeadCell>Name</TableHeadCell>
 				<TableHeadCell>Code</TableHeadCell>
@@ -80,7 +82,10 @@
 			<TableBody class="divide-y divide-gray-200 dark:divide-gray-700">
 				{#each data.domains as domain (domain.id)}
 					<TableBodyRow class="bg-white dark:bg-gray-800">
-						<TableBodyCell class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white">{domain.id}</TableBodyCell>
+						<TableBodyCell
+							class="px-6 py-4 font-medium whitespace-nowrap text-gray-900 dark:text-white"
+							>{domain.id}</TableBodyCell
+						>
 						<TableBodyCell>{domain.name}</TableBodyCell>
 						<TableBodyCell>{domain.code}</TableBodyCell>
 						<TableBodyCell>

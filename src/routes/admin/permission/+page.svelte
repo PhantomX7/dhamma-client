@@ -73,7 +73,7 @@
 				<TableHeadCell>ID</TableHeadCell>
 				<TableHeadCell>Name</TableHeadCell>
 				<TableHeadCell>Code</TableHeadCell>
-				<TableHeadCell>Object</TableHeadCell>
+				<TableHeadCell>Category</TableHeadCell>
 				<TableHeadCell>Action</TableHeadCell>
 				<TableHeadCell>Type</TableHeadCell>
 				<TableHeadCell>Domain Specific</TableHeadCell>

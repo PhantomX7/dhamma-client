@@ -10,7 +10,7 @@
 		TableHeadCell,
 		Card
 	} from 'flowbite-svelte';
-	import { ListOutline, EditOutline } from 'flowbite-svelte-icons';
+	import { ListOutline, EditOutline, LockOutline } from 'flowbite-svelte-icons';
 	
 	import { formatDate } from '$lib/utils';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
@@ -33,6 +33,9 @@
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Role Details</h1>
 		<div class="flex flex-shrink-0 gap-2">
+			<Button href="/admin/role/{role.id}/permissions">
+				<LockOutline class="me-2 h-4 w-4" /> Manage Permissions
+			</Button>
 			<Button href="/admin/role/{role.id}/edit">
 				<EditOutline class="me-2 h-4 w-4" /> Edit Role
 			</Button>
@@ -76,52 +79,50 @@
 		</div>
 	</Card>
 
-	<!-- Permissions Section Card (remains unchanged) -->
-	<Card padding="lg" size="2xl">
-		<h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">Assigned Permissions</h2>
+	<!-- Permissions Card -->
+	<Card padding="lg" size="2xl" class="mb-8">
+		<div class="mb-6 flex items-center justify-between">
+			<h2 class="text-xl font-semibold text-gray-900 dark:text-white">Permissions</h2>
+			<Button href="/admin/role/{role.id}/permissions">
+				<LockOutline class="me-2 h-4 w-4" /> Manage Permissions
+			</Button>
+		</div>
+
 		{#if role.permissions && role.permissions.length > 0}
-			<div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm dark:border-gray-700">
-				<Table hoverable={true} striped={true}>
-					<TableHead
-						class="bg-gray-50 text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400"
-					>
-						<TableHeadCell class="px-6 py-3">Name</TableHeadCell>
-						<TableHeadCell class="px-6 py-3">Code</TableHeadCell>
-						<TableHeadCell class="px-6 py-3">Type</TableHeadCell>
-						<TableHeadCell class="px-6 py-3">Description</TableHeadCell>
+			<div class="overflow-x-auto">
+				<Table hoverable={true}>
+					<TableHead class="bg-gray-50 text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
+						<TableHeadCell>Code</TableHeadCell>
+						<TableHeadCell>Name</TableHeadCell>
+						<TableHeadCell>Description</TableHeadCell>
+						<TableHeadCell>Category</TableHeadCell>
 					</TableHead>
 					<TableBody class="divide-y divide-gray-200 dark:divide-gray-700">
 						{#each role.permissions as permission (permission.id)}
-							<TableBodyRow
-								class="bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-600"
-							>
-								<TableBodyCell
-									class="px-6 py-4 font-medium whitespace-nowrap text-gray-900 dark:text-white"
-									>{permission.name}</TableBodyCell
-								>
-								<TableBodyCell class="px-6 py-4 text-gray-600 dark:text-gray-300"
-									>{permission.code}</TableBodyCell
-								>
-								<TableBodyCell class="px-6 py-4">
-									<Badge large color={permission.type === 'API' ? 'indigo' : 'purple'}>
-										{permission.type}
+							<TableBodyRow>
+								<TableBodyCell class="font-medium text-gray-900 dark:text-white">
+									{permission.code}
+								</TableBodyCell>
+								<TableBodyCell>{permission.name}</TableBodyCell>
+								<TableBodyCell class="max-w-md truncate">
+									{permission.description || '—'}
+								</TableBodyCell>
+								<TableBodyCell>
+									<Badge color="indigo">
+										{permission.category || 'Uncategorized'}
 									</Badge>
 								</TableBodyCell>
-								<TableBodyCell class="px-6 py-4 text-gray-600 dark:text-gray-300"
-									>{permission.description || '-'}</TableBodyCell
-								>
 							</TableBodyRow>
 						{/each}
 					</TableBody>
 				</Table>
 			</div>
 		{:else}
-			<div
-				class="rounded-lg border border-gray-200 bg-gray-100 px-6 py-10 text-center dark:border-gray-700 dark:bg-gray-800"
-			>
-				<p class="text-gray-500 dark:text-gray-400">
-					This role currently has no permissions assigned.
-				</p>
+			<div class="rounded-lg border border-gray-200 bg-gray-100 px-6 py-10 text-center dark:border-gray-700 dark:bg-gray-800">
+				<p class="text-gray-500 dark:text-gray-400">This role has no permissions assigned.</p>
+				<Button class="mt-4" size="sm" href="/admin/role/{role.id}/permissions">
+					Manage Permissions
+				</Button>
 			</div>
 		{/if}
 	</Card>

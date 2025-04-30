@@ -50,7 +50,7 @@
 				<p class="text-base font-semibold text-gray-900 dark:text-white">{permission.code}</p>
 			</DetailItem>
 
-			<DetailItem label="Object">
+			<DetailItem label="Category">
 				<p class="text-base text-gray-700 dark:text-gray-300">{permission.object}</p>
 			</DetailItem>
 

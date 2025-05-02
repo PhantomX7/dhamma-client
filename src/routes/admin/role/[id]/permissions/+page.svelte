@@ -26,7 +26,6 @@
 
 	// Create derived values for role and permissions that update when data changes
 	let role = $derived(data.role);
-	// let allPermissions = $derived(data.allPermissions || []);
 
 	// Track selected permissions for bulk operations
 	let selectedPermissions = $state(new Set());
@@ -34,8 +33,9 @@
 	let showErrorAlert = $state(false);
 	let alertMessage = $state('');
 
-	// Create a map of permission IDs that are already assigned to the role
-	let rolePermissionIds = $derived(new Set(role.permissions?.map((p) => p.id) || []));
+	// Create a set of permission codes that are already assigned to the role
+	// Since role.permissions is already an array of permission codes (strings)
+	let rolePermissionCodes = $derived(new Set(data.role.permissions));
 
 	// Group permissions by object field
 	let permissionsByCategory = $derived(groupPermissionByCategory());
@@ -84,11 +84,11 @@
 
 		if (checked) {
 			categoryPermissions.forEach((permission) => {
-				selectedPermissions.add(permission.id);
+				selectedPermissions.add(permission.code);
 			});
 		} else {
 			categoryPermissions.forEach((permission) => {
-				selectedPermissions.delete(permission.id);
+				selectedPermissions.delete(permission.code);
 			});
 		}
 
@@ -103,7 +103,7 @@
 	 */
 	function areAllSelected(category) {
 		const categoryPermissions = permissionsByCategory.get(category) || [];
-		return categoryPermissions.every((permission) => selectedPermissions.has(permission.id));
+		return categoryPermissions.every((permission) => selectedPermissions.has(permission.code));
 	}
 
 	/**
@@ -178,18 +178,18 @@
 		<div class="mb-4 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 			<h2 class="text-xl font-semibold text-gray-900 dark:text-white">Permissions</h2>
 			<div class="flex flex-shrink-0 gap-2">
-				<form method="POST" action="?/assignPermissions" use:enhance={handleSubmit()}>
-					{#each Array.from(selectedPermissions) as permissionId}
-						<input type="hidden" name="permission_ids" value={permissionId} />
+				<form method="POST" action="?/assignPermissions" use:enhance={handleSubmit}>
+					{#each Array.from(selectedPermissions) as permissionCode}
+						<input type="hidden" name="permissions[]" value={permissionCode} />
 					{/each}
 					<Button type="submit" color="primary" disabled={selectedPermissions.size === 0}>
 						<PlusOutline class="me-2 h-4 w-4" /> Assign Selected
 					</Button>
 				</form>
 
-				<form method="POST" action="?/removePermissions" use:enhance={handleSubmit()}>
-					{#each Array.from(selectedPermissions) as permissionId}
-						<input type="hidden" name="permission_ids" value={permissionId} />
+				<form method="POST" action="?/removePermissions" use:enhance={handleSubmit}>
+					{#each Array.from(selectedPermissions) as permissionCode}
+						<input type="hidden" name="permissions[]" value={permissionCode} />
 					{/each}
 					<Button type="submit" color="red" disabled={selectedPermissions.size === 0}>
 						<CloseOutline class="me-2 h-4 w-4" /> Remove Selected
@@ -244,12 +244,12 @@
 								<TableBodyRow class="bg-white dark:bg-gray-800">
 									<TableBodyCell class="px-4 py-3">
 										<Checkbox
-											checked={selectedPermissions.has(permission.id)}
+											checked={selectedPermissions.has(permission.code)}
 											onchange={(e) => {
 												if (e.target.checked) {
-													selectedPermissions.add(permission.id);
+													selectedPermissions.add(permission.code);
 												} else {
-													selectedPermissions.delete(permission.id);
+													selectedPermissions.delete(permission.code);
 												}
 												selectedPermissions = new Set(selectedPermissions); // Force update
 											}}
@@ -264,21 +264,21 @@
 										{permission.description || '—'}
 									</TableBodyCell>
 									<TableBodyCell class="px-4 py-3">
-										<Badge color={rolePermissionIds.has(permission.id) ? 'green' : 'gray'}>
-											{rolePermissionIds.has(permission.id) ? 'Assigned' : 'Not Assigned'}
+										<Badge color={rolePermissionCodes.has(permission.code) ? 'green' : 'gray'}>
+											{rolePermissionCodes.has(permission.code) ? 'Assigned' : 'Not Assigned'}
 										</Badge>
 									</TableBodyCell>
 									<TableBodyCell class="whitespace-nowrap px-4 py-3 text-center">
-										{#if rolePermissionIds.has(permission.id)}
-											<form method="POST" action="?/removePermission" use:enhance={handleSubmit()} class="inline-block">
-												<input type="hidden" name="permission_id" value={permission.id} />
+										{#if rolePermissionCodes.has(permission.code)}
+											<form method="POST" action="?/removePermissions" use:enhance={handleSubmit} class="inline-block">
+												<input type="hidden" name="permissions[]" value={permission.code} />
 												<Button type="submit" color="red" size="xs" aria-label="Remove permission">
 													<CloseOutline class="h-3 w-3" />
 												</Button>
 											</form>
 										{:else}
-											<form method="POST" action="?/assignPermission" use:enhance={handleSubmit()} class="inline-block">
-												<input type="hidden" name="permission_id" value={permission.id} />
+											<form method="POST" action="?/assignPermissions" use:enhance={handleSubmit} class="inline-block">
+												<input type="hidden" name="permissions[]" value={permission.code} />
 												<Button type="submit" color="primary" size="xs" aria-label="Assign permission">
 													<PlusOutline class="h-3 w-3" />
 												</Button>

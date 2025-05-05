@@ -27,6 +27,7 @@
 		UsersGroupOutline,
 		ApiKeyOutline
 	} from 'flowbite-svelte-icons';
+	import { hasPermission } from '$lib/utils/permissions.js';
 
 	let { data, children } = $props();
 
@@ -40,10 +41,10 @@
 
 	// Sidebar items configuration
 	const sidebarItems = [
-		{ href: '/admin/domain', label: 'Domains', icon: GlobeOutline },
-		{ href: '/admin/user', label: 'Users', icon: UserOutline },
-		{ href: '/admin/role', label: 'Roles', icon: UsersGroupOutline }, // Updated Roles icon
-		{ href: '/admin/permission', label: 'Permissions', icon: ApiKeyOutline } // Updated Permissions icon
+		{ href: '/admin/domain', permission: 'root', label: 'Domains', icon: GlobeOutline },
+		{ href: '/admin/user', permission: 'user/index', label: 'Users', icon: UserOutline },
+		{ href: '/admin/role', permission: 'role/index', label: 'Roles', icon: UsersGroupOutline },
+		{ href: '/admin/permission', permission: 'root', label: 'Permissions', icon: ApiKeyOutline }
 		// {
 		// 	href: '/admin',
 		// 	label: 'Dashboard',
@@ -77,26 +78,32 @@
 		<SidebarWrapper divClass="h-full overflow-y-auto bg-white px-3 py-4 dark:bg-gray-800">
 			<SidebarGroup>
 				{#each sidebarItems as item}
-					{#if item.child}
-						<SidebarDropdownWrapper label={isSidebarCollapsed ? '' : item.label}>
-							<svelte:fragment slot="icon">
-								{#if item.icon}{@const Icon = item.icon}<Icon
-										class="{isSidebarCollapsed ? 'mx-auto' : 'mr-5'} h-5 w-5"
-									/>{/if}
-							</svelte:fragment>
-							{#each item.child as child}
-								<SidebarDropdownItem href={child.href} label={isSidebarCollapsed ? '' : child.label}
-								></SidebarDropdownItem>
-							{/each}
-						</SidebarDropdownWrapper>
-					{:else}
-						<SidebarItem href={item.href} label={isSidebarCollapsed ? '' : item.label}>
-							<svelte:fragment slot="icon">
-								{#if item.icon}{@const Icon = item.icon}<Icon
-										class="{isSidebarCollapsed ? 'mx-auto' : 'mr-5'} h-5 w-5"
-									/>{/if}
-							</svelte:fragment>
-						</SidebarItem>
+					{#if hasPermission(user(), item.permission)}
+						{#if item.child}
+							<SidebarDropdownWrapper label={isSidebarCollapsed ? '' : item.label}>
+								<svelte:fragment slot="icon">
+									{#if item.icon}{@const Icon = item.icon}<Icon
+											class="{isSidebarCollapsed ? 'mx-auto' : 'mr-5'} h-5 w-5"
+										/>{/if}
+								</svelte:fragment>
+								{#each item.child as child}
+									{#if hasPermission(user(), child.permission)}
+										<SidebarDropdownItem
+											href={child.href}
+											label={isSidebarCollapsed ? '' : child.label}
+										></SidebarDropdownItem>
+									{/if}
+								{/each}
+							</SidebarDropdownWrapper>
+						{:else}
+							<SidebarItem href={item.href} label={isSidebarCollapsed ? '' : item.label}>
+								<svelte:fragment slot="icon">
+									{#if item.icon}{@const Icon = item.icon}<Icon
+											class="{isSidebarCollapsed ? 'mx-auto' : 'mr-5'} h-5 w-5"
+										/>{/if}
+								</svelte:fragment>
+							</SidebarItem>
+						{/if}
 					{/if}
 				{/each}
 			</SidebarGroup>
@@ -122,7 +129,7 @@
 			<NavBrand href="/admin">
 				<!-- Ensure text color adapts to dark mode -->
 				<span
-					class="self-center whitespace-nowrap text-xl font-semibold text-primary-700 dark:text-primary-500"
+					class="text-primary-700 dark:text-primary-500 self-center text-xl font-semibold whitespace-nowrap"
 					>Admin Panel</span
 				>
 			</NavBrand>

@@ -25,7 +25,7 @@
 		CogOutline,
 		BarsOutline,
 		UsersGroupOutline,
-		ApiKeyOutline,
+		ApiKeyOutline
 	} from 'flowbite-svelte-icons';
 
 	let { data, children } = $props();
@@ -43,38 +43,38 @@
 		{ href: '/admin/domain', label: 'Domains', icon: GlobeOutline },
 		{ href: '/admin/user', label: 'Users', icon: UserOutline },
 		{ href: '/admin/role', label: 'Roles', icon: UsersGroupOutline }, // Updated Roles icon
-		{ href: '/admin/permission', label: 'Permissions', icon: ApiKeyOutline }, // Updated Permissions icon
+		{ href: '/admin/permission', label: 'Permissions', icon: ApiKeyOutline } // Updated Permissions icon
 		// {
 		// 	href: '/admin',
 		// 	label: 'Dashboard',
 		// 	icon: ChartPieOutline,
 		// 	child: [{ href: '/admin/child', label: 'Test' }]
 		// },
-		{ href: '/admin/settings', label: 'Settings', icon: CogOutline } // Updated Settings icon
+		// { href: '/admin/settings', label: 'Settings', icon: CogOutline } // Updated Settings icon
 	];
 
-	// Toggle sidebar for mobile view
-	function toggleSidebar() {
-		isOpen = !isOpen;
-	}
-
-	// Toggle sidebar collapse state
+	/**
+	 * Toggles the collapsed state of the sidebar.
+	 * Also ensures the mobile overlay is closed if open.
+	 */
 	function toggleSidebarCollapse() {
 		isSidebarCollapsed = !isSidebarCollapsed;
-		if (isOpen) isOpen = false;
+		if (isOpen) isOpen = false; // Close mobile overlay if sidebar state changes
 	}
 </script>
 
-<div class="min-h-screen bg-gray-50">
+<!-- Add dark mode background class to the main container -->
+<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
 	<!-- Sidebar -->
 	<Sidebar
-		class="fixed top-0 left-0 z-40 h-screen border-r border-gray-200 pt-14 transition-transform duration-300 {isSidebarCollapsed
+		class="fixed top-0 left-0 z-40 h-screen border-r border-gray-200 pt-14 transition-transform duration-300 dark:border-gray-700 {isSidebarCollapsed
 			? 'w-0 -translate-x-full opacity-0'
 			: 'w-64 translate-x-0 opacity-100'}"
 		activeUrl={sidebarItems.find((item) => $page.url.pathname.startsWith(item.href))?.href ||
 			$page.url.pathname}
 	>
-		<SidebarWrapper divClass="h-full overflow-y-auto bg-white px-3 py-4">
+		<!-- Add dark mode background class to the sidebar wrapper -->
+		<SidebarWrapper divClass="h-full overflow-y-auto bg-white px-3 py-4 dark:bg-gray-800">
 			<SidebarGroup>
 				{#each sidebarItems as item}
 					{#if item.child}
@@ -104,13 +104,25 @@
 	</Sidebar>
 
 	<!-- Header -->
-	<Navbar class="fixed top-0 right-0 left-0 z-50 border-b border-gray-200 bg-white">
+	<!-- Add dark mode background and border classes to the Navbar -->
+	<Navbar
+		class="fixed top-0 right-0 left-0 z-50 border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
+	>
 		<div class="flex items-center gap-4">
-			<Button class="lg:inline-flex" color="light" size="sm" on:click={toggleSidebarCollapse}>
+			<!-- Add aria-label for accessibility -->
+			<Button
+				class="lg:inline-flex"
+				color="light"
+				size="sm"
+				onclick={toggleSidebarCollapse}
+				aria-label="Toggle sidebar"
+			>
 				<BarsOutline class="h-5 w-5" />
 			</Button>
 			<NavBrand href="/admin">
-				<span class="text-primary-700 self-center text-xl font-semibold whitespace-nowrap"
+				<!-- Ensure text color adapts to dark mode -->
+				<span
+					class="self-center whitespace-nowrap text-xl font-semibold text-primary-700 dark:text-primary-500"
 					>Admin Panel</span
 				>
 			</NavBrand>
@@ -143,7 +155,10 @@
 			? 'lg:ml-0'
 			: 'lg:ml-64'}"
 	>
-		<div class="rounded-lg border-gray-200 bg-white p-4 shadow-sm">
+		<!-- Add dark mode background and border classes to the content wrapper -->
+		<div
+			class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+		>
 			{@render children()}
 		</div>
 	</main>

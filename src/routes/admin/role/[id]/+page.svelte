@@ -10,18 +10,58 @@
 		TableHeadCell,
 		Card
 	} from 'flowbite-svelte';
-	import { ListOutline, EditOutline, LockOutline } from 'flowbite-svelte-icons';
-	
+	import { ListOutline, EditOutline, LockOutline, InfoCircleOutline } from 'flowbite-svelte-icons'; // Added InfoCircleOutline
+
 	import { formatDate } from '$lib/utils';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-	import DetailItem from '$lib/components/layout/DetailItem.svelte'; 
+	import DetailItem from '$lib/components/layout/DetailItem.svelte';
 
 	// Component props
 	let { data } = $props();
-	const role = data.role;
+	const role = $derived(data.role); // Use $derived for reactivity
 
 	// Breadcrumb items
-	const breadcrumbItems = [{ href: '/admin/role', label: 'Roles' }, { label: role.name }];
+	const breadcrumbItems = $derived([{ href: '/admin/role', label: 'Roles' }, { label: role.name }]); // Use $derived
+
+	/**
+	 * Groups the role's assigned permissions by their 'object' property.
+	 * @returns {Map<string, Array<object>>} A Map where keys are object categories
+	 *          and values are arrays of permissions assigned to the role.
+	 */
+	function groupPermissionsByObject() {
+		const grouped = new Map();
+		const permissions = role?.permissions || []; // Safely access permissions
+
+		if (!Array.isArray(permissions)) {
+			console.error('Role permissions is not an array:', permissions);
+			return grouped; // Return empty map if data is not as expected
+		}
+
+		permissions.forEach((permission) => {
+			// Use object as the category grouping key
+			const objectCategory = permission.object || 'Uncategorized';
+
+			if (!grouped.has(objectCategory)) {
+				grouped.set(objectCategory, []);
+			}
+			grouped.get(objectCategory).push(permission);
+		});
+
+		// Sort categories alphabetically
+		const sortedGrouped = new Map([...grouped.entries()].sort());
+
+		// Sort permissions within each category alphabetically by action
+		for (const categoryPermissions of sortedGrouped.values()) {
+			categoryPermissions.sort((a, b) => (a.action || '').localeCompare(b.action || ''));
+		}
+
+
+		return sortedGrouped;
+	}
+
+	// Create derived value for grouped permissions
+	let permissionsByObject = $derived(groupPermissionsByObject());
+
 </script>
 
 <!-- Main page container -->
@@ -45,84 +85,87 @@
 		</div>
 	</div>
 
+	<!-- General Information Card -->
 	<Card padding="lg" size="2xl" class="mb-8">
 		<h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">General Information</h2>
 		<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-			<DetailItem label="Domain">
-				<p class="text-base font-semibold text-gray-900 dark:text-white">{role.domain.name}</p>
-			</DetailItem>
-			<DetailItem label="ID">
-				<p class="text-base font-semibold text-gray-900 dark:text-white">{role.id}</p>
-			</DetailItem>
-
-			<DetailItem label="Name">
-				<p class="text-base font-semibold text-gray-900 dark:text-white">{role.name}</p>
-			</DetailItem>
-
-			<DetailItem label="Description" class="sm:col-span-2 lg:col-span-1">
-				<p class="text-base text-gray-700 dark:text-gray-300">{role.description || 'N/A'}</p>
-			</DetailItem>
-
-			<DetailItem label="Status">
-				<Badge large rounded color={role.is_active ? 'green' : 'gray'}>
+			<DetailItem label="ID">{role.id}</DetailItem>
+			<DetailItem label="Domain">{role.domain?.name || 'N/A'}</DetailItem>
+			<DetailItem label="Role Name">{role.name}</DetailItem>
+			<DetailItem label="Description">{role.description || 'N/A'}</DetailItem>
+			<DetailItem label="Active">
+				<Badge large rounded color={role.is_active ? 'green' : 'red'}>
 					{role.is_active ? 'Active' : 'Inactive'}
 				</Badge>
 			</DetailItem>
-
-			<DetailItem label="Created At">
-				<p class="text-base text-gray-700 dark:text-gray-300">{formatDate(role.created_at)}</p>
-			</DetailItem>
-
-			<DetailItem label="Updated At">
-				<p class="text-base text-gray-700 dark:text-gray-300">{formatDate(role.updated_at)}</p>
-			</DetailItem>
+			<DetailItem label="Created At">{formatDate(role.created_at)}</DetailItem>
+			<DetailItem label="Updated At">{formatDate(role.updated_at)}</DetailItem>
 		</div>
 	</Card>
 
-	<!-- Permissions Card -->
-	<Card padding="lg" size="2xl" class="mb-8">
-		<div class="mb-6 flex items-center justify-between">
-			<h2 class="text-xl font-semibold text-gray-900 dark:text-white">Permissions</h2>
-			<Button href="/admin/role/{role.id}/permissions">
-				<LockOutline class="me-2 h-4 w-4" /> Manage Permissions
+	<!-- Assigned Permissions Card -->
+	<Card padding="lg" size="2xl">
+		<div class="mb-4 flex items-center justify-between">
+			<h2 class="text-xl font-semibold text-gray-900 dark:text-white">Assigned Permissions</h2>
+			<Button size="sm" href="/admin/role/{role.id}/permissions">
+				Manage Permissions
 			</Button>
 		</div>
 
-		{#if role.permissions && role.permissions.length > 0}
-			<div class="overflow-x-auto">
-				<Table hoverable={true}>
-					<TableHead class="bg-gray-50 text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
-						<TableHeadCell>Code</TableHeadCell>
-						<TableHeadCell>Name</TableHeadCell>
-						<TableHeadCell>Description</TableHeadCell>
-						<TableHeadCell>Category</TableHeadCell>
+		{#if !permissionsByObject || permissionsByObject.size === 0}
+			<!-- No permissions message -->
+			<div
+				class="flex flex-col items-center justify-center rounded-lg border border-gray-200 bg-gray-50 px-6 py-10 text-center dark:border-gray-700 dark:bg-gray-800"
+			>
+				<InfoCircleOutline class="mb-3 h-8 w-8 text-gray-400 dark:text-gray-500" />
+				<p class="text-gray-500 dark:text-gray-400">No permissions assigned to this role.</p>
+				<Button class="mt-4" size="sm" href="/admin/role/{role.id}/permissions">
+					Assign Permissions
+				</Button>
+			</div>
+		{:else}
+			<!-- Permissions Table Container -->
+			<div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+				<Table hoverable={true} class="min-w-full text-sm">
+					<TableHead
+						class="bg-gray-100 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400"
+					>
+						<!-- Removed Category Header -->
+						<TableHeadCell class="px-4 py-3">Action</TableHeadCell>
+						<TableHeadCell class="px-4 py-3">Description</TableHeadCell>
+						<!-- Removed Status and Actions columns as they are implicit or not needed here -->
 					</TableHead>
 					<TableBody class="divide-y divide-gray-200 dark:divide-gray-700">
-						{#each role.permissions as permission (permission.id)}
-							<TableBodyRow>
-								<TableBodyCell class="font-medium text-gray-900 dark:text-white">
-									{permission.code}
-								</TableBodyCell>
-								<TableBodyCell>{permission.name}</TableBodyCell>
-								<TableBodyCell class="max-w-md truncate">
-									{permission.description || '—'}
-								</TableBodyCell>
-								<TableBodyCell>
-									<Badge color="indigo">
-										{permission.category || 'Uncategorized'}
-									</Badge>
+						{#each Array.from(permissionsByObject.entries()) as [objectCategory, permissions]}
+							<!-- Category Header Row -->
+							<TableBodyRow class="dark:bg-gray-750 bg-gray-50">
+								<TableBodyCell colspan="2" class="px-4 py-2">
+									<h3
+										class="text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300"
+									>
+										{objectCategory}
+									</h3>
 								</TableBodyCell>
 							</TableBodyRow>
+
+							<!-- Permission Rows for this category -->
+							{#each permissions as permission (permission.id)}
+								<TableBodyRow class="bg-white dark:bg-gray-800">
+									<TableBodyCell class="px-4 py-3">
+										<Badge color="blue" class="px-2.5 py-0.5 capitalize">
+											{permission.action || '—'}
+										</Badge>
+									</TableBodyCell>
+									<TableBodyCell
+										class="max-w-sm truncate px-4 py-3 text-gray-700 dark:text-gray-300"
+									>
+										{permission.description || '—'}
+									</TableBodyCell>
+								</TableBodyRow>
+							{/each}
 						{/each}
 					</TableBody>
 				</Table>
-			</div>
-		{:else}
-			<div class="rounded-lg border border-gray-200 bg-gray-100 px-6 py-10 text-center dark:border-gray-700 dark:bg-gray-800">
-				<p class="text-gray-500 dark:text-gray-400">This role has no permissions assigned.</p>
-				<Button class="mt-4" size="sm" href="/admin/role/{role.id}/permissions">
-					Manage Permissions
-				</Button>
 			</div>
 		{/if}
 	</Card>

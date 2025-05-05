@@ -19,6 +19,7 @@
 		open = $bindable(false),
 		userDomainIds = new Set(),
 		userId,
+		handleSubmit = () => {}
 	} = $props();
 
 	let searchTerm = $state('');
@@ -116,6 +117,8 @@
 	{/if}
 
 	<svelte:fragment slot="footer">
-		<Button class="cursor-pointer" color="alternative" on:click={() => (open = false)}>Cancel</Button>
+		<Button class="cursor-pointer" color="alternative" on:click={() => (open = false)}
+			>Cancel</Button
+		>
 	</svelte:fragment>
 </Modal>

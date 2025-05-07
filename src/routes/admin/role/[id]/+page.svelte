@@ -11,14 +11,16 @@
 		Card
 	} from 'flowbite-svelte';
 	import { ListOutline, EditOutline, LockOutline, InfoCircleOutline } from 'flowbite-svelte-icons'; // Added InfoCircleOutline
-
+	import { getContext } from 'svelte';
 	import { formatDate } from '$lib/utils';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 	import DetailItem from '$lib/components/layout/DetailItem.svelte';
 
 	// Component props
 	let { data } = $props();
-	const role = $derived(data.role); // Use $derived for reactivity
+	const role = $derived(data.role);
+	const currentUser = getContext('user');
+	import { hasPermission, hasAnyPermission } from '$lib/utils/permissions';
 
 	// Breadcrumb items
 	const breadcrumbItems = $derived([{ href: '/admin/role', label: 'Roles' }, { label: role.name }]); // Use $derived
@@ -55,13 +57,11 @@
 			categoryPermissions.sort((a, b) => (a.action || '').localeCompare(b.action || ''));
 		}
 
-
 		return sortedGrouped;
 	}
 
 	// Create derived value for grouped permissions
 	let permissionsByObject = $derived(groupPermissionsByObject());
-
 </script>
 
 <!-- Main page container -->
@@ -73,12 +73,16 @@
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Role Details</h1>
 		<div class="flex flex-shrink-0 gap-2">
-			<Button href="/admin/role/{role.id}/permissions">
-				<LockOutline class="me-2 h-4 w-4" /> Manage Permissions
-			</Button>
-			<Button href="/admin/role/{role.id}/edit">
-				<EditOutline class="me-2 h-4 w-4" /> Edit Role
-			</Button>
+			{#if hasAnyPermission(currentUser(), ['role/add-permissions', 'role/delete-permissions'])}
+				<Button href="/admin/role/{role.id}/permissions">
+					<LockOutline class="me-2 h-4 w-4" /> Manage Permissions
+				</Button>
+			{/if}
+			{#if hasPermission(currentUser(), 'role/udpate')}
+				<Button href="/admin/role/{role.id}/edit">
+					<EditOutline class="me-2 h-4 w-4" /> Edit Role
+				</Button>
+			{/if}
 			<Button color="light" href="/admin/role">
 				<ListOutline class="me-2 h-4 w-4" /> Back to List
 			</Button>
@@ -107,9 +111,9 @@
 	<Card padding="lg" size="2xl">
 		<div class="mb-4 flex items-center justify-between">
 			<h2 class="text-xl font-semibold text-gray-900 dark:text-white">Assigned Permissions</h2>
-			<Button size="sm" href="/admin/role/{role.id}/permissions">
-				Manage Permissions
-			</Button>
+			{#if hasAnyPermission(currentUser(), ['role/add-permissions', 'role/delete-permissions'])}
+				<Button size="sm" href="/admin/role/{role.id}/permissions">Manage Permissions</Button>
+			{/if}
 		</div>
 
 		{#if !permissionsByObject || permissionsByObject.size === 0}
@@ -119,16 +123,18 @@
 			>
 				<InfoCircleOutline class="mb-3 h-8 w-8 text-gray-400 dark:text-gray-500" />
 				<p class="text-gray-500 dark:text-gray-400">No permissions assigned to this role.</p>
-				<Button class="mt-4" size="sm" href="/admin/role/{role.id}/permissions">
-					Assign Permissions
-				</Button>
+				{#if hasAnyPermission(currentUser(), ['role/add-permissions', 'role/delete-permissions'])}
+					<Button class="mt-4" size="sm" href="/admin/role/{role.id}/permissions">
+						Assign Permissions
+					</Button>
+				{/if}
 			</div>
 		{:else}
 			<!-- Permissions Table Container -->
 			<div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
 				<Table hoverable={true} class="min-w-full text-sm">
 					<TableHead
-						class="bg-gray-100 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400"
+						class="bg-gray-100 text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400"
 					>
 						<!-- Removed Category Header -->
 						<TableHeadCell class="px-4 py-3">Action</TableHeadCell>
@@ -141,7 +147,7 @@
 							<TableBodyRow class="dark:bg-gray-750 bg-gray-50">
 								<TableBodyCell colspan="2" class="px-4 py-2">
 									<h3
-										class="text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-gray-300"
+										class="text-xs font-semibold tracking-wider text-gray-700 uppercase dark:text-gray-300"
 									>
 										{objectCategory}
 									</h3>

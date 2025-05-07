@@ -21,11 +21,12 @@
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
 	import { formatDate } from '$lib/utils';
+	import { getContext } from 'svelte';
 
 	let { data } = $props();
-
-	// Create a derived value for user that updates when data changes
 	let user = $derived(data.user);
+	const currentUser = getContext('user');
+	import { hasPermission } from '$lib/utils/permissions';
 
 	// Modal state
 	let showModal = $state(false);
@@ -119,9 +120,11 @@
 		</h1>
 		<!-- Moved Add Role button here and added Back button -->
 		<div class="flex flex-shrink-0 gap-2">
-			<Button class="cursor-pointer" onclick={() => (showModal = true)}>
-				<PlusOutline class="me-2 h-4 w-4" /> Add Role
-			</Button>
+			{#if hasPermission(currentUser(), 'user/assign-role')}
+				<Button class="cursor-pointer" onclick={() => (showModal = true)}>
+					<PlusOutline class="me-2 h-4 w-4" /> Add Role
+				</Button>
+			{/if}
 			<Button color="light" href="/admin/user/{user.id}">
 				<ChevronLeftOutline class="me-2 h-4 w-4" /> Back to User
 			</Button>
@@ -181,24 +184,26 @@
 									{formatDate(userRole.created_at)}
 								</TableBodyCell>
 								<TableBodyCell class="whitespace-nowrap">
-									<!-- Remove Role Form -->
-									<form
-										method="POST"
-										action="?/removeRole"
-										use:enhance={handleRemoveSubmit()}
-										class="inline-block"
-									>
-										<input type="hidden" name="role_id" value={userRole.role_id} />
-										<Button
-											type="submit"
-											color="red"
-											size="xs"
-											class="cursor-pointer focus:ring-4 focus:ring-red-300 focus:outline-none dark:focus:ring-red-900"
-											aria-label="Remove role"
+									{#if hasPermission(currentUser(), 'user/remove-role')}
+										<!-- Remove Role Form -->
+										<form
+											method="POST"
+											action="?/removeRole"
+											use:enhance={handleRemoveSubmit()}
+											class="inline-block"
 										>
-											<CloseOutline class="h-3 w-3" />
-										</Button>
-									</form>
+											<input type="hidden" name="role_id" value={userRole.role_id} />
+											<Button
+												type="submit"
+												color="red"
+												size="xs"
+												class="cursor-pointer focus:ring-4 focus:ring-red-300 focus:outline-none dark:focus:ring-red-900"
+												aria-label="Remove role"
+											>
+												<CloseOutline class="h-3 w-3" />
+											</Button>
+										</form>
+									{/if}
 								</TableBodyCell>
 							</TableBodyRow>
 						{/each}

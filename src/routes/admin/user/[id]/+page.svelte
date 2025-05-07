@@ -1,5 +1,15 @@
 <script>
-	import { Badge, Button, Card, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
+	import {
+		Badge,
+		Button,
+		Card,
+		Table,
+		TableBody,
+		TableBodyCell,
+		TableBodyRow,
+		TableHead,
+		TableHeadCell
+	} from 'flowbite-svelte';
 	import { getContext } from 'svelte';
 	import { formatDate } from '$lib/utils';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
@@ -7,35 +17,33 @@
 	import { ListOutline, EditOutline, CogOutline, UserCircleSolid } from 'flowbite-svelte-icons';
 
 	let { data } = $props();
-	const currentUser = getContext('user');
 	const user = data.user;
+	const currentUser = getContext('user');
+	import { hasAnyPermission } from '$lib/utils/permissions';
 
-	const breadcrumbItems = [
-		{ href: '/admin/user', label: 'Users' },
-		{ label: user.username }
-	];
+	const breadcrumbItems = [{ href: '/admin/user', label: 'Users' }, { label: user.username }];
 
 	// Group roles by domain for display
 	function getRolesByDomain() {
 		// Create a map to store domains and their roles
 		const domainMap = new Map();
-		
+
 		// Process user_roles if they exist
 		if (user.user_roles && user.user_roles.length > 0) {
 			// First, create entries for all domains (even those without roles)
 			if (user.domains) {
-				user.domains.forEach(domain => {
+				user.domains.forEach((domain) => {
 					domainMap.set(domain.id, {
 						domain: domain,
 						roles: []
 					});
 				});
 			}
-			
+
 			// Then add roles to their respective domains
-			user.user_roles.forEach(userRole => {
+			user.user_roles.forEach((userRole) => {
 				if (!userRole.role) return;
-				
+
 				// Get or create the domain entry
 				if (!domainMap.has(userRole.domain_id)) {
 					// This handles roles for domains not in user.domains
@@ -44,16 +52,16 @@
 						roles: []
 					});
 				}
-				
+
 				// Add the role to the domain
 				domainMap.get(userRole.domain_id).roles.push(userRole.role);
 			});
 		}
-		
+
 		// Convert map to array for easier iteration in the template
 		return Array.from(domainMap.values());
 	}
-	
+
 	const rolesByDomain = getRolesByDomain();
 </script>
 
@@ -71,12 +79,16 @@
 					<EditOutline class="me-2 h-4 w-4" /> Edit User
 				</Button>
 			{/if} -->
-			<Button href="/admin/user/{user.id}/domains">
-				<CogOutline class="me-2 h-4 w-4" /> Manage Domains
-			</Button>
-			<Button href="/admin/user/{user.id}/roles">
-				<CogOutline class="me-2 h-4 w-4" /> Manage Roles
-			</Button>
+			{#if currentUser().is_super_admin}
+				<Button href="/admin/user/{user.id}/domains">
+					<CogOutline class="me-2 h-4 w-4" /> Manage Domains
+				</Button>
+			{/if}
+			{#if hasAnyPermission(currentUser(), ['user/assign-role', 'user/remove-role'])}
+				<Button href="/admin/user/{user.id}/roles">
+					<CogOutline class="me-2 h-4 w-4" /> Manage Roles
+				</Button>
+			{/if}
 			<Button color="light" href="/admin/user">
 				<ListOutline class="me-2 h-4 w-4" /> Back to List
 			</Button>
@@ -96,7 +108,7 @@
 			</DetailItem>
 
 			<DetailItem label="UUID">
-				<p class="text-base font-mono text-gray-700 dark:text-gray-300">{user.uuid}</p>
+				<p class="font-mono text-base text-gray-700 dark:text-gray-300">{user.uuid}</p>
 			</DetailItem>
 
 			<DetailItem label="Status">
@@ -123,26 +135,30 @@
 		</div>
 	</Card>
 
-	<!-- Assigned Domains Card -->
-	<Card padding="lg" size="2xl" class="mb-8">
-		<h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">Assigned Domains</h2>
-		{#if user.domains && user.domains.length > 0}
-			<div class="flex flex-wrap gap-2">
-				{#each user.domains as domain (domain.id)}
-					<Badge large color="indigo">{domain.name} ({domain.code})</Badge>
-				{/each}
-			</div>
-		{:else}
-			<div
-				class="rounded-lg border border-gray-200 bg-gray-100 px-6 py-10 text-center dark:border-gray-700 dark:bg-gray-800"
-			>
-				<p class="text-gray-500 dark:text-gray-400">This user currently has no domains assigned.</p>
-				<Button class="mt-4" size="sm" href="/admin/user/{user.id}/domains">
-					Manage Domains
-				</Button>
-			</div>
-		{/if}
-	</Card>
+	{#if currentUser().is_super_admin}
+		<!-- Assigned Domains Card -->
+		<Card padding="lg" size="2xl" class="mb-8">
+			<h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">Assigned Domains</h2>
+			{#if user.domains && user.domains.length > 0}
+				<div class="flex flex-wrap gap-2">
+					{#each user.domains as domain (domain.id)}
+						<Badge large color="indigo">{domain.name} ({domain.code})</Badge>
+					{/each}
+				</div>
+			{:else}
+				<div
+					class="rounded-lg border border-gray-200 bg-gray-100 px-6 py-10 text-center dark:border-gray-700 dark:bg-gray-800"
+				>
+					<p class="text-gray-500 dark:text-gray-400">
+						This user currently has no domains assigned.
+					</p>
+					<Button class="mt-4" size="sm" href="/admin/user/{user.id}/domains">
+						Manage Domains
+					</Button>
+				</div>
+			{/if}
+		</Card>
+	{/if}
 
 	<!-- User Roles by Domain Card -->
 	<Card padding="lg" size="2xl" class="mb-8">
@@ -169,7 +185,8 @@
 									</p>
 								</div>
 								<Badge large color="indigo" class="ml-2">
-									{domainData.roles.length} {domainData.roles.length === 1 ? 'Role' : 'Roles'}
+									{domainData.roles.length}
+									{domainData.roles.length === 1 ? 'Role' : 'Roles'}
 								</Badge>
 							</div>
 						</div>
@@ -186,7 +203,9 @@
 								</TableHead>
 								<TableBody>
 									{#each domainData.roles as role}
-										{@const userRole = user.user_roles.find(ur => ur.role_id === role.id && ur.domain_id === domainData.domain.id)}
+										{@const userRole = user.user_roles.find(
+											(ur) => ur.role_id === role.id && ur.domain_id === domainData.domain.id
+										)}
 										<TableBodyRow>
 											<TableBodyCell>{role.id}</TableBodyCell>
 											<TableBodyCell>
@@ -210,25 +229,27 @@
 								</TableBody>
 							</Table>
 						{:else}
-							<div class="p-4 text-center text-gray-500 dark:text-gray-400">
-								No roles assigned in this domain.
-							</div>
+							<div class="p-4 text-center text-gray-500 dark:text-gray-400">No roles assigned.</div>
 						{/if}
 					</div>
 				{/each}
 			</div>
 		{:else}
-			<div class="rounded-lg border border-gray-200 bg-gray-50 px-6 py-10 text-center dark:border-gray-700 dark:bg-gray-800">
+			<div
+				class="rounded-lg border border-gray-200 bg-gray-50 px-6 py-10 text-center dark:border-gray-700 dark:bg-gray-800"
+			>
 				<div class="mb-4 flex justify-center">
 					<UserCircleSolid class="h-12 w-12 text-gray-400" />
 				</div>
 				<p class="mb-2 text-lg font-medium text-gray-900 dark:text-white">No Roles Assigned</p>
 				<p class="mb-4 text-gray-500 dark:text-gray-400">
-					This user currently has no roles assigned to any domain.
+					This user currently has no roles assigned.
 				</p>
-				<Button href="/admin/user/{user.id}/roles">
-					<CogOutline class="me-2 h-4 w-4" /> Manage Roles
-				</Button>
+				{#if hasAnyPermission(currentUser(), ['user/assign-role', 'user/remove-role'])}
+					<Button href="/admin/user/{user.id}/roles">
+						<CogOutline class="me-2 h-4 w-4" /> Manage Roles
+					</Button>
+				{/if}
 			</div>
 		{/if}
 	</Card>

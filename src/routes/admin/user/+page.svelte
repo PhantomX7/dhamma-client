@@ -54,9 +54,11 @@
 		<!-- Page title using h1 -->
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Users</h1>
 		<!-- Add User button with icon and link -->
+		{#if hasPermission(currentUser(), 'user/create')}
 		<Button href="/admin/user/add">
 			<PlusOutline class="me-2 h-4 w-4" /> Add User
 		</Button>
+		{/if}
 	</div>
 
 	<!-- DataTable component wrapping the table -->

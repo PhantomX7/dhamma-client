@@ -21,11 +21,13 @@
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
-
+	import { getContext } from 'svelte';
 	let { data } = $props();
 
 	// Create derived values for role and permissions that update when data changes
 	let role = $derived(data.role);
+	const currentUser = getContext('user');
+	import { hasPermission } from '$lib/utils/permissions';
 
 	// Track selected permissions for bulk operations
 	let selectedPermissions = $state(new Set());
@@ -205,35 +207,38 @@
 			<h2 class="text-xl font-semibold text-gray-900 dark:text-white">Permissions</h2>
 			<!-- Bulk Action Buttons -->
 			<div class="flex flex-shrink-0 gap-2">
-				<form method="POST" action="?/assignPermissions" use:enhance={handleSubmit}>
-					{#each Array.from(selectedPermissions) as permissionCode}
-						<input type="hidden" name="permissions[]" value={permissionCode} />
-					{/each}
-					<Button
-						type="submit"
-						class="cursor-pointer"
-						color="primary"
-						size="sm"
-						disabled={selectedPermissions.size === 0}
-					>
-						<PlusOutline class="me-1.5 h-3.5 w-3.5" /> Assign Selected
-					</Button>
-				</form>
-
-				<form method="POST" action="?/removePermissions" use:enhance={handleSubmit}>
-					{#each Array.from(selectedPermissions) as permissionCode}
-						<input type="hidden" name="permissions[]" value={permissionCode} />
-					{/each}
-					<Button
-						type="submit"
-						class="cursor-pointer"
-						color="red"
-						size="sm"
-						disabled={selectedPermissions.size === 0}
-					>
-						<CloseOutline class="me-1.5 h-3.5 w-3.5" /> Remove Selected
-					</Button>
-				</form>
+				{#if hasPermission(currentUser(), 'role/add-permissions')}
+					<form method="POST" action="?/assignPermissions" use:enhance={handleSubmit}>
+						{#each Array.from(selectedPermissions) as permissionCode}
+							<input type="hidden" name="permissions[]" value={permissionCode} />
+						{/each}
+						<Button
+							type="submit"
+							class="cursor-pointer"
+							color="primary"
+							size="sm"
+							disabled={selectedPermissions.size === 0}
+						>
+							<PlusOutline class="me-1.5 h-3.5 w-3.5" /> Assign Selected
+						</Button>
+					</form>
+				{/if}
+				{#if hasPermission(currentUser(), 'role/delete-permissions')}
+					<form method="POST" action="?/removePermissions" use:enhance={handleSubmit}>
+						{#each Array.from(selectedPermissions) as permissionCode}
+							<input type="hidden" name="permissions[]" value={permissionCode} />
+						{/each}
+						<Button
+							type="submit"
+							class="cursor-pointer"
+							color="red"
+							size="sm"
+							disabled={selectedPermissions.size === 0}
+						>
+							<CloseOutline class="me-1.5 h-3.5 w-3.5" /> Remove Selected
+						</Button>
+					</form>
+				{/if}
 			</div>
 		</div>
 
@@ -317,24 +322,26 @@
 									</TableBodyCell>
 									<TableBodyCell class="px-4 py-3 text-center whitespace-nowrap">
 										{#if rolePermissionCodes.has(permission.code)}
-											<form
-												method="POST"
-												action="?/removePermissions"
-												use:enhance={handleSubmit}
-												class="inline-block"
-											>
-												<input type="hidden" name="permissions[]" value={permission.code} />
-												<Button
-													class="cursor-pointer"
-													type="submit"
-													color="red"
-													size="xs"
-													aria-label="Remove permission"
+											{#if hasPermission(currentUser(), 'role/delete-permissions')}
+												<form
+													method="POST"
+													action="?/removePermissions"
+													use:enhance={handleSubmit}
+													class="inline-block"
 												>
-													<CloseOutline class="h-3 w-3" />
-												</Button>
-											</form>
-										{:else}
+													<input type="hidden" name="permissions[]" value={permission.code} />
+													<Button
+														class="cursor-pointer"
+														type="submit"
+														color="red"
+														size="xs"
+														aria-label="Remove permission"
+													>
+														<CloseOutline class="h-3 w-3" />
+													</Button>
+												</form>
+											{/if}
+										{:else if hasPermission(currentUser(), 'role/add-permissions')}
 											<form
 												method="POST"
 												action="?/assignPermissions"

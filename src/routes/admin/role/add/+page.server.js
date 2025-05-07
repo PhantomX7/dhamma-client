@@ -10,6 +10,7 @@ import { createResource } from '$lib/utils/data';
  */
 export async function load(event) {
 	await event.parent();
+	let { user } = event.locals;
 
 	// Initialize an empty form using the role schema
 	const form = await superValidate(zod(roleSchema));
@@ -17,6 +18,10 @@ export async function load(event) {
 	// Set default values
 	form.data.is_active = true;
     form.data.domain_id = null;
+
+	if (user && !user.is_super_admin) {
+		form.data.domain_id = user.domain_id;
+	}
 
 	return {
 		form

@@ -7,7 +7,7 @@ export const load = loadFlash(async (event) => {
 	let user = null;
 	if (locals.token) {
 		const [response, fetchError] = await runPromise(api.fetch('auth/me', {}, event));
-		
+
 		if (fetchError) {
 			// Handle connection errors
 			if (fetchError.cause?.code === 'ECONNREFUSED') {
@@ -24,9 +24,10 @@ export const load = loadFlash(async (event) => {
 				errorMessage: 'An unexpected error occurred'
 			};
 		}
-		
+
 		if (response.ok) {
 			user = response.data.data;
+			locals.user = user;
 		}
 	}
 

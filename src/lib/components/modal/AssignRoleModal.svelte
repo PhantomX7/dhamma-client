@@ -2,10 +2,15 @@
 	import { Modal, Button, Label, Select, Spinner } from 'flowbite-svelte';
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
+	import { getContext } from 'svelte';
 
 	// --- Props ---
 	// Use $props() to declare and access component properties
 	let { user, open = $bindable(false) } = $props();
+
+	// Get current user context to check if superadmin
+	const currentUser = getContext('user');
+	const isSuperAdmin = $derived(currentUser()?.is_super_admin === true);
 
 	// --- State ---
 	let selectedDomainId = $state(null);
@@ -65,39 +70,47 @@
 		availableRoles = []; // Clear previous roles
 
 		if (domainId) {
-			isLoading = true;
-			try {
-				const params = new URLSearchParams();
-				params.set('limit', '100');
-				params.set('domain_id', `eq:${domainId}`);
-				const response = await fetch(`/api/role?${params.toString()}`);
-				if (!response.ok) {
-					const errorData = await response.json().catch(() => ({})); // Try to get error details
-					throw new Error(
-						errorData.message || `Failed to fetch roles (status: ${response.status})`
-					);
-				}
+			await fetchRolesForDomain(domainId);
+		}
+	}
 
-				const data = await response.json();
-				const rolesFromApi = data.data || []; // Adapt based on API response structure
-
-				// Filter out roles already assigned to this user in this domain
-				// Access user prop directly
-				const assignedRoleIds =
-					user.user_roles?.filter((ur) => ur.domain_id === domainId).map((ur) => ur.role_id) || [];
-
-				availableRoles = rolesFromApi.filter((role) => !assignedRoleIds.includes(role.id));
-
-				if (availableRoles.length === 0) {
-					errorMessage = 'No assignable roles found for this domain.';
-				}
-			} catch (error) {
-				console.error('Error fetching roles:', error);
-				errorMessage = error.message || 'Failed to load roles. Please try again.';
-				availableRoles = [];
-			} finally {
-				isLoading = false;
+	/**
+	 * Fetches available roles for a specific domain ID.
+	 * @param {number} domainId - The domain ID to fetch roles for.
+	 */
+	async function fetchRolesForDomain(domainId) {
+		isLoading = true;
+		try {
+			const params = new URLSearchParams();
+			params.set('limit', '100');
+			params.set('domain_id', `eq:${domainId}`);
+			const response = await fetch(`/api/role?${params.toString()}`);
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({})); // Try to get error details
+				throw new Error(
+					errorData.message || `Failed to fetch roles (status: ${response.status})`
+				);
 			}
+
+			const data = await response.json();
+			const rolesFromApi = data.data || []; // Adapt based on API response structure
+
+			// Filter out roles already assigned to this user in this domain
+			// Access user prop directly
+			const assignedRoleIds =
+				user.user_roles?.filter((ur) => ur.domain_id === domainId).map((ur) => ur.role_id) || [];
+
+			availableRoles = rolesFromApi.filter((role) => !assignedRoleIds.includes(role.id));
+
+			if (availableRoles.length === 0) {
+				errorMessage = 'No assignable roles found for this domain.';
+			}
+		} catch (error) {
+			console.error('Error fetching roles:', error);
+			errorMessage = error.message || 'Failed to load roles. Please try again.';
+			availableRoles = [];
+		} finally {
+			isLoading = false;
 		}
 	}
 
@@ -130,9 +143,33 @@
 		// Access showModal prop directly
 		open = false;
 		resetState();
-		// Access onClose prop directly
-		onClose(); // Call the provided onClose handler
 	}
+
+	/**
+	 * Automatically load roles when modal opens for non-superadmin users
+	 * using their first domain ID
+	 */
+	$effect(() => {
+		if (open && !isSuperAdmin && currentUser()) {
+			// For non-superadmin, automatically select their domain
+			const user = currentUser();
+			let domainId = null;
+			
+			// Try to get domain_id from user_roles first (most specific)
+			if (user.user_roles && user.user_roles.length > 0) {
+				domainId = user.user_roles[0].domain_id;
+			}
+			// Fallback to domains array if user_roles doesn't have domain_id
+			else if (user.domains && user.domains.length > 0) {
+				domainId = user.domains[0].id;
+			}
+			
+			if (domainId) {
+				selectedDomainId = domainId;
+				fetchRolesForDomain(domainId);
+			}
+		}
+	});
 </script>
 
 <Modal
@@ -155,28 +192,33 @@
 			</div>
 		{/if}
 
-		<!-- Domain Selection -->
-		<div>
-			<Label for="domain_id" class="mb-2 block">Select Domain</Label>
-			<Select
-				id="domain_id"
-				name="domain_id"
-				required
-				value={selectedDomainId ?? ''}
-				on:change={handleDomainChange}
-				aria-label="Select Domain"
-			>
-				<option value="" disabled selected={selectedDomainId === null}>Choose a domain...</option>
-				{#each availableDomains as domain (domain.id)}
-					<option value={domain.id}>{domain.name} ({domain.code})</option>
-				{/each}
-				{#if availableDomains.length === 0 && !isLoading}
-					<option value="" disabled>No available domains with assignable roles</option>
-				{/if}
-			</Select>
-		</div>
+		<!-- Domain Selection - Only shown for superadmin users -->
+		{#if isSuperAdmin}
+			<div>
+				<Label for="domain_id" class="mb-2 block">Select Domain</Label>
+				<Select
+					id="domain_id"
+					name="domain_id"
+					required
+					value={selectedDomainId ?? ''}
+					on:change={handleDomainChange}
+					aria-label="Select Domain"
+				>
+					<option value="" disabled selected={selectedDomainId === null}>Choose a domain...</option>
+					{#each availableDomains as domain (domain.id)}
+						<option value={domain.id}>{domain.name} ({domain.code})</option>
+					{/each}
+					{#if availableDomains.length === 0 && !isLoading}
+						<option value="" disabled>No available domains with assignable roles</option>
+					{/if}
+				</Select>
+			</div>
+		{:else}
+			<!-- Hidden domain_id field for non-superadmin users -->
+			<input type="hidden" name="domain_id" value={selectedDomainId} />
+		{/if}
 
-		<!-- Role Selection (only shown after domain is selected) -->
+		<!-- Role Selection -->
 		<div>
 			<Label for="role_id" class="mb-2 block">Select Role</Label>
 			{#if isLoading}
@@ -198,7 +240,7 @@
 							? availableRoles.length > 0
 								? 'Choose a role...'
 								: 'No available roles'
-							: 'Select a domain first'}
+							: isSuperAdmin ? 'Select a domain first' : 'Loading roles...'}
 					</option>
 					{#each availableRoles as role (role.id)}
 						<option value={role.id}>{role.name}</option>

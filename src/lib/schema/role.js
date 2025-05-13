@@ -18,5 +18,6 @@ export const roleSchema = z.object({
 	domain_id: z.coerce // Use coerce for number conversion from form values
 		.number({ required_error: 'Domain is required', invalid_type_error: 'Invalid Domain ID' })
 		.int()
-		.positive('Domain must be selected')
+		.positive('Domain must be selected'),
+	_original: z.string().optional()
 });

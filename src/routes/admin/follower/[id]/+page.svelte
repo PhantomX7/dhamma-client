@@ -1,22 +1,38 @@
 <script>
 	import { Badge, Button, Card } from 'flowbite-svelte';
-	import { ListOutline, EditOutline } from 'flowbite-svelte-icons';
+	import { PlusOutline, ListOutline, EditOutline, TrashBinOutline } from 'flowbite-svelte-icons';
 	import { formatDate } from '$lib/utils';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 	import DetailItem from '$lib/components/layout/DetailItem.svelte';
 	import { getContext } from 'svelte';
+	import { enhance } from '$app/forms';
 
 	const currentUser = getContext('user');
 
 	// Component props
 	let { data } = $props();
-	let follower = data.follower;
+	let follower = $derived(data.follower); // Use $derived for reactivity with Svelte 5
 
 	// Breadcrumb items
 	const breadcrumbItems = [
 		{ href: '/admin/follower', label: 'Followers' },
-		{ label: follower.name }
+		{ label: data.follower.name }
 	];
+
+	/**
+	 * Enhancer function for card removal form submissions.
+	 * Invalidates all data on success or redirect to refresh the card list.
+	 */
+	function handleCardActionEnhance() {
+		return async ({ result, update }) => {
+			if (result.type === 'success' || result.type === 'redirect') {
+				// The remove action redirects, causing a page reload and data refresh.
+				// invalidateAll() ensures data consistency if the action didn't redirect but succeeded.
+				await invalidateAll();
+			}
+			// Optionally, handle `result.type === 'failure'` here for client-side error messages
+		};
+	}
 </script>
 
 <!-- Main page container -->
@@ -40,7 +56,13 @@
 	<!-- General Information Card -->
 	<Card padding="lg" size="2xl" class="mb-8">
 		<h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">General Information</h2>
-		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+		<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+			<DetailItem label="Name">
+				<p class="text-base text-gray-700 dark:text-gray-300">{follower.name}</p>
+			</DetailItem>
+			<DetailItem label="Email">
+				<p class="text-base text-gray-700 dark:text-gray-300">{follower.email || 'N/A'}</p>
+			</DetailItem>
 			<DetailItem label="ID">
 				<p class="text-base font-semibold text-gray-900 dark:text-white">{follower.id}</p>
 			</DetailItem>
@@ -83,5 +105,48 @@
 				<p class="text-base text-gray-700 dark:text-gray-300">{formatDate(follower.updated_at)}</p>
 			</DetailItem>
 		</div>
+	</Card>
+
+	<!-- Follower Cards Section -->
+	<Card padding="lg" size="2xl" class="mb-8">
+		<div class="mb-6 flex items-center justify-between">
+			<h2 class="text-xl font-semibold text-gray-900 dark:text-white">Follower Cards</h2>
+			{#if follower?.id}
+				<Button href="/admin/follower/{follower.id}/add-card">
+					<PlusOutline class="me-2 h-4 w-4" /> Add Card
+				</Button>
+			{/if}
+		</div>
+
+		{#if follower?.cards && follower.cards.length > 0}
+			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+				{#each follower.cards as card (card.id)}
+					<Card class="flex flex-col justify-between shadow-md">
+						<div class="p-4">
+							<p class="text-lg font-medium text-gray-900 dark:text-white">
+								Code: <span class="font-mono">{card.code}</span>
+							</p>
+							<p class="text-xs text-gray-500 dark:text-gray-400">ID: {card.id}</p>
+						</div>
+						{#if follower?.id && card?.id}
+							<form
+								method="POST"
+								action="/admin/follower/{follower.id}/remove-card/{card.id}"
+								use:enhance={handleCardActionEnhance}
+								class="border-t border-gray-200 dark:border-gray-700 p-4 text-right"
+							>
+								<Button type="submit" color="red" size="sm" pill>
+									<TrashBinOutline class="me-1.5 h-3.5 w-3.5" /> Remove
+								</Button>
+							</form>
+						{/if}
+					</Card>
+				{/each}
+			</div>
+		{:else}
+			<p class="text-center text-gray-500 dark:text-gray-400 py-4">
+				No cards have been assigned to this follower yet.
+			</p>
+		{/if}
 	</Card>
 </div>

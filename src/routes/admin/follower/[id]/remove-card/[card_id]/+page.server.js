@@ -1,5 +1,5 @@
 import api from '$lib/api';
-import { redirect } from '@sveltejs/kit';
+import { fail } from '@sveltejs/kit';
 import { setFlash } from 'sveltekit-flash-message/server';
 import { runPromise } from '$lib/utils';
 
@@ -26,17 +26,12 @@ export const actions = {
 		);
 
 		if (fetchError || !response.ok) {
-			// If API call fails, parse error and set a flash message
-			const errorData = response && !response.ok ? await response.json().catch(() => ({})) : {};
-			const errorMessage =
-				errorData?.message || fetchError?.message || 'Failed to remove card. Please try again.';
-			setFlash({ type: 'error', message: errorMessage }, cookies);
-			// Redirect back to the follower detail page even on failure, flash message will be displayed
-			throw redirect(303, `/admin/follower/${followerId}`);
+			setFlash({ type: 'error', message: 'Failed to remove card from follower' }, cookies);
+			return fail(400, { error: 'Failed to remove card' });
 		}
 
-		// On success, set a success flash message and redirect to the follower's detail page
-		setFlash({ type: 'success', message: 'Card removed successfully!' }, cookies);
-		throw redirect(303, `/admin/follower/${followerId}`);
+		setFlash({ type: 'success', message: 'Card successfully removed from follower' }, cookies);
+
+		return { success: true };
 	}
 };

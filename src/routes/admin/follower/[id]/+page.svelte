@@ -6,6 +6,7 @@
 	import DetailItem from '$lib/components/layout/DetailItem.svelte';
 	import { getContext } from 'svelte';
 	import { enhance } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
 
 	const currentUser = getContext('user');
 
@@ -25,12 +26,13 @@
 	 */
 	function handleCardActionEnhance() {
 		return async ({ result, update }) => {
-			if (result.type === 'success' || result.type === 'redirect') {
-				// The remove action redirects, causing a page reload and data refresh.
-				// invalidateAll() ensures data consistency if the action didn't redirect but succeeded.
+			// Only proceed if we have a successful result
+			if (result && result.type === 'success') {
+				// First invalidate all data
 				await invalidateAll();
+				// Then run the default update behavior
+				await update({ invalidateAll: true });
 			}
-			// Optionally, handle `result.type === 'failure'` here for client-side error messages
 		};
 	}
 </script>
@@ -73,7 +75,9 @@
 
 			{#if currentUser().is_super_admin}
 				<DetailItem label="Domain ID">
-					<p class="text-base font-semibold text-gray-900 dark:text-white">{follower.domain.name}</p>
+					<p class="text-base font-semibold text-gray-900 dark:text-white">
+						{follower.domain.name}
+					</p>
 				</DetailItem>
 			{/if}
 
@@ -133,9 +137,9 @@
 								method="POST"
 								action="/admin/follower/{follower.id}/remove-card/{card.id}"
 								use:enhance={handleCardActionEnhance}
-								class="border-t border-gray-200 dark:border-gray-700 p-4 text-right"
+								class="border-t border-gray-200 p-4 text-right dark:border-gray-700"
 							>
-								<Button type="submit" color="red" size="sm" pill>
+								<Button class="cursor-pointer" type="submit" color="red" size="sm" pill>
 									<TrashBinOutline class="me-1.5 h-3.5 w-3.5" /> Remove
 								</Button>
 							</form>
@@ -144,7 +148,7 @@
 				{/each}
 			</div>
 		{:else}
-			<p class="text-center text-gray-500 dark:text-gray-400 py-4">
+			<p class="py-4 text-center text-gray-500 dark:text-gray-400">
 				No cards have been assigned to this follower yet.
 			</p>
 		{/if}

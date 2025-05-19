@@ -47,7 +47,6 @@ export const actions = {
 		const { params } = event;
 		const followerId = params.id; // Get follower ID from route parameters
 
-        console.log('Adding card to follower:', followerId);
 		// Use the createResource utility to handle form validation, API call, and response
 		return await createResource(
 			event,

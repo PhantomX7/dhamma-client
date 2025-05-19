@@ -24,8 +24,9 @@
 		UserOutline,
 		CogOutline,
 		BarsOutline,
-		UsersGroupOutline, // Icon for Followers (can be changed if a more specific one is preferred)
-		ApiKeyOutline
+		UsersGroupOutline,
+		ApiKeyOutline,
+		CalendarPlusOutline
 	} from 'flowbite-svelte-icons';
 	import { hasPermission } from '$lib/utils/permissions.js';
 
@@ -44,7 +45,8 @@
 		{ href: '/admin/domain', permission: 'root', label: 'Domains', icon: GlobeOutline },
 		{ href: '/admin/user', permission: 'user/index', label: 'Users', icon: UserOutline },
 		{ href: '/admin/role', permission: 'role/index', label: 'Roles', icon: UsersGroupOutline },
-		{ href: '/admin/follower', permission: 'follower/index', label: 'Followers', icon: UsersGroupOutline }, // Added Follower link
+		{ href: '/admin/follower', permission: 'follower/index', label: 'Followers', icon: UsersGroupOutline },
+		{ href: '/admin/event', permission: 'event/index', label: 'Events', icon: CalendarPlusOutline }, // Added Event link
 		{ href: '/admin/permission', permission: 'root', label: 'Permissions', icon: ApiKeyOutline }
 		// {
 		// 	href: '/admin',

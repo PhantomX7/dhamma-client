@@ -30,10 +30,12 @@
 			type: FilterType.STRING,
 			label: 'Name'
 		},
-		domain_name: {
-			type: FilterType.STRING, // Assuming domain_id is a number
-			label: 'Domain Name'
-		},
+		...(currentUser()?.is_super_admin && { // Conditionally add domain_name filter for super admins
+			domain_name: {
+				type: FilterType.STRING,
+				label: 'Domain Name'
+			}
+		}),
 		phone: {
 			type: FilterType.STRING,
 			label: 'Phone'

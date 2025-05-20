@@ -22,8 +22,11 @@
 		placeholder = '',
 		error = '',
 		helperText = '',
-		required = false
+		required = false,
+		oninput = () => {}
 	} = $props();
+
+	// No need for event dispatcher in Svelte 5 - events are forwarded automatically
 </script>
 
 <div class="space-y-2">
@@ -34,7 +37,8 @@
 		</Label>
 	{/if}
 
-	<!-- Input field -->
+	<!-- Input field with event forwarding -->
+	<!-- In Svelte 5, events are automatically forwarded without needing a dispatcher -->
 	<Input
 		{id}
 		{type}
@@ -43,6 +47,7 @@
 		{placeholder}
 		{required}
 		color={error ? 'red' : 'base'}
+		on:input={oninput}
 	/>
 
 	{#if error}

@@ -11,7 +11,7 @@
 	const eventId = $derived(data.eventId);
 
 	// Initialize SuperForm for client-side form handling
-	const { form, errors, enhance, submitting, delayed, message } = superForm(data.form, {
+	const { form, errors, enhance, submitting, delayed, message, submit } = superForm(data.form, {
 		resetForm: true, // Reset form on successful submission if staying on page
 		taintedMessage: null,
 		multipleSubmits: 'prevent',
@@ -39,6 +39,26 @@
 			return () => clearTimeout(timer); // Cleanup timer
 		}
 	});
+
+	// Auto-submit functionality for RFID scanner
+	let debounceTimer;
+	
+	/**
+	 * Handles input changes and auto-submits after typing stops
+	 * @param {Event} e - The input event
+	 */
+	function handleCardCodeInput(e) {
+		// Clear any existing timer
+		if (debounceTimer) clearTimeout(debounceTimer);
+		
+		// Set a new timer to submit the form after typing stops
+		debounceTimer = setTimeout(() => {
+			const value = e.target.value.trim();
+			if (value && !$submitting && !$delayed) {
+				submit(); // Submit the form
+			}
+		}, 500); // 500ms delay - adjust if needed for your RFID scanner
+	}
 </script>
 
 <div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
@@ -87,6 +107,7 @@
                 error={$errors.card_code?.join(', ')}
 				autocomplete="off"
 				autofocus
+				oninput={handleCardCodeInput}
 			/>
 
 			<div class="flex items-center justify-end space-x-3 pt-2">
@@ -95,12 +116,12 @@
 						Cancel
 					</Button>
 				{/if}
-				<FormButton
+				<!-- <FormButton
 					type="submit"
 					loading={$submitting || $delayed}
 					text="Submit Attendance"
 					loadingText="Submitting..."
-				/>
+				/> -->
 			</div>
 		</form>
 	</Card>

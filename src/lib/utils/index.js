@@ -6,6 +6,35 @@ export function formatDate(dateString) {
 	return new Date(dateString).toLocaleDateString();
 }
 
+/**
+ * Formats a date string to include both date and time
+ * @param {string|Date} dateString - The date string or Date object to format
+ * @param {object} options - Optional formatting options
+ * @param {boolean} [options.includeSeconds=false] - Whether to include seconds in the time
+ * @param {string} [options.locale] - Locale to use for formatting (defaults to browser locale)
+ * @returns {string} Formatted date and time string
+ */
+export function formatDateTime(dateString, options = {}) {
+	const date = dateString instanceof Date ? dateString : new Date(dateString);
+	const { includeSeconds = false, locale } = options;
+	
+	// Date formatting options
+	const dateOptions = {
+		year: 'numeric',
+		month: 'short',
+		day: 'numeric',
+		hour: '2-digit',
+		minute: '2-digit'
+	};
+	
+	// Add seconds if requested
+	if (includeSeconds) {
+		dateOptions.second = '2-digit';
+	}
+	
+	return date.toLocaleString(locale, dateOptions);
+}
+
 export const runPromise = async (promise) => {
 	try {
 		const res = await promise;

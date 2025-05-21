@@ -14,16 +14,18 @@ import { getChangedFields, setErrors } from '$lib/utils/form';
  * @param {string} resourcePath - The base API path for the resource (e.g., 'domain', 'user').
  * @param {string} resourceNamePlural - The plural name of the resource for error messages (e.g., 'Domains', 'Users').
  * @param {string} errorRedirectPath - The path to redirect to on critical errors (e.g., '/admin').
+ * @param {string|null} [filter=''] - Optional query string for additional filtering (e.g., 'status=active&type=admin').
  * @returns {Promise<{list: Array<any>, meta: object|null}>} - An object containing the list of resources and metadata.
  */
 export async function loadResourceList(
 	event,
 	resourcePath,
 	resourceNamePlural,
-	errorRedirectPath = '/admin'
+	errorRedirectPath = '/admin',
+	filter = ''
 ) {
 	const { url } = event;
-	const apiUrl = `${resourcePath}?${buildApiQuery(url)}`;
+	const apiUrl = `${resourcePath}?${filter ? filter + '&' : ''}${buildApiQuery(url)}`;
 
 	const [response, fetchError] = await runPromise(api.fetch(apiUrl, {}, event));
 
@@ -141,15 +143,17 @@ export async function updateResourceById(
 	}
 
 	// Handle API response errors (validation, server errors)
-	const responseData = response.data; 
+	const responseData = response.data;
 	if (!response.ok || !responseData || !responseData.status) {
 		const message = responseData?.message || `Failed to update ${resourceName.toLowerCase()}`;
-		console.error(
-			`API error updating ${resourceName.toLowerCase()}:`,
-			response.status,
-			message,
-			responseData?.error
-		);
+		if (response.status != 422) {
+			console.error(
+				`API error updating ${resourceName.toLowerCase()}:`,
+				response.status,
+				message,
+				responseData?.error
+			);
+		}
 		if (responseData?.error) {
 			setErrors(form, responseData.error); // Populate form errors if available
 		}
@@ -225,12 +229,14 @@ export async function createResource(
 	const responseData = response.data; // Assuming api.fetch wrapper provides parsed data
 	if (!response.ok || !responseData || !responseData.status) {
 		const message = responseData?.message || `Failed to create ${resourceName.toLowerCase()}`;
-		console.error(
-			`API error creating ${resourceName.toLowerCase()}:`,
-			response.status,
-			message,
-			responseData?.error
-		);
+		if (response.status != 422) {
+			console.error(
+				`API error creating ${resourceName.toLowerCase()}:`,
+				response.status,
+				message,
+				responseData?.error
+			);
+		}
 		if (responseData?.error) {
 			setErrors(form, responseData.error); // Populate form errors if available
 		}

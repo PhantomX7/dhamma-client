@@ -68,7 +68,7 @@
 				label="Card Code"
 				placeholder="Enter the card code (e.g., XYZ123)"
 				required={true}
-				errors={$errors.code}
+				error={$errors.code?.join(', ')}
 				autocomplete="off"
 			/>
 

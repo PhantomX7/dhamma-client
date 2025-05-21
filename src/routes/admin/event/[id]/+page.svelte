@@ -1,6 +1,6 @@
 <script>
 	import { Badge, Button, Card } from 'flowbite-svelte';
-	import { ListOutline, EditOutline, UserAddOutline } from 'flowbite-svelte-icons'; // Added UserAddOutline
+	import { ListOutline, EditOutline, UserAddOutline, UsersOutline } from 'flowbite-svelte-icons'; // Added UsersOutline
 	import { formatDate } from '$lib/utils';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 	import DetailItem from '$lib/components/layout/DetailItem.svelte';
@@ -31,6 +31,9 @@
 		</h1>
 		<div class="flex flex-shrink-0 gap-2">
 			{#if event?.id}
+				<Button href={`/admin/event/${event.id}/attendance`} color="blue">
+					<UsersOutline class="me-2 h-4 w-4" /> View Attendance
+				</Button>
 				<Button href={`/admin/event/${event.id}/attend`} color="green">
 					<UserAddOutline class="me-2 h-4 w-4" /> Attend Event
 				</Button>

@@ -49,7 +49,7 @@
 		{/if}
 	</div>
 
-	<Card padding="lg" size="xl" class="mb-8">
+	<Card size="xl" class="mb-8 p-4">
 		<h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">Attendance List</h2>
 		
 		<DataTable data={attendanceList} meta={data.meta} {filterConfig}>

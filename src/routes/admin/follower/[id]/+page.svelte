@@ -1,6 +1,6 @@
 <script>
 	import { Badge, Button, Card } from 'flowbite-svelte';
-	import { PlusOutline, ListOutline, EditOutline, TrashBinOutline, UsersOutline } from 'flowbite-svelte-icons';
+	import { PlusOutline, ListOutline, EditOutline, TrashBinOutline, UsersOutline, CashOutline } from 'flowbite-svelte-icons';
 	import { formatDate } from '$lib/utils';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 	import DetailItem from '$lib/components/layout/DetailItem.svelte';
@@ -46,6 +46,9 @@
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Follower Details</h1>
 		<div class="flex flex-shrink-0 gap-2">
+			<Button href="/admin/follower/{follower.id}/point-mutation" color="yellow">
+				<CashOutline class="me-2 h-4 w-4" /> View Point History
+			</Button>
 			<Button href="/admin/follower/{follower.id}/attendance" color="blue">
 				<UsersOutline class="me-2 h-4 w-4" /> View Attendance
 			</Button>
@@ -59,7 +62,7 @@
 	</div>
 
 	<!-- General Information Card -->
-	<Card padding="lg" size="2xl" class="mb-8">
+	<Card size="xl" class="mb-8 p-5">
 		<h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">General Information</h2>
 		<div class="grid grid-cols-1 gap-3 md:grid-cols-2">
 			<DetailItem label="Name">
@@ -115,7 +118,7 @@
 	</Card>
 
 	<!-- Follower Cards Section -->
-	<Card padding="lg" size="2xl" class="mb-8">
+	<Card size="xl" class="mb-8 p-5">
 		<div class="mb-6 flex items-center justify-between">
 			<h2 class="text-xl font-semibold text-gray-900 dark:text-white">Follower Cards</h2>
 			{#if follower?.id}

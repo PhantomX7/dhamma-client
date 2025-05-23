@@ -64,7 +64,7 @@
 	</div>
 
 	<!-- Current User Domains Card -->
-	<Card padding="lg" size="2xl">
+	<Card size="xl" class="mb-8 p-4">
 		<div class="mb-6 flex items-center justify-between">
 			<h2 class="text-xl font-semibold text-gray-900 dark:text-white">Assigned Domains</h2>
 			<Button class="cursor-pointer" onclick={() => (showModal = true)}>

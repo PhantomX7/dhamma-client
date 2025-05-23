@@ -201,7 +201,7 @@
 	{/if}
 
 	<!-- Permissions Table Card -->
-	<Card padding="lg" size="2xl" class="mb-6">
+	<Card size="xl" class="mb-8 p-4">
 		<!-- Card Header with Title and Bulk Actions -->
 		<div class="mb-4 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 			<h2 class="text-xl font-semibold text-gray-900 dark:text-white">Permissions</h2>

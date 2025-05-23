@@ -51,7 +51,7 @@
 	</div>
 
 	<!-- Form Card -->
-	<Card padding="lg" size="2xl" class="mb-8">
+	<Card size="xl" class="mb-8 p-5">
 		<form method="POST" use:enhance class="space-y-6">
 			<input type="hidden" name="_original" bind:value={$form._original} />
 			{#if $message?.text}

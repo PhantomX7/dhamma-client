@@ -76,7 +76,7 @@
 		{/if}
 	</div>
 
-	<Card padding="lg" size="xl" class="mb-8 max-w-2xl mx-auto">
+	<Card size="xl" class="mb-8 p-4">
 		<form method="POST" use:enhance class="space-y-6">
 			<!-- Display server-set flash messages or form messages -->
 			{#if $message?.text}

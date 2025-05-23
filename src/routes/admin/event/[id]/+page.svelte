@@ -48,7 +48,7 @@
 	</div>
 
 	<!-- General Information Card -->
-	<Card padding="lg" size="2xl" class="mb-8">
+	<Card size="xl" class="mb-8 p-5">
 		<h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">General Information</h2>
 		<div class="grid grid-cols-1 gap-y-4 gap-x-6 md:grid-cols-2">
 			<DetailItem label="ID">

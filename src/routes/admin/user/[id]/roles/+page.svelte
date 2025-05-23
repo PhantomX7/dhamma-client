@@ -143,7 +143,7 @@
 	{:else}
 		<!-- Iterate through domains -->
 		{#each Array.from(rolesByDomain.entries()) as [domainId, domainData] (domainId)}
-			<Card padding="lg" size="xl" class="mb-6">
+			<Card size="xl" class="mb-8 p-4">
 				<h2 class="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
 					<!-- Directly access domain properties -->
 					Domain: {domainData.domain.name}

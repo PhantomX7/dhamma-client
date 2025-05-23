@@ -40,7 +40,7 @@
 	</div>
 
 	<!-- Form Card -->
-	<Card padding="lg" size="2xl" class="mb-8">
+	<Card size="xl" class="mb-8 p-5">
 		<form method="POST" use:enhance class="flex flex-col space-y-6">
 			{#if $errors._errors}
 				<Alert color="red" class="mb-0">

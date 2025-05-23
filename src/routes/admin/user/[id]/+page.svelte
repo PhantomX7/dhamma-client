@@ -96,7 +96,7 @@
 	</div>
 
 	<!-- General Information Card -->
-	<Card padding="lg" size="2xl" class="mb-8">
+	<Card size="xl" class="mb-8 p-5">
 		<h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">General Information</h2>
 		<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
 			<DetailItem label="ID">
@@ -137,7 +137,7 @@
 
 	{#if currentUser().is_super_admin}
 		<!-- Assigned Domains Card -->
-		<Card padding="lg" size="2xl" class="mb-8">
+		<Card size="xl" class="mb-8 p-5">
 			<h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">Assigned Domains</h2>
 			{#if user.domains && user.domains.length > 0}
 				<div class="flex flex-wrap gap-2">
@@ -161,7 +161,7 @@
 	{/if}
 
 	<!-- User Roles by Domain Card -->
-	<Card padding="lg" size="2xl" class="mb-8">
+	<Card size="xl" class="mb-8 p-5">
 		<div class="mb-6 flex items-center justify-between">
 			<h2 class="text-xl font-semibold text-gray-900 dark:text-white">User Roles by Domain</h2>
 			<Button size="xs" href="/admin/user/{user.id}/roles" class="px-3">

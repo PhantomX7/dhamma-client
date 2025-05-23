@@ -13,8 +13,9 @@
 		Dropdown,
 		DropdownItem,
 		DropdownHeader,
-		DropdownDivider,
-		Button
+		DropdownGroup,
+		Button,
+		Card
 	} from 'flowbite-svelte';
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
@@ -45,7 +46,12 @@
 		{ href: '/admin/domain', permission: 'root', label: 'Domains', icon: GlobeOutline },
 		{ href: '/admin/user', permission: 'user/index', label: 'Users', icon: UserOutline },
 		{ href: '/admin/role', permission: 'role/index', label: 'Roles', icon: UsersGroupOutline },
-		{ href: '/admin/follower', permission: 'follower/index', label: 'Followers', icon: UsersGroupOutline },
+		{
+			href: '/admin/follower',
+			permission: 'follower/index',
+			label: 'Followers',
+			icon: UsersGroupOutline
+		},
 		{ href: '/admin/event', permission: 'event/index', label: 'Events', icon: CalendarPlusOutline }, // Added Event link
 		{ href: '/admin/permission', permission: 'root', label: 'Permissions', icon: ApiKeyOutline }
 		// {
@@ -144,17 +150,16 @@
 			>
 			<Dropdown triggeredBy="#avatar-menu" class="z-50">
 				<DropdownHeader>
-					<span class="block text-sm">Admin User</span>
+					<span class="block text-sm text-gray-900 dark:text-white">Admin User</span>
 					<span class="block truncate text-sm font-medium">{user().username}</span>
 				</DropdownHeader>
-				<!-- <DropdownItem href="/admin/profile">Profile</DropdownItem>
-				<DropdownItem href="/admin/settings">Settings</DropdownItem> -->
-				<DropdownDivider />
-				<form method="post" action="/admin?/logout" use:enhance>
-					<DropdownItem class="cursor-pointer">
-						<button class="cursor-pointer" type="submit">Sign Out</button>
-					</DropdownItem>
-				</form>
+				<DropdownGroup>
+					<form method="post" action="/admin?/logout" use:enhance>
+						<DropdownItem class="cursor-pointer">
+							<button class="cursor-pointer" type="submit">Sign Out</button>
+						</DropdownItem>
+					</form>
+				</DropdownGroup>
 			</Dropdown>
 		</div>
 	</Navbar>
@@ -166,10 +171,8 @@
 			: 'lg:ml-64'}"
 	>
 		<!-- Add dark mode background and border classes to the content wrapper -->
-		<div
-			class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
-		>
+		<Card size="xl" shadow="normal" class="p-4">
 			{@render children()}
-		</div>
+		</Card>
 	</main>
 </div>

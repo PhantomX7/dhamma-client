@@ -34,7 +34,7 @@
 	</div>
 
 	<!-- Use Card component as the form container -->
-	<Card padding="lg" size="2xl" class="mb-8">
+	<Card size="xl" class="mb-8 p-5">
 		<form method="POST" use:enhance class="flex flex-col space-y-6">
 			<!-- General form errors display -->
 			{#if $errors._errors}

@@ -90,7 +90,7 @@
 	</div>
 
 	<!-- General Information Card -->
-	<Card padding="lg" size="2xl" class="mb-8">
+	<Card size="xl" class="mb-8 p-5">
 		<h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">General Information</h2>
 		<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
 			<DetailItem label="ID">{role.id}</DetailItem>
@@ -108,7 +108,7 @@
 	</Card>
 
 	<!-- Assigned Permissions Card -->
-	<Card padding="lg" size="2xl">
+	<Card size="xl" class="mb-8 p-4">
 		<div class="mb-4 flex items-center justify-between">
 			<h2 class="text-xl font-semibold text-gray-900 dark:text-white">Assigned Permissions</h2>
 			{#if hasAnyPermission(currentUser(), ['role/add-permissions', 'role/delete-permissions'])}

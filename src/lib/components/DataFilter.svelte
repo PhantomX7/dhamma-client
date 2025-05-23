@@ -78,7 +78,7 @@
 
 	{#if isFilterVisible}
 		<!-- Use Card component for the filter section -->
-		<Card padding="lg" size="2xl">
+		<Card class="p-5" size="xl">
 			<!-- Grid layout for filter inputs -->
 			<div class="grid gap-4 mb-4">
 				{#each Object.entries(filterConfig) as [field, config]}

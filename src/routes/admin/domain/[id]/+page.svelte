@@ -1,26 +1,18 @@
 <script>
-	import { Badge, Button, Card } from 'flowbite-svelte'; 
-	import { ListOutline, EditOutline } from 'flowbite-svelte-icons'; 
+	import { Badge, breadcrumb, Button, Card } from 'flowbite-svelte';
+	import { ListOutline, EditOutline } from 'flowbite-svelte-icons';
 	import { formatDate } from '$lib/utils';
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-	import DetailItem from '$lib/components/layout/DetailItem.svelte'; 
+	import { Container, DetailItem } from '$lib/components/layout';
 
 	// Component props
 	let { data } = $props();
 	let domain = data.domain;
 
 	// Breadcrumb items
-	const breadcrumbItems = [
-		{ href: '/admin/domain', label: 'Domains' },
-		{ label: domain.name } 
-	];
+	const breadcrumbItems = [{ href: '/admin/domain', label: 'Domains' }, { label: domain.name }];
 </script>
 
-<!-- Main page container -->
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<!-- Breadcrumb navigation -->
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
-
+<Container breadcrumb={breadcrumbItems}>
 	<!-- Page header -->
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Domain Details</h1>
@@ -69,6 +61,4 @@
 			</DetailItem>
 		</div>
 	</Card>
-
-	<!-- Add other sections/cards here if needed in the future -->
-</div>
+</Container>

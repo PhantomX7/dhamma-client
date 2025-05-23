@@ -3,7 +3,6 @@
 	import { InfoCircleSolid, FileLinesOutline, ListOutline } from 'flowbite-svelte-icons';
 	import { FormInput, FormTextarea, FormToggle, FormButton } from '$lib/components/form';
 	import { superForm } from 'sveltekit-superforms/client';
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 	import { Container } from '$lib/components/layout';
 
 	let { data } = $props();

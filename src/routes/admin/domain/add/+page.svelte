@@ -1,9 +1,9 @@
 <script>
-	import { Alert, Button, Card } from 'flowbite-svelte';
+	import { Alert, breadcrumb, Button, Card } from 'flowbite-svelte';
 	import { ExclamationCircleSolid, ListOutline } from 'flowbite-svelte-icons';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { FormInput, FormTextarea, FormToggle, FormButton } from '$lib/components/form';
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+	import { Container } from '$lib/components/layout';
 
 	// Component props
 	let { data } = $props();
@@ -20,11 +20,7 @@
 	const breadcrumbItems = [{ href: '/admin/domain', label: 'Domains' }, { label: 'Add Domain' }];
 </script>
 
-<!-- Main page container with padding and dark mode background -->
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<!-- Breadcrumb navigation -->
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
-
+<Container breadcrumb={breadcrumbItems}>
 	<!-- Page header section -->
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Add New Domain</h1>
@@ -100,7 +96,9 @@
 			</div>
 
 			<!-- Form actions section with border and padding -->
-			<div class="flex items-center justify-start gap-3 border-t border-gray-200 pt-6 dark:border-gray-700">
+			<div
+				class="flex items-center justify-start gap-3 border-t border-gray-200 pt-6 dark:border-gray-700"
+			>
 				<FormButton
 					type="submit"
 					loading={$submitting || $delayed}
@@ -111,4 +109,4 @@
 			</div>
 		</form>
 	</Card>
-</div>
+</Container>

@@ -11,8 +11,8 @@
 	// Added icons
 	import { PlusOutline, EyeOutline, EditOutline } from 'flowbite-svelte-icons';
 	import { formatDate } from '$lib/utils';
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 	import DataTable from '$lib/components/DataTable.svelte';
+	import { Container } from '$lib/components/layout'; // Import Container
 	import { getContext } from 'svelte';
 	import { FilterType } from '$lib/utils/filter';
 
@@ -26,12 +26,12 @@
 
 	// Configuration for the DataTable filter component
 	const filterConfig = {
-		// Optional: Add domain name filter if needed
-		domain_name: {
-			// Adjusted key for potential nested filtering if DataTable supports it
-			type: FilterType.STRING,
-			label: 'Domain Name'
-		},
+		...(currentUser().is_super_admin && {
+			domain_name: {
+				type: FilterType.STRING,
+				label: 'Domain Name'
+			}
+		}),
 		name: {
 			type: FilterType.STRING,
 			label: 'Role Name'
@@ -45,13 +45,12 @@
 			label: 'Created Date'
 		}
 	};
+
+	const tableColspan = $derived(currentUser().is_super_admin ? 7 : 6);
 </script>
 
-<!-- Main page container with standard padding and dark mode background -->
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<!-- Breadcrumb navigation with bottom margin -->
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
-
+<!-- Use Container component -->
+<Container breadcrumb={breadcrumbItems}>
 	<!-- Page header section with responsive layout and spacing -->
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<!-- Page title using h1 -->
@@ -126,10 +125,10 @@
 				{:else}
 					<!-- Row displayed when there is no data -->
 					<TableBodyRow>
-						<TableBodyCell colspan="7" class="text-center px-6 py-4">No roles found.</TableBodyCell>
+						<TableBodyCell colspan={tableColspan} class="text-center px-6 py-4">No roles found.</TableBodyCell>
 					</TableBodyRow>
 				{/each}
 			</TableBody>
 		</Table>
 	</DataTable>
-</div>
+</Container>

@@ -16,11 +16,11 @@
 		CloseOutline,
 		InfoCircleOutline
 	} from 'flowbite-svelte-icons';
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+	import { Container } from '$lib/components/layout'; // Import Container
 	import AssignRoleModal from '$lib/components/modal/AssignRoleModal.svelte';
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
-	import { formatDate } from '$lib/utils';
+	import { formatDate } from '$lib/utils'; // Keep formatDate as it's used
 	import { getContext } from 'svelte';
 
 	let { data } = $props();
@@ -108,11 +108,8 @@
 	}
 </script>
 
-<!-- Main page container -->
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<!-- Breadcrumb navigation -->
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
-
+<!-- Use Container component -->
+<Container breadcrumb={breadcrumbItems}>
 	<!-- Page header -->
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
@@ -212,9 +209,9 @@
 			</Card>
 		{/each}
 	{/if}
+</Container>
 
-	<!-- Assign Role Modal -->
-	{#if showModal}
-		<AssignRoleModal {user} bind:open={showModal} handleSubmit={handleAddSubmit} />
-	{/if}
-</div>
+<!-- Assign Role Modal (outside the container for global overlay behavior) -->
+{#if showModal}
+	<AssignRoleModal {user} bind:open={showModal} handleSubmit={handleAddSubmit} />
+{/if}

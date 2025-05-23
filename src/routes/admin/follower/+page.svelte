@@ -13,8 +13,8 @@
 	import { formatDate } from '$lib/utils';
 	import DataTable from '$lib/components/DataTable.svelte';
 	import { FilterType } from '$lib/utils/filter';
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-    import { getContext } from 'svelte';
+	import { getContext } from 'svelte';
+	import { Container } from '$lib/components/layout'; // Import Container
 
     const currentUser = getContext('user');
 
@@ -49,13 +49,12 @@
 			label: 'Created Date'
 		}
 	};
+
+	const tableColspan = $derived(currentUser().is_super_admin ? 9 : 8);
 </script>
 
-<!-- Main page container -->
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<!-- Breadcrumb navigation -->
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
-
+<!-- Use Container component -->
+<Container breadcrumb={breadcrumbItems}>
 	<!-- Page header -->
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Followers</h1>
@@ -88,8 +87,9 @@
 						<TableBodyCell
 							class="px-6 py-4 font-medium whitespace-nowrap text-gray-900 dark:text-white"
 							>{follower.id}</TableBodyCell
-						>
-						<TableBodyCell>{follower.domain.name}</TableBodyCell>
+						> {#if currentUser().is_super_admin}
+							<TableBodyCell>{follower.domain.name}</TableBodyCell>
+						{/if}
 						<TableBodyCell>{follower.name}</TableBodyCell>
 						<TableBodyCell>{follower.phone || 'N/A'}</TableBodyCell>
 						<TableBodyCell>{follower.points}</TableBodyCell>
@@ -117,10 +117,10 @@
 					</TableBodyRow>
 				{:else}
 					<TableBodyRow>
-						<TableBodyCell colspan="9" class="text-center">No followers found.</TableBodyCell>
+						<TableBodyCell colspan={tableColspan} class="text-center">No followers found.</TableBodyCell>
 					</TableBodyRow>
 				{/each}
 			</TableBody>
 		</Table>
 	</DataTable>
-</div>
+</Container>

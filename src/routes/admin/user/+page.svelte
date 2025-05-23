@@ -15,7 +15,7 @@
 	import { formatDate } from '$lib/utils';
 	import DataTable from '$lib/components/DataTable.svelte';
 	import { FilterType } from '$lib/utils/filter';
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+	import { Container } from '$lib/components/layout';
 	import { hasPermission } from '$lib/utils/permissions';
 
 	// Component props
@@ -44,11 +44,8 @@
 	};
 </script>
 
-<!-- Main page container with standard padding and dark mode background -->
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<!-- Breadcrumb navigation with bottom margin -->
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
-
+<!-- Main page container with Container component -->
+<Container breadcrumb={breadcrumbItems}>
 	<!-- Page header section with responsive layout and spacing -->
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<!-- Page title using h1 -->
@@ -173,4 +170,4 @@
 			</TableBody>
 		</Table>
 	</DataTable>
-</div>
+</Container>

@@ -8,7 +8,7 @@
 	} from 'flowbite-svelte-icons';
 	import { FormInput, FormTextarea, FormButton, FormSearchSelect } from '$lib/components/form';
 	import { superForm } from 'sveltekit-superforms/client';
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+	import { Container } from '$lib/components/layout'; // Import Container
 	import { getContext } from 'svelte';
 
 	const currentUser = getContext('user');
@@ -33,10 +33,8 @@
 	]);
 </script>
 
-<!-- Main page container -->
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<!-- Breadcrumb navigation -->
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
+<!-- Use Container component -->
+<Container breadcrumb={breadcrumbItems}>
 
 	<!-- Page header -->
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
@@ -132,4 +130,4 @@
 			</div>
 		</form>
 	</Card>
-</div>
+</Container>

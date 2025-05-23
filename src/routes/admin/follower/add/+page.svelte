@@ -2,8 +2,8 @@
 	import { Alert, Button, Card } from 'flowbite-svelte';
 	import { ExclamationCircleSolid, ListOutline } from 'flowbite-svelte-icons';
 	import { superForm } from 'sveltekit-superforms/client';
-	import { FormInput, FormToggle, FormButton, FormSearchSelect } from '$lib/components/form'; // Removed FormTextarea if not needed
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+	import { FormInput, FormToggle, FormButton, FormSearchSelect } from '$lib/components/form';
+	import { Container } from '$lib/components/layout'; // Import Container
 	import { getContext } from 'svelte';
 
 	const currentUser = getContext('user');
@@ -16,7 +16,9 @@
 		resetForm: false,
 		taintedMessage: null,
 		multipleSubmits: 'prevent',
-		dataType: 'json'
+		dataType: 'json',
+		invalidateAll: true, // Invalidate data on success/error to reflect changes
+		applyAction: true // Apply server action results (errors, etc.)
 	});
 
 	// Breadcrumb items definition
@@ -26,11 +28,8 @@
 	];
 </script>
 
-<!-- Main page container -->
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<!-- Breadcrumb navigation -->
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
-
+<!-- Use Container component -->
+<Container breadcrumb={breadcrumbItems}>
 	<!-- Page header -->
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Add New Follower</h1>
@@ -121,4 +120,4 @@
 			</div>
 		</form>
 	</Card>
-</div>
+</Container>

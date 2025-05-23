@@ -2,8 +2,8 @@
 	import { Button, Card, Alert } from 'flowbite-svelte';
 	import { ListOutline, ExclamationCircleSolid, ArrowLeftOutline } from 'flowbite-svelte-icons';
 	import { superForm } from 'sveltekit-superforms/client';
-	import { FormInput, FormButton } from '$lib/components/form';
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+	import { FormInput, FormButton } from '$lib/components/form'; // Removed Breadcrumb import
+	import { Container } from '$lib/components/layout'; // Import Container
 
 	let { data } = $props(); // Contains form, follower, followerId from load function
 	const follower = $derived(data.follower);
@@ -30,9 +30,8 @@
 	]);
 </script>
 
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
-
+<!-- Use Container component -->
+<Container breadcrumb={breadcrumbItems}>
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
 			Add New Card to {follower?.name || `Follower ${followerId}`}
@@ -83,4 +82,4 @@
 			</div>
 		</form>
 	</Card>
-</div>
+</Container>

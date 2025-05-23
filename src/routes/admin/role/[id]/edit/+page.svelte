@@ -1,10 +1,10 @@
 <script>
 	// Import necessary components and icons
-	import { Button, Alert } from 'flowbite-svelte';
+	import { Button, Alert, Card } from 'flowbite-svelte'; // Added Card
 	import { InfoCircleSolid, FileLinesOutline, ListOutline } from 'flowbite-svelte-icons'; // Added Alert, InfoCircleSolid, FileLinesOutline, ListOutline
 	import { FormInput, FormTextarea, FormToggle, FormButton } from '$lib/components/form';
 	import { superForm } from 'sveltekit-superforms/client';
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+	import { Container } from '$lib/components/layout'; // Import Container
 
 	// Component props
 	let { data } = $props();
@@ -12,7 +12,10 @@
 	const { form, enhance, errors, message, submitting, delayed } = superForm(data.form, {
 		dataType: 'json',
 		resetForm: false, // Keep form data after submission attempt
-		multipleSubmits: 'prevent' // Prevent multiple rapid submissions
+		multipleSubmits: 'prevent', // Prevent multiple rapid submissions
+		taintedMessage: null, // Disable default tainted message
+		invalidateAll: true, // Invalidate data on success/error to reflect changes
+		applyAction: true // Apply server action results (errors, etc.)
 	});
 
 	// Define breadcrumb items dynamically
@@ -23,11 +26,8 @@
 	];
 </script>
 
-<!-- Main page container with standard padding and dark mode background -->
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<!-- Breadcrumb navigation with bottom margin -->
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
-
+<!-- Use Container component -->
+<Container breadcrumb={breadcrumbItems}>
 	<!-- Page header section with responsive layout and spacing -->
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<!-- Page title using h1 -->
@@ -43,8 +43,8 @@
 		</div>
 	</div>
 
-	<!-- Form Card, styled like the reference -->
-	<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+	<!-- Form Card -->
+	<Card size="xl" class="mb-8 p-5">
 		<!-- Form element with POST method and superForm enhancement -->
 		<form method="POST" use:enhance class="space-y-6">
 
@@ -119,5 +119,5 @@
 				<Button type="button" color="alternative" href="/admin/role/{data.role.id}">Cancel</Button>
 			</div>
 		</form>
-	</div>
-</div>
+	</Card>
+</Container>

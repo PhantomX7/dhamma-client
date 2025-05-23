@@ -2,8 +2,7 @@
 	import { Badge, Button, Card } from 'flowbite-svelte';
 	import { ListOutline, EditOutline, UserAddOutline, UsersOutline } from 'flowbite-svelte-icons'; // Added UsersOutline
 	import { formatDate } from '$lib/utils';
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-	import DetailItem from '$lib/components/layout/DetailItem.svelte';
+	import { Container, DetailItem } from '$lib/components/layout'; // Import Container and DetailItem
 	import { getContext } from 'svelte';
 
 	const currentUser = getContext('user');
@@ -19,10 +18,8 @@
 	]);
 </script>
 
-<!-- Main page container -->
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<!-- Breadcrumb navigation -->
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
+<!-- Use Container component -->
+<Container breadcrumb={breadcrumbItems}>
 
 	<!-- Page header -->
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
@@ -86,4 +83,4 @@
 			</DetailItem>
 		</div>
 	</Card>
-</div>
+</Container>

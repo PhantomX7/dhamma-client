@@ -12,7 +12,7 @@
 	import { formatDate } from '$lib/utils';
 	import DataTable from '$lib/components/DataTable.svelte';
 	import { FilterType } from '$lib/utils/filter';
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+	import { Container } from '$lib/components/layout'; // Import Container
 	import { getContext } from 'svelte';
 
 	const currentUser = getContext('user');
@@ -46,10 +46,8 @@
 	});
 </script>
 
-<!-- Main page container -->
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<!-- Breadcrumb navigation -->
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
+<!-- Use Container component -->
+<Container breadcrumb={breadcrumbItems}>
 
 	<!-- Page header -->
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
@@ -110,4 +108,4 @@
 			</TableBody>
 		</Table>
 	</DataTable>
-</div>
+</Container>

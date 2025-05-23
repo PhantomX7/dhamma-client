@@ -12,24 +12,26 @@
 	} from 'flowbite-svelte';
 	import { getContext } from 'svelte';
 	import { formatDate } from '$lib/utils';
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-	import DetailItem from '$lib/components/layout/DetailItem.svelte';
+	import { Container, DetailItem } from '$lib/components/layout'; // Updated imports
 	import { ListOutline, EditOutline, CogOutline, UserCircleSolid } from 'flowbite-svelte-icons';
 
 	let { data } = $props();
-	const user = data.user;
+	let user = $derived(data.user); // Make user reactive
 	const currentUser = getContext('user');
 	import { hasAnyPermission } from '$lib/utils/permissions';
 
-	const breadcrumbItems = [{ href: '/admin/user', label: 'Users' }, { label: user.username }];
+	const breadcrumbItems = $derived([
+		{ href: '/admin/user', label: 'Users' },
+		{ label: user?.username || 'User Details' } // Use derived user and provide fallback
+	]);
 
 	// Group roles by domain for display
 	function getRolesByDomain() {
 		// Create a map to store domains and their roles
 		const domainMap = new Map();
 
-		// Process user_roles if they exist
-		if (user.user_roles && user.user_roles.length > 0) {
+		// Process user_roles if they exist on the reactive user object
+		if (user?.user_roles && user.user_roles.length > 0) {
 			// First, create entries for all domains (even those without roles)
 			if (user.domains) {
 				user.domains.forEach((domain) => {
@@ -62,13 +64,11 @@
 		return Array.from(domainMap.values());
 	}
 
-	const rolesByDomain = getRolesByDomain();
+	let rolesByDomain = $derived(getRolesByDomain()); // Make rolesByDomain reactive
 </script>
 
-<!-- Main page container -->
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<!-- Breadcrumb navigation -->
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
+<!-- Use Container component -->
+<Container breadcrumb={breadcrumbItems}>
 
 	<!-- Page header -->
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
@@ -253,4 +253,4 @@
 			</div>
 		{/if}
 	</Card>
-</div>
+</Container>

@@ -3,7 +3,7 @@
 	import { ArrowLeftOutline, ExclamationCircleSolid, CheckCircleSolid } from 'flowbite-svelte-icons';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { FormInput, FormButton } from '$lib/components/form';
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+	import { Container } from '$lib/components/layout';
 
 	// Component props
 	let { data } = $props();
@@ -61,9 +61,7 @@
 	}
 </script>
 
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
-
+<Container breadcrumb={breadcrumbItems}>
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
 			Record Attendance for: {event?.name || 'Event'}
@@ -104,7 +102,7 @@
 				label="Follower Card Code"
 				placeholder="Enter the follower's card code"
 				required={true}
-                error={$errors.card_code?.join(', ')}
+				error={$errors.card_code?.join(', ')}
 				autocomplete="off"
 				autofocus
 				oninput={handleCardCodeInput}
@@ -119,4 +117,4 @@
 			</div>
 		</form>
 	</Card>
-</div>
+</Container>

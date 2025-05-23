@@ -2,7 +2,7 @@
 	import { Button, Card, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
 	import { ArrowLeftOutline } from 'flowbite-svelte-icons';
 	import { formatDateTime } from '$lib/utils';
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+	import { Container } from '$lib/components/layout'; // Import Container
 	import DataTable from '$lib/components/DataTable.svelte';
 	import { FilterType } from '$lib/utils/filter';
 
@@ -34,9 +34,8 @@
 	});
 </script>
 
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
-
+<!-- Use Container component -->
+<Container breadcrumb={breadcrumbItems}>
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
 			Attendance for: {follower?.name || 'Follower'}
@@ -79,4 +78,4 @@
 		{/if}
 		</DataTable>
 	</Card>
-</div>
+</Container>

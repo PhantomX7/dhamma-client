@@ -1,5 +1,5 @@
 <script>
-	import { Alert, breadcrumb, Button, Card } from 'flowbite-svelte';
+	import { Alert, Button, Card } from 'flowbite-svelte';
 	import { ExclamationCircleSolid, ListOutline } from 'flowbite-svelte-icons';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { FormInput, FormTextarea, FormToggle, FormButton } from '$lib/components/form';
@@ -13,7 +13,9 @@
 		resetForm: false, // Keep form data on success/error unless explicitly reset
 		taintedMessage: null, // Disable default tainted message
 		multipleSubmits: 'prevent', // Prevent multiple submissions while one is in progress
-		dataType: 'json' // Expect JSON response from the server
+		dataType: 'json', // Expect JSON response from the server
+		invalidateAll: true, // Invalidate data on success/error to reflect changes
+		applyAction: true // Apply server action results (errors, etc.)
 	});
 
 	// Breadcrumb items definition
@@ -77,7 +79,7 @@
 						name="description"
 						bind:value={$form.description}
 						error={$errors.description?.join(', ')}
-						placeholder="Optional: Describe the description of this domain"
+						placeholder="Optional: Provide a brief description of the domain."
 						rows={3}
 					/>
 				</div>

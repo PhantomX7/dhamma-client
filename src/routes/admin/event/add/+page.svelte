@@ -2,8 +2,8 @@
 	import { Alert, Button, Card } from 'flowbite-svelte';
 	import { ExclamationCircleSolid, ListOutline } from 'flowbite-svelte-icons';
 	import { superForm } from 'sveltekit-superforms/client';
-	import { FormInput, FormTextarea, FormButton, FormSearchSelect } from '$lib/components/form';
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+	import { FormInput, FormTextarea, FormButton, FormSearchSelect } from '$lib/components/form'; // Removed Breadcrumb import
+	import { Container } from '$lib/components/layout'; // Import Container
 	import { getContext } from 'svelte';
 
 	const currentUser = getContext('user');
@@ -28,10 +28,8 @@
 	]);
 </script>
 
-<!-- Main page container -->
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<!-- Breadcrumb navigation -->
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
+<!-- Use Container component -->
+<Container breadcrumb={breadcrumbItems}>
 
 	<!-- Page header -->
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
@@ -129,4 +127,4 @@
 			</div>
 		</form>
 	</Card>
-</div>
+</Container>

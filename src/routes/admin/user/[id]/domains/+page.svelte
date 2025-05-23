@@ -11,11 +11,10 @@
 		TableHeadCell
 	} from 'flowbite-svelte';
 	import { ChevronLeftOutline, PlusOutline, CloseOutline } from 'flowbite-svelte-icons'; // Added icons
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+	import { Container } from '$lib/components/layout'; // Import Container
 	import AssignDomainModal from '$lib/components/modal/AssignDomainModal.svelte';
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
-	import { formatDate } from '$lib/utils'; // Added formatDate if needed for table
 
 	let { data } = $props();
 
@@ -48,10 +47,8 @@
 	}
 </script>
 
-<!-- Main page container -->
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<!-- Breadcrumb navigation -->
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
+<!-- Use Container component -->
+<Container breadcrumb={breadcrumbItems}>
 
 	<!-- Page header -->
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
@@ -127,7 +124,7 @@
 			</div>
 		{/if}
 	</Card>
-</div>
+</Container>
 
 <!-- Domain Search Modal (remains outside the card) -->
 <AssignDomainModal

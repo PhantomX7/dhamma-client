@@ -2,8 +2,8 @@
 	import { Button, Alert } from 'flowbite-svelte';
 	import { InfoCircleSolid, FileLinesOutline, ListOutline } from 'flowbite-svelte-icons';
 	import { FormInput, FormToggle, FormButton } from '$lib/components/form'; // Removed FormTextarea
-	import { superForm } from 'sveltekit-superforms/client';
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+	import { superForm } from 'sveltekit-superforms/client'; // Removed Breadcrumb import
+	import { Container } from '$lib/components/layout'; // Import Container
 
 	let { data } = $props();
 	const { form, enhance, errors, submitting, delayed } = superForm(data.form, {
@@ -21,10 +21,8 @@
 	];
 </script>
 
-<!-- Main page container -->
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<!-- Breadcrumb navigation -->
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
+<!-- Use Container component -->
+<Container breadcrumb={breadcrumbItems}>
 
 	<!-- Page header -->
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
@@ -96,4 +94,4 @@
 			</div>
 		</form>
 	</div>
-</div>
+</Container>

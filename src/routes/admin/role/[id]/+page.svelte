@@ -13,8 +13,7 @@
 	import { ListOutline, EditOutline, LockOutline, InfoCircleOutline } from 'flowbite-svelte-icons'; // Added InfoCircleOutline
 	import { getContext } from 'svelte';
 	import { formatDate } from '$lib/utils';
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
-	import DetailItem from '$lib/components/layout/DetailItem.svelte';
+	import { Container, DetailItem } from '$lib/components/layout'; // Updated import for Container and DetailItem
 
 	// Component props
 	let { data } = $props();
@@ -64,11 +63,8 @@
 	let permissionsByObject = $derived(groupPermissionsByObject());
 </script>
 
-<!-- Main page container -->
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<!-- Breadcrumb navigation -->
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
-
+<!-- Use Container component -->
+<Container breadcrumb={breadcrumbItems}>
 	<!-- Page header -->
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Role Details</h1>
@@ -175,4 +171,4 @@
 			</div>
 		{/if}
 	</Card>
-</div>
+</Container>

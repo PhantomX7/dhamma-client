@@ -1,9 +1,9 @@
 <script>
 	import { Button, Card, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
-	import { ArrowLeftOutline } from 'flowbite-svelte-icons';
+	import { ArrowLeftOutline, CashOutline } from 'flowbite-svelte-icons'; // Added CoinsOutline
 	import { formatDateTime } from '$lib/utils'; // Assuming you might want to show a timestamp
-	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 	import DataTable from '$lib/components/DataTable.svelte';
+	import { Container } from '$lib/components/layout'; // Import Container
 	import { FilterType } from '$lib/utils/filter';
 
 	// Component props from load function
@@ -35,12 +35,11 @@
 	});
 </script>
 
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
-
+<!-- Use Container component -->
+<Container breadcrumb={breadcrumbItems}>
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-			<CoinsOutline class="me-2 inline-block h-6 w-6 align-text-bottom" /> Point Mutation History for: {follower?.name || `Follower ${followerId}`}
+			<CashOutline class="me-2 inline-block h-6 w-6 align-text-bottom" /> Point Mutation History for: {follower?.name || `Follower ${followerId}`}
 		</h1>
 		{#if followerId}
 			<Button color="alternative" href={`/admin/follower/${followerId}`}>
@@ -84,4 +83,4 @@
 			{/if}
 		</DataTable>
 	</Card>
-</div>
+</Container>

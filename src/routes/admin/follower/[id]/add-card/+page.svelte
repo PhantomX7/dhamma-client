@@ -49,14 +49,10 @@
 		<form method="POST" use:enhance class="space-y-6">
 			<!-- Display server-set flash messages or form messages -->
 			{#if $message?.text}
-				<Alert
-					color={$message.type === 'error' ? 'red' : 'green'}
-					dismissable
-					class="items-center"
-				>
-					<svelte:fragment slot="icon">
+				<Alert color={$message.type === 'error' ? 'red' : 'green'} dismissable class="items-center">
+					{#snippet icon()}
 						<ExclamationCircleSolid class="me-2 h-5 w-5 flex-shrink-0" />
-					</svelte:fragment>
+					{/snippet}
 					<span class="text-sm">{$message.text}</span>
 				</Alert>
 			{/if}

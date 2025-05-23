@@ -1,6 +1,11 @@
 <script>
 	import { Button, Alert, Card } from 'flowbite-svelte';
-	import { InfoCircleSolid, FileLinesOutline, ListOutline, ExclamationCircleSolid } from 'flowbite-svelte-icons';
+	import {
+		InfoCircleSolid,
+		FileLinesOutline,
+		ListOutline,
+		ExclamationCircleSolid
+	} from 'flowbite-svelte-icons';
 	import { FormInput, FormTextarea, FormButton, FormSearchSelect } from '$lib/components/form';
 	import { superForm } from 'sveltekit-superforms/client';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
@@ -40,9 +45,9 @@
 		</h1>
 		<div class="flex flex-shrink-0 gap-2">
 			{#if eventDetails?.id}
-			<Button color="light" href={`/admin/event/${eventDetails.id}`}>
-				<FileLinesOutline class="me-2 h-4 w-4" /> Back to Details
-			</Button>
+				<Button color="light" href={`/admin/event/${eventDetails.id}`}>
+					<FileLinesOutline class="me-2 h-4 w-4" /> Back to Details
+				</Button>
 			{/if}
 			<Button color="alternative" href="/admin/event">
 				<ListOutline class="me-2 h-4 w-4" /> Back to List
@@ -55,14 +60,10 @@
 		<form method="POST" use:enhance class="space-y-6">
 			<input type="hidden" name="_original" bind:value={$form._original} />
 			{#if $message?.text}
-				<Alert
-					color={$message.type === 'error' ? 'red' : 'green'}
-					dismissable
-					class="items-center"
-				>
-					<svelte:fragment slot="icon">
+				<Alert color={$message.type === 'error' ? 'red' : 'green'} dismissable class="items-center">
+					{#snippet icon()}
 						<ExclamationCircleSolid class="me-2 h-5 w-5 flex-shrink-0" />
-					</svelte:fragment>
+					{/snippet}
 					<span class="text-sm">{$message.text}</span>
 				</Alert>
 			{/if}
@@ -114,7 +115,9 @@
 				/>
 			</div>
 
-			<div class="flex items-center justify-start gap-3 border-t border-gray-200 pt-6 dark:border-gray-700">
+			<div
+				class="flex items-center justify-start gap-3 border-t border-gray-200 pt-6 dark:border-gray-700"
+			>
 				<FormButton
 					type="submit"
 					loading={$submitting || $delayed}
@@ -122,9 +125,9 @@
 					loadingText="Saving..."
 				/>
 				{#if eventDetails?.id}
-				<Button type="button" color="alternative" href={`/admin/event/${eventDetails.id}`}>
-					Cancel
-				</Button>
+					<Button type="button" color="alternative" href={`/admin/event/${eventDetails.id}`}>
+						Cancel
+					</Button>
 				{/if}
 			</div>
 		</form>

@@ -44,23 +44,11 @@
 	<!-- Form Card -->
 	<Card size="xl" class="mb-8 p-5">
 		<form method="POST" use:enhance class="flex flex-col space-y-6">
-			{#if $message?.text}
-				<Alert
-					color={$message.type === 'error' ? 'red' : 'green'}
-					dismissable
-					class="items-center"
-				>
-					<svelte:fragment slot="icon">
-						<ExclamationCircleSolid class="me-2 h-5 w-5 flex-shrink-0" />
-					</svelte:fragment>
-					<span class="text-sm">{$message.text}</span>
-				</Alert>
-			{/if}
 			{#if $errors._errors}
 				<Alert color="red" class="mb-0">
-					<svelte:fragment slot="icon">
+					{#snippet icon()}
 						<ExclamationCircleSolid class="h-5 w-5" />
-					</svelte:fragment>
+					{/snippet}
 					<span class="font-medium">Please fix the following errors:</span>
 					<ul class="mt-1.5 list-inside list-disc">
 						{#each $errors._errors as error}

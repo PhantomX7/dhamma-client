@@ -86,13 +86,13 @@
 					onclose={() => message.set(null)}
 					class="items-center"
 				>
-					<svelte:fragment slot="icon">
+				{#snippet icon()}
 						{#if $message.type === 'error'}
 							<ExclamationCircleSolid class="me-2 h-5 w-5 flex-shrink-0" />
 						{:else}
 							<CheckCircleSolid class="me-2 h-5 w-5 flex-shrink-0" />
 						{/if}
-					</svelte:fragment>
+					{/snippet}
 					<span class="text-sm">{$message.text}</span>
 				</Alert>
 			{/if}

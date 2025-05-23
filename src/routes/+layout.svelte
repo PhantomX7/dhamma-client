@@ -5,18 +5,18 @@
 	import { setContext } from 'svelte';
 	import { invalidateAll } from '$app/navigation';
 	import { Toast } from 'flowbite-svelte';
-	import { 
-		CheckCircleSolid, 
-		ExclamationCircleSolid, 
+	import {
+		CheckCircleSolid,
+		ExclamationCircleSolid,
 		InfoCircleSolid,
 		CloseCircleSolid
 	} from 'flowbite-svelte-icons';
 	import { fade, fly } from 'svelte/transition';
-	
+
 	let { data, children } = $props();
 
 	const flash = getFlash(page);
-	
+
 	// Auto-dismiss flash messages after 5 seconds
 	$effect(() => {
 		if ($flash) {
@@ -29,23 +29,31 @@
 
 	// Get appropriate icon based on flash type
 	function getFlashIcon(type) {
-		switch(type) {
-			case 'success': return CheckCircleSolid;
-			case 'error': return CloseCircleSolid;
-			case 'warning': return ExclamationCircleSolid;
-			case 'info': 
-			default: return InfoCircleSolid;
+		switch (type) {
+			case 'success':
+				return CheckCircleSolid;
+			case 'error':
+				return CloseCircleSolid;
+			case 'warning':
+				return ExclamationCircleSolid;
+			case 'info':
+			default:
+				return InfoCircleSolid;
 		}
 	}
-	
+
 	// Get appropriate color based on flash type
 	function getFlashColor(type) {
-		switch(type) {
-			case 'success': return 'green';
-			case 'error': return 'red';
-			case 'warning': return 'yellow';
-			case 'info': 
-			default: return 'blue';
+		switch (type) {
+			case 'success':
+				return 'green';
+			case 'error':
+				return 'red';
+			case 'warning':
+				return 'yellow';
+			case 'info':
+			default:
+				return 'blue';
 		}
 	}
 
@@ -77,21 +85,21 @@
 		</section>
 	{:else}
 		{#if $flash}
-			<div 
+			<div
 				class="fixed top-20 right-4 z-50 max-w-md"
 				in:fly={{ y: -20, duration: 300 }}
 				out:fade={{ duration: 200 }}
 			>
-				<Toast 
+				<Toast
 					dismissable
-					simple 
+					simple
 					color={getFlashColor($flash.type)}
-					class="shadow-lg border border-gray-100"
+					class="border border-gray-100 shadow-lg"
 				>
-					<svelte:fragment slot="icon">
+					{#snippet icon()}
 						{@const FlashIcon = getFlashIcon($flash.type)}
 						<FlashIcon class="h-5 w-5" />
-					</svelte:fragment>
+					{/snippet}
 					<div class="ml-3 text-sm font-normal">
 						{$flash.message}
 					</div>

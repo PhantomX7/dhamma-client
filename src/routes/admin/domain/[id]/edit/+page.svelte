@@ -4,9 +4,10 @@
 	import { FormInput, FormTextarea, FormToggle, FormButton } from '$lib/components/form';
 	import { superForm } from 'sveltekit-superforms/client';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
+	import { Container } from '$lib/components/layout';
 
 	let { data } = $props();
-	const { form, enhance, errors, message, submitting, delayed } = superForm(data.form, {
+	const { form, enhance, errors, submitting, delayed } = superForm(data.form, {
 		dataType: 'json',
 		resetForm: false,
 		multipleSubmits: 'prevent'
@@ -21,30 +22,32 @@
 </script>
 
 <!-- Main page container -->
-<div class="min-h-screen p-4 md:p-6 dark:bg-gray-900">
-	<!-- Breadcrumb navigation -->
-	<Breadcrumb class="mb-6" items={breadcrumbItems} />
-
+<Container breadcrumb={breadcrumbItems}>
 	<!-- Page header -->
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Domain: {data.domain.name}</h1>
+		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+			Edit Domain: {data.domain.name}
+		</h1>
 		<div class="flex flex-shrink-0 gap-2">
 			<Button color="light" href="/admin/domain/{data.domain.id}">
-				<FileLinesOutline class="me-2 h-4 w-4" /> Back to Details 
+				<FileLinesOutline class="me-2 h-4 w-4" /> Back to Details
 			</Button>
 			<Button color="alternative" href="/admin/domain">
-				<ListOutline class="me-2 h-4 w-4" /> Back to List 
+				<ListOutline class="me-2 h-4 w-4" /> Back to List
 			</Button>
 		</div>
 	</div>
 
 	<!-- Form Card -->
-	<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+	<div
+		class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
+	>
 		<form method="POST" use:enhance class="space-y-6">
 			<!-- Hidden field to store original data for comparison -->
 			<input type="hidden" name="_original" bind:value={$form._original} />
 
 			<!-- General Form Errors Alert -->
+			{JSON.stringify($errors)}
 			{#if $errors._errors}
 				<Alert color="red" class="mb-4">
 					<InfoCircleSolid slot="icon" class="h-5 w-5" />
@@ -102,15 +105,19 @@
 			</div>
 
 			<!-- Form Actions -->
-			<div class="flex items-center justify-start gap-3 border-t border-gray-200 pt-6 dark:border-gray-700">
+			<div
+				class="flex items-center justify-start gap-3 border-t border-gray-200 pt-6 dark:border-gray-700"
+			>
 				<FormButton
 					type="submit"
 					loading={$submitting || $delayed}
 					text="Save Changes"
 					loadingText="Saving..."
 				/>
-				<Button type="button" color="alternative" href="/admin/domain/{data.domain.id}">Cancel</Button>
+				<Button type="button" color="alternative" href="/admin/domain/{data.domain.id}"
+					>Cancel</Button
+				>
 			</div>
 		</form>
 	</div>
-</div>
+</Container>

@@ -44,9 +44,9 @@
 		<form method="POST" use:enhance class="flex flex-col space-y-6">
 			{#if $errors._errors}
 				<Alert color="red" class="mb-0">
-					<svelte:fragment slot="icon">
+					{#snippet icon()}
 						<ExclamationCircleSolid class="h-5 w-5" />
-					</svelte:fragment>
+					{/snippet}
 					<span class="font-medium">Please fix the following errors:</span>
 					<ul class="mt-1.5 list-inside list-disc">
 						{#each $errors._errors as error}

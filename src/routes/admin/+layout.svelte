@@ -90,11 +90,11 @@
 					{#if hasPermission(user(), item.permission)}
 						{#if item.child}
 							<SidebarDropdownWrapper label={isSidebarCollapsed ? '' : item.label}>
-								<svelte:fragment slot="icon">
+								{#snippet icon()}
 									{#if item.icon}{@const Icon = item.icon}<Icon
 											class="{isSidebarCollapsed ? 'mx-auto' : 'mr-5'} h-5 w-5"
 										/>{/if}
-								</svelte:fragment>
+								{/snippet}
 								{#each item.child as child}
 									{#if hasPermission(user(), child.permission)}
 										<SidebarDropdownItem
@@ -106,11 +106,11 @@
 							</SidebarDropdownWrapper>
 						{:else}
 							<SidebarItem href={item.href} label={isSidebarCollapsed ? '' : item.label}>
-								<svelte:fragment slot="icon">
+								{#snippet icon()}
 									{#if item.icon}{@const Icon = item.icon}<Icon
 											class="{isSidebarCollapsed ? 'mx-auto' : 'mr-5'} h-5 w-5"
 										/>{/if}
-								</svelte:fragment>
+								{/snippet}
 							</SidebarItem>
 						{/if}
 					{/if}

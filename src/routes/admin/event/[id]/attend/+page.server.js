@@ -24,9 +24,9 @@ export async function load(event) {
 	const eventId = event.params.id;
 
 	// Load event details for display
-	const { resource: eventDetails } = await loadResourceById(
+	const { event: eventDetail } = await loadResourceById(
 		event,
-		'event', // API resource type
+		'/event', // API resource type
 		'event', // Key for the event data
 		`/admin/event` // Fallback redirect
 	);
@@ -36,7 +36,7 @@ export async function load(event) {
 
 	return {
 		form,
-		event: eventDetails, // Pass event data to the page
+		event: eventDetail, // Pass event data to the page
 		eventId
 	};
 }

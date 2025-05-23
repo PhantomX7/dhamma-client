@@ -7,7 +7,7 @@
 
 	// Component props
 	let { data } = $props();
-	const eventDetails = $derived(data.event);
+	const event = $derived(data.event);
 	const eventId = $derived(data.eventId);
 
 	// Initialize SuperForm for client-side form handling
@@ -25,7 +25,7 @@
 		{ href: '/admin/event', label: 'Events' },
 		{
 			href: `/admin/event/${eventId}`,
-			label: eventDetails?.name || `Event ${eventId}`
+			label: event?.name || `Event ${eventId}`
 		},
 		{ label: 'Attend' }
 	]);
@@ -66,7 +66,7 @@
 
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-			Record Attendance for: {eventDetails?.name || 'Event'}
+			Record Attendance for: {event?.name || 'Event'}
 		</h1>
 		{#if eventId}
 			<Button color="alternative" href={`/admin/event/${eventId}`}>
@@ -116,12 +116,6 @@
 						Cancel
 					</Button>
 				{/if}
-				<!-- <FormButton
-					type="submit"
-					loading={$submitting || $delayed}
-					text="Submit Attendance"
-					loadingText="Submitting..."
-				/> -->
 			</div>
 		</form>
 	</Card>

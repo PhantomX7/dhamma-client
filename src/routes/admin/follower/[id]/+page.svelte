@@ -1,6 +1,6 @@
 <script>
 	import { Badge, Button, Card } from 'flowbite-svelte';
-	import { PlusOutline, ListOutline, EditOutline, TrashBinOutline } from 'flowbite-svelte-icons';
+	import { PlusOutline, ListOutline, EditOutline, TrashBinOutline, UsersOutline } from 'flowbite-svelte-icons';
 	import { formatDate } from '$lib/utils';
 	import Breadcrumb from '$lib/components/Breadcrumb.svelte';
 	import DetailItem from '$lib/components/layout/DetailItem.svelte';
@@ -46,6 +46,9 @@
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Follower Details</h1>
 		<div class="flex flex-shrink-0 gap-2">
+			<Button href="/admin/follower/{follower.id}/attendance" color="blue">
+				<UsersOutline class="me-2 h-4 w-4" /> View Attendance
+			</Button>
 			<Button href="/admin/follower/{follower.id}/edit">
 				<EditOutline class="me-2 h-4 w-4" /> Edit Follower
 			</Button>

@@ -172,7 +172,6 @@
 
 <!-- Use Container component -->
 <Container breadcrumb={breadcrumbItems}>
-
 	<!-- Page header -->
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
@@ -274,12 +273,20 @@
 							<!-- Category Header Row -->
 							<TableBodyRow class="dark:bg-gray-750 bg-gray-50">
 								<TableBodyCell colspan="5" class="px-4 py-2">
-									<!-- Removed the per-category checkbox, kept the category title -->
-									<h3
-										class="text-xs font-semibold tracking-wider text-gray-700 uppercase dark:text-gray-300"
-									>
-										{objectCategory}
-									</h3>
+									<!-- Add checkbox for selecting all permissions in this category -->
+									<div class="flex items-center">
+										<Checkbox
+											checked={areAllSelected(objectCategory)}
+											onchange={(e) => toggleSelectAll(objectCategory, e.target.checked)}
+											aria-label={`Select all ${objectCategory} permissions`}
+											class="mr-3"
+										/>
+										<h3
+											class="text-xs font-semibold tracking-wider text-gray-700 uppercase dark:text-gray-300"
+										>
+											{objectCategory}
+										</h3>
+									</div>
 								</TableBodyCell>
 							</TableBodyRow>
 

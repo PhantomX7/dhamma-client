@@ -308,14 +308,25 @@
 	{/if}
 
 	<!-- Selection Modal -->
-	<Modal bind:open={isModalOpen} size="lg" title={`Select ${label || 'Item'}`} autoclose={false}>
+	<Modal
+		bind:open={isModalOpen}
+		size="lg"
+		title={`Select ${label || 'Item'}`}
+		autoclose={false}
+		closeBtnClass="cursor-pointer"
+	>
 		<div class="mb-4">
-			<Search bind:value={modalSearchTerm} placeholder="Search..." oninput={handleSearchInput} />
+			<Search bind:value={modalSearchTerm} placeholder="Search..." onchange={handleSearchInput} />
 		</div>
 
 		<!-- Use Table for results -->
 		<div>
-            <Table hoverable={true} shadow divClass="relative max-h-[70vh] overflow-x-auto overflow-y-auto">
+			<Table
+				hoverable={true}
+				striped={true}
+				shadow
+				divClass="relative max-h-[70vh] overflow-x-auto overflow-y-auto"
+			>
 				{#if isLoading}
 					<!-- Loading State -->
 					<TableBody>
@@ -363,21 +374,23 @@
 					</TableBody>
 				{:else}
 					<!-- Results Table -->
-					<TableHead class="sticky top-0 bg-gray-50 dark:bg-gray-700">
+					<TableHead class="sticky top-0 bg-gray-50 text-sm dark:bg-gray-700">
 						<TableHeadCell class="p-3">Name</TableHeadCell>
 						{#if showCodeColumn}
 							<TableHeadCell class="p-3">Code</TableHeadCell>
 						{/if}
 					</TableHead>
-					<TableBody class="divide-y dark:divide-gray-700">
+					<TableBody class="divide-y divide-gray-200 dark:divide-gray-700">
 						{#each results as item (item[valueField])}
 							<TableBodyRow
-								class="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600"
+								class="cursor-pointer"
 								onclick={() => handleSelect(item)}
 								onkeypress={(e) => e.key === 'Enter' && handleSelect(item)}
 								tabindex="0"
 							>
-								<TableBodyCell class="whitespace-nowrap p-3 font-medium text-gray-900 dark:text-white">
+								<TableBodyCell
+									class="p-3 font-medium whitespace-nowrap text-gray-900 dark:text-white"
+								>
 									{item[displayField]}
 								</TableBodyCell>
 								{#if showCodeColumn}
@@ -392,8 +405,10 @@
 			</Table>
 		</div>
 
-		<svelte:fragment slot="footer">
-			<Button class="cursor-pointer" color="alternative" onclick={() => (isModalOpen = false)}>Cancel</Button>
-		</svelte:fragment>
+		{#snippet footer()}
+			<Button class="cursor-pointer" color="alternative" onclick={() => (isModalOpen = false)}
+				>Cancel</Button
+			>
+		{/snippet}
 	</Modal>
 </div>

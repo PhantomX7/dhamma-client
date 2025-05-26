@@ -23,7 +23,8 @@
 		error = '',
 		helperText = '',
 		required = false,
-		oninput = () => {}
+		oninput = () => {},
+		elementRef = $bindable()
 	} = $props();
 
 	// No need for event dispatcher in Svelte 5 - events are forwarded automatically
@@ -47,7 +48,8 @@
 		{placeholder}
 		{required}
 		color={error ? 'red' : 'base'}
-		oninput={oninput}
+		onchange={oninput}
+		bind:elementRef
 	/>
 
 	{#if error}

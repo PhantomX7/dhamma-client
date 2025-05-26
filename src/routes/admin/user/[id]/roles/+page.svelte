@@ -118,7 +118,12 @@
 		<!-- Moved Add Role button here and added Back button -->
 		<div class="flex flex-shrink-0 gap-2">
 			{#if hasPermission(currentUser(), 'user/assign-role')}
-				<Button class="cursor-pointer" onclick={() => (showModal = true)}>
+				<Button
+					class="cursor-pointer"
+					onclick={() => {
+						showModal = true;
+					}}
+				>
 					<PlusOutline class="me-2 h-4 w-4" /> Add Role
 				</Button>
 			{/if}
@@ -212,6 +217,5 @@
 </Container>
 
 <!-- Assign Role Modal (outside the container for global overlay behavior) -->
-{#if showModal}
-	<AssignRoleModal {user} bind:open={showModal} handleSubmit={handleAddSubmit} />
-{/if}
+
+<AssignRoleModal {user} bind:open={showModal} handleSubmit={handleAddSubmit} />

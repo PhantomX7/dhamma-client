@@ -59,6 +59,8 @@
 			}
 		}, 500); // 500ms delay - adjust if needed for your RFID scanner
 	}
+
+	let elementRef = $state()
 </script>
 
 <Container breadcrumb={breadcrumbItems}>
@@ -103,9 +105,8 @@
 				placeholder="Enter the follower's card code"
 				required={true}
 				error={$errors.card_code?.join(', ')}
-				autocomplete="off"
-				autofocus
 				oninput={handleCardCodeInput}
+				bind:elementRef
 			/>
 
 			<div class="flex items-center justify-end space-x-3 pt-2">

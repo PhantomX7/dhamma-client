@@ -87,9 +87,7 @@
 			const response = await fetch(`/api/role?${params.toString()}`);
 			if (!response.ok) {
 				const errorData = await response.json().catch(() => ({})); // Try to get error details
-				throw new Error(
-					errorData.message || `Failed to fetch roles (status: ${response.status})`
-				);
+				throw new Error(errorData.message || `Failed to fetch roles (status: ${response.status})`);
 			}
 
 			const data = await response.json();
@@ -154,7 +152,7 @@
 			// For non-superadmin, automatically select their domain
 			const user = currentUser();
 			let domainId = null;
-			
+
 			// Try to get domain_id from user_roles first (most specific)
 			if (user.user_roles && user.user_roles.length > 0) {
 				domainId = user.user_roles[0].domain_id;
@@ -163,7 +161,7 @@
 			else if (user.domains && user.domains.length > 0) {
 				domainId = user.domains[0].id;
 			}
-			
+
 			if (domainId) {
 				selectedDomainId = domainId;
 				fetchRolesForDomain(domainId);
@@ -172,15 +170,17 @@
 	});
 </script>
 
-<Modal
-	bind:open
-	size="md"
-	autoclose={false}
-	on:close={resetState}
-	class="w-full"
-	title="Assign Role Modal"
->
-	<form method="POST" action="?/assignRole" use:enhance={handleSubmit} class="space-y-6">
+<form method="POST" action="?/assignRole" use:enhance={handleSubmit} class="space-y-6">
+	<Modal
+		bind:open
+		size="md"
+		autoclose={false}
+		on:close={resetState}
+		class="w-full"
+		title="Assign Role Modal"
+		closeBtnClass="cursor-pointer"
+		footerClass="flex items-center justify-between space-x-2 border-t border-gray-200 pt-4 dark:border-gray-600"
+	>
 		<h3 class="mb-4 text-xl font-medium text-gray-900 dark:text-white">Assign Role to User</h3>
 
 		{#if errorMessage}
@@ -201,10 +201,10 @@
 					name="domain_id"
 					required
 					value={selectedDomainId ?? ''}
-					on:change={handleDomainChange}
+					onchange={handleDomainChange}
 					aria-label="Select Domain"
+					placeholder="Select a domain"
 				>
-					<option value="" disabled selected={selectedDomainId === null}>Choose a domain...</option>
 					{#each availableDomains as domain (domain.id)}
 						<option value={domain.id}>{domain.name} ({domain.code})</option>
 					{/each}
@@ -232,16 +232,16 @@
 					required
 					disabled={!selectedDomainId || availableRoles.length === 0}
 					value={selectedRoleId ?? ''}
-					on:change={(e) => (selectedRoleId = parseInt(e.target.value))}
+					onchange={(e) => (selectedRoleId = parseInt(e.target.value))}
 					aria-label="Select Role"
+					placeholder={selectedDomainId
+						? availableRoles.length > 0
+							? 'Choose a role...'
+							: 'No available roles'
+						: isSuperAdmin
+							? 'Select a domain first'
+							: 'Loading roles...'}
 				>
-					<option value="" disabled selected={selectedRoleId === null}>
-						{selectedDomainId
-							? availableRoles.length > 0
-								? 'Choose a role...'
-								: 'No available roles'
-							: isSuperAdmin ? 'Select a domain first' : 'Loading roles...'}
-					</option>
 					{#each availableRoles as role (role.id)}
 						<option value={role.id}>{role.name}</option>
 					{/each}
@@ -252,18 +252,10 @@
 		<!-- Hidden user ID field (Consider if needed, server action already has user context via params.id) -->
 		<input type="hidden" name="role_id" value={selectedRoleId} />
 
-		<!-- Form Actions -->
-		<div
-			class="flex items-center justify-end space-x-2 border-t border-gray-200 pt-4 dark:border-gray-600"
-		>
-			<Button
-				color="alternative"
-				type="button"
-				onclick={closeModal}
-				aria-label="Cancel role assignment"
+		{#snippet footer()}
+			<Button class="cursor-pointer" color="alternative" onclick={closeModal}
+				>Cancel</Button
 			>
-				Cancel
-			</Button>
 			<Button
 				type="submit"
 				disabled={!selectedDomainId || !selectedRoleId || isLoading}
@@ -275,6 +267,6 @@
 					Assign Role
 				{/if}
 			</Button>
-		</div>
-	</form>
-</Modal>
+		{/snippet}
+	</Modal>
+</form>

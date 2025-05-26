@@ -64,7 +64,7 @@
 	}
 </script>
 
-<Modal bind:open size="lg" title="Add Domains" autoclose={false}>
+<Modal bind:open size="lg" title="Add Domains" autoclose={false} closeBtnClass="cursor-pointer">
 	<div class="mb-4">
 		<Search
 			bind:value={searchTerm}
@@ -86,39 +86,45 @@
 			No domains found matching your search or all domains are already assigned to this user.
 		</div>
 	{:else}
-		<Table hoverable>
-			<TableHead>
-				<TableHeadCell>Name</TableHeadCell>
-				<TableHeadCell>Code</TableHeadCell>
-				<TableHeadCell>Status</TableHeadCell>
-				<TableHeadCell>Action</TableHeadCell>
-			</TableHead>
-			<TableBody>
-				{#each searchResults as domain}
-					<TableBodyRow>
-						<TableBodyCell>{domain.name}</TableBodyCell>
-						<TableBodyCell>{domain.code}</TableBodyCell>
-						<TableBodyCell>
-							<Badge color={domain.is_active ? 'green' : 'red'}>
-								{domain.is_active ? 'Active' : 'Inactive'}
-							</Badge>
-						</TableBodyCell>
-						<!-- In the table body cell -->
-						<TableBodyCell>
-							<form method="POST" action="?/addDomain" use:enhance={handleSubmit}>
-								<input type="hidden" name="domain_id" value={domain.id} />
-								<Button class="cursor-pointer" type="submit" size="xs" color="green">Add</Button>
-							</form>
-						</TableBodyCell>
-					</TableBodyRow>
-				{/each}
-			</TableBody>
-		</Table>
+		<div class="relative max-h-[60vh] overflow-auto shadow-md sm:rounded-lg">
+			<Table hoverable={true} striped={true}>
+				<TableHead class="sticky top-0 bg-gray-50 text-sm dark:bg-gray-700">
+					<TableHeadCell class="p-3">Name</TableHeadCell>
+					<TableHeadCell class="p-3">Code</TableHeadCell>
+					<TableHeadCell class="p-3">Status</TableHeadCell>
+					<TableHeadCell class="p-3"><span class="sr-only">Action</span></TableHeadCell>
+				</TableHead>
+				<TableBody class="divide-y divide-gray-200 dark:divide-gray-700">
+					{#each searchResults as domain (domain.id)}
+						<TableBodyRow>
+							<TableBodyCell class="p-3 font-medium whitespace-nowrap text-gray-900 dark:text-white"
+								>{domain.name}</TableBodyCell
+							>
+							<TableBodyCell class="p-3 text-gray-600 dark:text-gray-400"
+								>{domain.code}</TableBodyCell
+							>
+							<TableBodyCell class="p-3">
+								<Badge color={domain.is_active ? 'green' : 'red'}>
+									{domain.is_active ? 'Active' : 'Inactive'}
+								</Badge>
+							</TableBodyCell>
+							<TableBodyCell class="p-3">
+								<form method="POST" action="?/addDomain" use:enhance={handleSubmit}>
+									<input type="hidden" name="user_id" value={userId} />
+									<input type="hidden" name="domain_id" value={domain.id} />
+									<Button class="cursor-pointer" type="submit" size="xs" color="green">Add</Button>
+								</form>
+							</TableBodyCell>
+						</TableBodyRow>
+					{/each}
+				</TableBody>
+			</Table>
+		</div>
 	{/if}
 
-	<svelte:fragment slot="footer">
+	{#snippet footer()}
 		<Button class="cursor-pointer" color="alternative" on:click={() => (open = false)}
 			>Cancel</Button
 		>
-	</svelte:fragment>
+	{/snippet}
 </Modal>

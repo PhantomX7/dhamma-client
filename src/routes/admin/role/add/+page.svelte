@@ -1,16 +1,16 @@
 <script>
-	import { Alert, Button, Card } from 'flowbite-svelte';
-	import { ExclamationCircleSolid, ListOutline } from 'flowbite-svelte-icons';
+	import { Button, Card } from 'flowbite-svelte'; // Removed Alert
+	import { ListOutline } from 'flowbite-svelte-icons'; // Removed ExclamationCircleSolid
 	import { superForm } from 'sveltekit-superforms/client';
-	// Import the new component and remove FormTextarea if no longer needed elsewhere
 	import {
 		FormInput,
 		FormTextarea,
 		FormToggle,
 		FormButton,
-		FormSearchSelect
+		FormSearchSelect,
+		ErrorAlert // Added ErrorAlert
 	} from '$lib/components/form';
-	import { Container } from '$lib/components/layout'; // Import Container
+	import { Container } from '$lib/components/layout'; 
 	import { getContext } from 'svelte';
 
 	// Component props
@@ -45,20 +45,8 @@
 	<!-- Use Card component for the form container -->
 	<Card size="xl" class="mb-8 p-5">
 		<form method="POST" use:enhance class="flex flex-col space-y-6">
-			<!-- General form errors display -->
-			{#if $errors._errors}
-				<Alert color="red" class="mb-0">
-					{#snippet icon()}
-						<ExclamationCircleSolid class="h-5 w-5" />
-					{/snippet}
-					<span class="font-medium">Please fix the following errors:</span>
-					<ul class="mt-1.5 list-inside list-disc">
-						{#each $errors._errors as error}
-							<li>{error}</li>
-						{/each}
-					</ul>
-				</Alert>
-			{/if}
+			<!-- Enhanced Error Alert -->
+			<ErrorAlert errors={$errors} />
 
 			<!-- Form fields grid layout -->
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">

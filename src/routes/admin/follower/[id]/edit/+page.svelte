@@ -1,9 +1,9 @@
 <script>
-	import { Button, Alert } from 'flowbite-svelte';
-	import { InfoCircleSolid, FileLinesOutline, ListOutline } from 'flowbite-svelte-icons';
-	import { FormInput, FormToggle, FormButton } from '$lib/components/form'; // Removed FormTextarea
-	import { superForm } from 'sveltekit-superforms/client'; // Removed Breadcrumb import
-	import { Container } from '$lib/components/layout'; // Import Container
+	import { Button } from 'flowbite-svelte'; 
+	import { FileLinesOutline, ListOutline } from 'flowbite-svelte-icons';
+	import { FormInput, FormToggle, FormButton, ErrorAlert } from '$lib/components/form'; 
+	import { superForm } from 'sveltekit-superforms/client'; 
+	import { Container } from '$lib/components/layout'; 
 
 	let { data } = $props();
 	const { form, enhance, errors, submitting, delayed } = superForm(data.form, {
@@ -42,17 +42,8 @@
 		<form method="POST" use:enhance class="space-y-6">
 			<input type="hidden" name="_original" bind:value={$form._original} />
 
-			{#if $errors._errors}
-				<Alert color="red" class="mb-4">
-					<InfoCircleSolid slot="icon" class="h-5 w-5" />
-					<span class="font-medium">Please fix the following errors:</span>
-					<ul class="mt-1.5 list-inside list-disc">
-						{#each $errors._errors as error}
-							<li>{error}</li>
-						{/each}
-					</ul>
-				</Alert>
-			{/if}
+			<!-- Enhanced Error Alert -->
+			<ErrorAlert errors={$errors} />
 
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 				<FormInput

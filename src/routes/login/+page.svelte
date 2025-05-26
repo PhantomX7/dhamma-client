@@ -4,7 +4,6 @@
 	import { zodClient } from 'sveltekit-superforms/adapters';
 	import { goto } from '$app/navigation';
 	import { FormInput, FormButton } from '$lib/components/form';
-	import { Container } from '$lib/components/layout';
 
 	let { data } = $props();
 
@@ -14,9 +13,8 @@
 	});
 </script>
 
-<Container>
-	<div class="flex min-h-screen items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-		<div class="w-full max-w-md space-y-8">
+<div class="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+	<div class="w-full max-w-md space-y-8">
 		<div class="text-center">
 			<div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-primary-600">
 				<svg
@@ -107,4 +105,4 @@
 			</form>
 		</div>
 	</div>
-</Container>
+</div>

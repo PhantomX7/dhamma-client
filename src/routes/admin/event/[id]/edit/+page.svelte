@@ -6,7 +6,7 @@
 		ListOutline,
 		ExclamationCircleSolid
 	} from 'flowbite-svelte-icons';
-	import { FormInput, FormTextarea, FormButton, FormSearchSelect } from '$lib/components/form';
+	import { FormInput, FormTextarea, FormButton, FormSearchSelect, ErrorAlert } from '$lib/components/form'; // Added ErrorAlert
 	import { superForm } from 'sveltekit-superforms/client';
 	import { Container } from '$lib/components/layout'; // Import Container
 	import { getContext } from 'svelte';
@@ -57,25 +57,9 @@
 	<Card size="xl" class="mb-8 p-5">
 		<form method="POST" use:enhance class="space-y-6">
 			<input type="hidden" name="_original" bind:value={$form._original} />
-			{#if $message?.text}
-				<Alert color={$message.type === 'error' ? 'red' : 'green'} dismissable class="items-center">
-					{#snippet icon()}
-						<ExclamationCircleSolid class="me-2 h-5 w-5 flex-shrink-0" />
-					{/snippet}
-					<span class="text-sm">{$message.text}</span>
-				</Alert>
-			{/if}
-			{#if $errors._errors}
-				<Alert color="red" class="mb-4">
-					<InfoCircleSolid slot="icon" class="h-5 w-5" />
-					<span class="font-medium">Please fix the following errors:</span>
-					<ul class="mt-1.5 list-inside list-disc">
-						{#each $errors._errors as error}
-							<li>{error}</li>
-						{/each}
-					</ul>
-				</Alert>
-			{/if}
+			
+			<!-- Enhanced Error Alert -->
+			<ErrorAlert errors={$errors} />
 
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 				<FormInput

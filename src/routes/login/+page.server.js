@@ -60,7 +60,7 @@ export const actions = {
 
 		// Handle API response
 		if (!response.ok || !response.data.status) {
-			return message(form, response.data.error || 'Authentication failed');
+			return message(form, response.data.error || 'Invalid Credentials');
 		}
 
 		// Set authentication data

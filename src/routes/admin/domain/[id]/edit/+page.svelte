@@ -1,21 +1,25 @@
 <script>
-	import { Button, Alert } from 'flowbite-svelte';
-	import { InfoCircleSolid, FileLinesOutline, ListOutline } from 'flowbite-svelte-icons';
-	import { FormInput, FormTextarea, FormToggle, FormButton } from '$lib/components/form';
+	import { Button, Card } from 'flowbite-svelte';
+	import { FileLinesOutline, ListOutline } from 'flowbite-svelte-icons';
+	import { FormInput, FormTextarea, FormToggle, FormButton, ErrorAlert } from '$lib/components/form';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { Container } from '$lib/components/layout';
 
 	let { data } = $props();
-	const { form, enhance, errors, submitting, delayed } = superForm(data.form, {
+	
+	// Success toast state
+	let showSuccessToast = $state(false);
+
+	const { form, enhance, errors, submitting, delayed, message } = superForm(data.form, {
 		dataType: 'json',
 		resetForm: false,
-		multipleSubmits: 'prevent'
+		multipleSubmits: 'prevent',
 	});
 
 	// Define breadcrumb items
 	const breadcrumbItems = [
 		{ href: '/admin/domain', label: 'Domains' },
-		{ href: `/admin/domain/${data.domain.id}`, label: data.domain.name }, // Link back to details
+		{ href: `/admin/domain/${data.domain.id}`, label: data.domain.name },
 		{ label: 'Edit' }
 	];
 </script>
@@ -38,26 +42,13 @@
 	</div>
 
 	<!-- Form Card -->
-	<div
-		class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
-	>
+	<Card size="xl" class="mb-8 p-5">
 		<form method="POST" use:enhance class="space-y-6">
 			<!-- Hidden field to store original data for comparison -->
 			<input type="hidden" name="_original" bind:value={$form._original} />
 
-			<!-- General Form Errors Alert -->
-			{JSON.stringify($errors)}
-			{#if $errors._errors}
-				<Alert color="red" class="mb-4">
-					<InfoCircleSolid slot="icon" class="h-5 w-5" />
-					<span class="font-medium">Please fix the following errors:</span>
-					<ul class="mt-1.5 list-inside list-disc">
-						{#each $errors._errors as error}
-							<li>{error}</li>
-						{/each}
-					</ul>
-				</Alert>
-			{/if}
+			<!-- Enhanced Error Alert -->
+			<ErrorAlert errors={$errors} />
 
 			<!-- Form Fields -->
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -104,19 +95,15 @@
 			</div>
 
 			<!-- Form Actions -->
-			<div
-				class="flex items-center justify-start gap-3 border-t border-gray-200 pt-6 dark:border-gray-700"
-			>
+			<div class="flex items-center justify-start gap-3 border-t border-gray-200 pt-6 dark:border-gray-700">
 				<FormButton
 					type="submit"
 					loading={$submitting || $delayed}
 					text="Save Changes"
 					loadingText="Saving..."
 				/>
-				<Button type="button" color="alternative" href="/admin/domain/{data.domain.id}"
-					>Cancel</Button
-				>
+				<Button type="button" color="alternative" href="/admin/domain/{data.domain.id}">Cancel</Button>
 			</div>
 		</form>
-	</div>
+	</Card>
 </Container>

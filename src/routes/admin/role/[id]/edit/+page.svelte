@@ -1,10 +1,10 @@
 <script>
 	// Import necessary components and icons
-	import { Button, Alert, Card } from 'flowbite-svelte'; // Added Card
-	import { InfoCircleSolid, FileLinesOutline, ListOutline } from 'flowbite-svelte-icons'; // Added Alert, InfoCircleSolid, FileLinesOutline, ListOutline
-	import { FormInput, FormTextarea, FormToggle, FormButton } from '$lib/components/form';
+	import { Button, Card } from 'flowbite-svelte'; // Removed Alert
+	import { FileLinesOutline, ListOutline } from 'flowbite-svelte-icons'; // Removed InfoCircleSolid
+	import { FormInput, FormTextarea, FormToggle, FormButton, ErrorAlert } from '$lib/components/form'; // Added ErrorAlert
 	import { superForm } from 'sveltekit-superforms/client';
-	import { Container } from '$lib/components/layout'; // Import Container
+	import { Container } from '$lib/components/layout'; 
 
 	// Component props
 	let { data } = $props();
@@ -51,18 +51,8 @@
 			<!-- Hidden input to store original data for change detection -->
 			<input type="hidden" name="_original" bind:value={$form._original} />
 
-			<!-- General Form Errors Alert -->
-			{#if $errors._errors}
-				<Alert color="red" class="mb-4">
-					<InfoCircleSolid slot="icon" class="h-5 w-5" />
-					<span class="font-medium">Please fix the following errors:</span>
-					<ul class="mt-1.5 list-inside list-disc">
-						{#each $errors._errors as error}
-							<li>{error}</li>
-						{/each}
-					</ul>
-				</Alert>
-			{/if}
+			<!-- Enhanced Error Alert -->
+			<ErrorAlert errors={$errors} />
 
 			<!-- Form Fields using grid layout like the reference -->
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">

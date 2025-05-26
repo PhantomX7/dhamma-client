@@ -1,9 +1,9 @@
 <script>
-	import { Alert, Button, Card } from 'flowbite-svelte';
-	import { ExclamationCircleSolid, ListOutline } from 'flowbite-svelte-icons';
+	import { Button, Card } from 'flowbite-svelte';
+	import { ListOutline } from 'flowbite-svelte-icons';
 	import { superForm } from 'sveltekit-superforms/client';
-	import { FormInput, FormToggle, FormButton, FormSearchSelect } from '$lib/components/form';
-	import { Container } from '$lib/components/layout'; // Import Container
+	import { FormInput, FormToggle, FormButton, FormSearchSelect, ErrorAlert } from '$lib/components/form'; // Added ErrorAlert
+	import { Container } from '$lib/components/layout'; 
 	import { getContext } from 'svelte';
 
 	const currentUser = getContext('user');
@@ -41,19 +41,8 @@
 	<!-- Form Card -->
 	<Card size="xl" class="mb-8 p-5">
 		<form method="POST" use:enhance class="flex flex-col space-y-6">
-			{#if $errors._errors}
-				<Alert color="red" class="mb-0">
-					{#snippet icon()}
-						<ExclamationCircleSolid class="h-5 w-5" />
-					{/snippet}
-					<span class="font-medium">Please fix the following errors:</span>
-					<ul class="mt-1.5 list-inside list-disc">
-						{#each $errors._errors as error}
-							<li>{error}</li>
-						{/each}
-					</ul>
-				</Alert>
-			{/if}
+			<!-- Enhanced Error Alert -->
+			<ErrorAlert errors={$errors} />
 
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 				<!-- Domain Selection -->

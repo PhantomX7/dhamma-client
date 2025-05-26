@@ -80,18 +80,21 @@
 		<!-- Use Card component for the filter section -->
 		<Card class="p-5" size="xl">
 			<!-- Grid layout for filter inputs -->
-			<div class="grid gap-4 mb-4">
+			<div class="mb-4 grid gap-4">
 				{#each Object.entries(filterConfig) as [field, config]}
 					<div class="grid grid-cols-[8rem_10rem_1fr] items-center gap-4">
 						<!-- Filter label -->
-						<span class="text-sm font-medium text-gray-700 dark:text-gray-300">{config.label || field}</span>
+						<span class="text-sm font-medium text-gray-700 dark:text-gray-300"
+							>{config.label || field}</span
+						>
 
 						<!-- Operator selection dropdown -->
 						<Select
 							class="w-full"
 							value={activeFilters[field]?.operator || ''}
-							onchange={(e) =>
-								handleFilterChange(field, e.target.value, activeFilters[field]?.value)}
+							onchange={(e) => {
+								handleFilterChange(field, e.target.value, activeFilters[field]?.value);
+							}}
 						>
 							<option value="" disabled>Select Operator</option>
 							{#each operatorsByType[config.type] || [] as op}
@@ -124,17 +127,18 @@
 								<option value="false">False</option>
 							</Select>
 						{:else if config.type === FilterType.DATE}
-							<div class="flex items-center gap-2 w-full">
+							<div class="flex w-full items-center gap-2">
 								<!-- Date input(s) -->
 								<Input
 									type="date"
 									class="w-full"
 									value={activeFilters[field]?.value?.split(',')[0] || ''}
-									oninput={(e) => {
+									onchange={(e) => {
 										const currentValue = activeFilters[field]?.value?.split(',') || [];
-										const newValue = activeFilters[field]?.operator === FilterOperator.BETWEEN
-											? [e.target.value, currentValue[1] || ''].join(',')
-											: e.target.value;
+										const newValue =
+											activeFilters[field]?.operator === FilterOperator.BETWEEN
+												? [e.target.value, currentValue[1] || ''].join(',')
+												: e.target.value;
 										handleFilterChange(field, activeFilters[field]?.operator, newValue);
 									}}
 								/>
@@ -144,9 +148,13 @@
 										type="date"
 										class="w-full"
 										value={activeFilters[field]?.value?.split(',')[1] || ''}
-										oninput={(e) => {
+										onchange={(e) => {
 											const currentValue = activeFilters[field]?.value?.split(',') || [];
-											handleFilterChange(field, activeFilters[field]?.operator, [currentValue[0] || '', e.target.value].join(','));
+											handleFilterChange(
+												field,
+												activeFilters[field]?.operator,
+												[currentValue[0] || '', e.target.value].join(',')
+											);
 										}}
 									/>
 								{/if}
@@ -157,9 +165,10 @@
 								type={config.type === FilterType.NUMBER ? 'number' : 'text'}
 								value={activeFilters[field]?.value || ''}
 								class="w-full"
-								placeholder="Enter value"
-								oninput={(e) =>
-									handleFilterChange(field, activeFilters[field]?.operator, e.target.value)}
+								placeholder="Enter value hehe"
+								onchange={(e) => {
+									handleFilterChange(field, activeFilters[field]?.operator, e.target.value);
+								}}
 							/>
 						{/if}
 					</div>

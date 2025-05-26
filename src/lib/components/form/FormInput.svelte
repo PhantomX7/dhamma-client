@@ -47,7 +47,7 @@
 		{placeholder}
 		{required}
 		color={error ? 'red' : 'base'}
-		on:input={oninput}
+		oninput={oninput}
 	/>
 
 	{#if error}

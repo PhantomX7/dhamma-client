@@ -13,11 +13,11 @@
 
 	// Initialize SuperForm
 	const { form, errors, enhance, submitting, delayed, message } = superForm(data.form, {
-		resetForm: true,
+		resetForm: false,
 		taintedMessage: null,
 		multipleSubmits: 'prevent',
 		dataType: 'json',
-		invalidateAll: false,
+		invalidateAll: true,
 		applyAction: true
 	});
 

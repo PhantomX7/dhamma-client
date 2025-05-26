@@ -17,8 +17,8 @@
 		taintedMessage: null,
 		multipleSubmits: 'prevent',
 		dataType: 'json',
-		invalidateAll: true, // Invalidate data on success/error to reflect changes
-		applyAction: true // Apply server action results (errors, etc.)
+		invalidateAll: true,
+		applyAction: true 
 	});
 
 	// Breadcrumb items definition

@@ -66,11 +66,9 @@
 
 <Modal bind:open size="lg" title="Add Domains" autoclose={false} closeBtnClass="cursor-pointer">
 	<div class="mb-4">
-		<Search
-			bind:value={searchTerm}
-			on:input={handleSearch}
-			placeholder="Search domains by name or code..."
-		/>
+		<Search bind:value={searchTerm} onchange={handleSearch} placeholder="Search domains by code..."
+			><Button class="me-1">Search</Button></Search
+		>
 	</div>
 
 	{#if isSearching}

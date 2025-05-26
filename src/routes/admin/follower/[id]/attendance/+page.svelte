@@ -58,7 +58,7 @@
 					<TableHeadCell>Event Name</TableHeadCell>
 					<TableHeadCell>Attended Time</TableHeadCell>
 				</TableHead>
-				<TableBody class="divide-y">
+				<TableBody class="divide-y divide-gray-200 dark:divide-gray-700">
 					{#each attendanceList as attendance (attendance.id)}
 						<TableBodyRow>
 							<TableBodyCell class="font-medium text-gray-900 dark:text-white">

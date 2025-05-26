@@ -60,7 +60,7 @@
 						<TableHeadCell>Description</TableHeadCell>
 						<TableHeadCell class="hidden sm:table-cell">Date</TableHeadCell>
 					</TableHead>
-					<TableBody class="divide-y">
+					<TableBody class="divide-y divide-gray-200 dark:divide-gray-700">
 						{#each pointMutationList as mutation (mutation.id)}
 							<TableBodyRow>
 								<TableBodyCell class="whitespace-nowrap font-medium {(mutation.amount || 0) < 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'}">

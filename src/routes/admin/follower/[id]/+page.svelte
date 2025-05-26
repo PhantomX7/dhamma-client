@@ -42,7 +42,7 @@
 	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
 		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Follower Details</h1>
 		<div class="flex flex-shrink-0 gap-2">
-			<Button href="/admin/follower/{follower.id}/point-mutation" color="yellow">
+			<Button href="/admin/follower/{follower.id}/point-mutation" color="blue">
 				<CashOutline class="me-2 h-4 w-4" /> View Point History
 			</Button>
 			<Button href="/admin/follower/{follower.id}/attendance" color="blue">

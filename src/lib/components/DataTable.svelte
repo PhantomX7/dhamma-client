@@ -67,7 +67,7 @@
                     <Select 
                         class="w-20"
                         value={meta.limit}
-                        on:change={handleLimitChange}
+                        onchange={handleLimitChange}
                     >
                         {#each limitOptions as limit}
                             <option value={limit}>{limit}</option>

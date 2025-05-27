@@ -31,18 +31,18 @@
 </script>
 
 <!-- Use Container component -->
-<Container breadcrumb={breadcrumbItems}>
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-			Add New Card to {follower?.name || `Follower ${followerId}`}
-		</h1>
+<Container
+	breadcrumb={breadcrumbItems}
+	title={`Add New Card to ${follower?.name || `Follower ${followerId}`}`}
+>
+	{#snippet headerActions()}
 		{#if followerId}
-			<Button color="alternative" href="/admin/follower/{followerId}">
+			<Button color="alternative" href={`/admin/follower/${followerId}`}>
 				<ArrowLeftOutline class="me-2 h-4 w-4" />
 				Back to Follower
 			</Button>
 		{/if}
-	</div>
+	{/snippet}
 
 	<Card size="xl" class="mb-8 p-4">
 		<form method="POST" use:enhance class="space-y-6">
@@ -69,7 +69,7 @@
 
 			<div class="flex items-center justify-end space-x-3 pt-2">
 				{#if followerId}
-					<Button type="button" color="alternative" href="/admin/follower/{followerId}">
+					<Button type="button" color="alternative" href={`/admin/follower/${followerId}`}>
 						Cancel
 					</Button>
 				{/if}

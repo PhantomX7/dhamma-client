@@ -33,7 +33,7 @@
 
 	const breadcrumbItems = $derived([
 		{ href: '/admin/user', label: 'Users' },
-		{ href: `/admin/user/${user.id}`, label: user.username },
+		{ href: `/admin/user/${user?.id}`, label: user?.username || 'User Details' },
 		{ label: 'Manage Roles' }
 	]);
 
@@ -109,13 +109,11 @@
 </script>
 
 <!-- Use Container component -->
-<Container breadcrumb={breadcrumbItems}>
-	<!-- Page header -->
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-			Manage Roles for {user.username}
-		</h1>
-		<!-- Moved Add Role button here and added Back button -->
+<Container
+	breadcrumb={breadcrumbItems}
+	title={`Manage Roles for ${user?.username || 'Selected User'}`}
+>
+	{#snippet headerActions()}
 		<div class="flex flex-shrink-0 gap-2">
 			{#if hasPermission(currentUser(), 'user/assign-role')}
 				<Button
@@ -127,11 +125,11 @@
 					<PlusOutline class="me-2 h-4 w-4" /> Add Role
 				</Button>
 			{/if}
-			<Button color="light" href="/admin/user/{user.id}">
+			<Button color="light" href={`/admin/user/${user.id}`}>
 				<ChevronLeftOutline class="me-2 h-4 w-4" /> Back to User
 			</Button>
 		</div>
-	</div>
+	{/snippet}
 
 	<!-- Display message if no roles are assigned -->
 	{#if rolesByDomain.size === 0}

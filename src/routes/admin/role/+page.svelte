@@ -22,10 +22,10 @@
 	import { hasPermission } from '$lib/utils/permissions';
 
 	// Breadcrumb items definition
-	const breadcrumbItems = [{ label: 'Roles' }];
+	const breadcrumbItems = $derived([{ label: 'Roles', href: '/admin/role' }]);
 
 	// Configuration for the DataTable filter component
-	const filterConfig = {
+	const filterConfig = $derived({
 		...(currentUser().is_super_admin && {
 			domain_name: {
 				type: FilterType.STRING,
@@ -44,24 +44,21 @@
 			type: FilterType.DATE,
 			label: 'Created Date'
 		}
-	};
+	});
 
 	const tableColspan = $derived(currentUser().is_super_admin ? 7 : 6);
 </script>
 
 <!-- Use Container component -->
-<Container breadcrumb={breadcrumbItems}>
-	<!-- Page header section with responsive layout and spacing -->
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<!-- Page title using h1 -->
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Roles</h1>
+<Container breadcrumb={breadcrumbItems} title="Roles">
+	{#snippet headerActions()}
 		<!-- Add Role button with icon -->
 		{#if hasPermission(currentUser(), 'role/create')}
 			<Button href="/admin/role/add">
 				<PlusOutline class="me-2 h-4 w-4" /> Add New Role
 			</Button>
 		{/if}
-	</div>
+	{/snippet}
 
 	<!-- DataTable component wrapping the table -->
 	<DataTable data={data.roles} meta={data.meta} {filterConfig}>

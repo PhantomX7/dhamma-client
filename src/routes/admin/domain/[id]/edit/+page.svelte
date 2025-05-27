@@ -6,8 +6,8 @@
 	import { Container } from '$lib/components/layout';
 
 	let { data } = $props();
-	
-	// Success toast state
+	let domain = $derived(data.domain);
+
 	let showSuccessToast = $state(false);
 
 	const { form, enhance, errors, submitting, delayed, message } = superForm(data.form, {
@@ -17,29 +17,25 @@
 	});
 
 	// Define breadcrumb items
-	const breadcrumbItems = [
+	const breadcrumbItems = $derived([
 		{ href: '/admin/domain', label: 'Domains' },
-		{ href: `/admin/domain/${data.domain.id}`, label: data.domain.name },
+		{ href: `/admin/domain/${domain?.id}`, label: domain?.name || 'Domain Details' },
 		{ label: 'Edit' }
-	];
+	]);
 </script>
 
 <!-- Main page container -->
-<Container breadcrumb={breadcrumbItems}>
-	<!-- Page header -->
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-			Edit Domain: {data.domain.name}
-		</h1>
+<Container breadcrumb={breadcrumbItems} title={`Edit Domain: ${domain?.name || ''}`}>
+	{#snippet headerActions()}
 		<div class="flex flex-shrink-0 gap-2">
-			<Button color="light" href="/admin/domain/{data.domain.id}">
+			<Button color="light" href={`/admin/domain/${domain?.id}`}>
 				<FileLinesOutline class="me-2 h-4 w-4" /> Back to Details
 			</Button>
 			<Button color="alternative" href="/admin/domain">
 				<ListOutline class="me-2 h-4 w-4" /> Back to List
 			</Button>
 		</div>
-	</div>
+	{/snippet}
 
 	<!-- Form Card -->
 	<Card size="xl" class="mb-8 p-5">
@@ -102,7 +98,7 @@
 					text="Save Changes"
 					loadingText="Saving..."
 				/>
-				<Button type="button" color="alternative" href="/admin/domain/{data.domain.id}">Cancel</Button>
+				<Button type="button" color="alternative" href={`/admin/domain/${domain?.id}`}>Cancel</Button>
 			</div>
 		</form>
 	</Card>

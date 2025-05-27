@@ -1,6 +1,6 @@
 <script>
 	import { Button, Card, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
-	import { ArrowLeftOutline, CashOutline } from 'flowbite-svelte-icons'; // Added CoinsOutline
+	import { ArrowLeftOutline, CashOutline } from 'flowbite-svelte-icons';
 	import { formatDateTime } from '$lib/utils'; // Assuming you might want to show a timestamp
 	import DataTable from '$lib/components/DataTable.svelte';
 	import { Container } from '$lib/components/layout'; // Import Container
@@ -36,21 +36,21 @@
 </script>
 
 <!-- Use Container component -->
-<Container breadcrumb={breadcrumbItems}>
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-			<CashOutline class="me-2 inline-block h-6 w-6 align-text-bottom" /> Point Mutation History for: {follower?.name || `Follower ${followerId}`}
-		</h1>
+<Container
+	breadcrumb={breadcrumbItems}
+	title={`Point Mutation History for: ${follower?.name || `Follower ${followerId}`}`}
+>
+	{#snippet headerActions()}
 		{#if followerId}
 			<Button color="alternative" href={`/admin/follower/${followerId}`}>
 				<ArrowLeftOutline class="me-2 h-4 w-4" />
 				Back to Follower Details
 			</Button>
 		{/if}
-	</div>
+	{/snippet}
 
 	<Card size="xl" class="mb-8 p-4">
-		<h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">Point History</h2>
+		<h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white"><CashOutline class="me-2 inline-block h-5 w-5 align-text-bottom" />Point History</h2>
 
 		<DataTable data={pointMutationList} meta={data.meta} {filterConfig}>
 			{#if pointMutationList && pointMutationList.length > 0}

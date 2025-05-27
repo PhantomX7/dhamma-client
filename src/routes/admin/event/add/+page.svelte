@@ -29,15 +29,12 @@
 </script>
 
 <!-- Use Container component -->
-<Container breadcrumb={breadcrumbItems}>
-
-	<!-- Page header -->
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Add New Event</h1>
+<Container breadcrumb={breadcrumbItems} title="Add New Event">
+	{#snippet headerActions()}
 		<Button color="alternative" href="/admin/event">
 			<ListOutline class="me-2 h-4 w-4" /> Back to List
 		</Button>
-	</div>
+	{/snippet}
 
 	<!-- Form Card -->
 	<Card size="xl" class="mb-8 p-5">

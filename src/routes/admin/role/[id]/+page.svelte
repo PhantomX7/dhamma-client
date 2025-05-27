@@ -22,7 +22,10 @@
 	import { hasPermission, hasAnyPermission } from '$lib/utils/permissions';
 
 	// Breadcrumb items
-	const breadcrumbItems = $derived([{ href: '/admin/role', label: 'Roles' }, { label: role.name }]); // Use $derived
+	const breadcrumbItems = $derived([
+		{ href: '/admin/role', label: 'Roles' },
+		{ label: role?.name || 'Role Details' } // Use derived role and provide fallback
+	]);
 
 	/**
 	 * Groups the role's assigned permissions by their 'object' property.
@@ -64,18 +67,19 @@
 </script>
 
 <!-- Use Container component -->
-<Container breadcrumb={breadcrumbItems}>
-	<!-- Page header -->
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Role Details</h1>
+<Container
+	breadcrumb={breadcrumbItems}
+	title={`Role Details: ${role?.name || ''}`}
+>
+	{#snippet headerActions()}
 		<div class="flex flex-shrink-0 gap-2">
 			{#if hasAnyPermission(currentUser(), ['role/add-permissions', 'role/delete-permissions'])}
-				<Button href="/admin/role/{role.id}/permissions">
+				<Button href={`/admin/role/${role?.id}/permissions`}>
 					<LockOutline class="me-2 h-4 w-4" /> Manage Permissions
 				</Button>
 			{/if}
 			{#if hasPermission(currentUser(), 'role/udpate')}
-				<Button href="/admin/role/{role.id}/edit">
+				<Button href={`/admin/role/${role?.id}/edit`}>
 					<EditOutline class="me-2 h-4 w-4" /> Edit Role
 				</Button>
 			{/if}
@@ -83,23 +87,23 @@
 				<ListOutline class="me-2 h-4 w-4" /> Back to List
 			</Button>
 		</div>
-	</div>
+	{/snippet}
 
 	<!-- General Information Card -->
 	<Card size="xl" class="mb-8 p-5">
 		<h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">General Information</h2>
 		<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-			<DetailItem label="ID">{role.id}</DetailItem>
-			<DetailItem label="Domain">{role.domain?.name || 'N/A'}</DetailItem>
-			<DetailItem label="Role Name">{role.name}</DetailItem>
-			<DetailItem label="Description">{role.description || 'N/A'}</DetailItem>
+			<DetailItem label="ID">{role?.id}</DetailItem>
+			<DetailItem label="Domain">{role?.domain?.name || 'N/A'}</DetailItem>
+			<DetailItem label="Role Name">{role?.name}</DetailItem>
+			<DetailItem label="Description">{role?.description || 'N/A'}</DetailItem>
 			<DetailItem label="Active">
-				<Badge large rounded color={role.is_active ? 'green' : 'red'}>
-					{role.is_active ? 'Active' : 'Inactive'}
+				<Badge large rounded color={role?.is_active ? 'green' : 'red'}>
+					{role?.is_active ? 'Active' : 'Inactive'}
 				</Badge>
 			</DetailItem>
-			<DetailItem label="Created At">{formatDate(role.created_at)}</DetailItem>
-			<DetailItem label="Updated At">{formatDate(role.updated_at)}</DetailItem>
+			<DetailItem label="Created At">{formatDate(role?.created_at)}</DetailItem>
+			<DetailItem label="Updated At">{formatDate(role?.updated_at)}</DetailItem>
 		</div>
 	</Card>
 
@@ -108,7 +112,7 @@
 		<div class="mb-4 flex items-center justify-between">
 			<h2 class="text-xl font-semibold text-gray-900 dark:text-white">Assigned Permissions</h2>
 			{#if hasAnyPermission(currentUser(), ['role/add-permissions', 'role/delete-permissions'])}
-				<Button size="sm" href="/admin/role/{role.id}/permissions">Manage Permissions</Button>
+				<Button size="sm" href={`/admin/role/${role?.id}/permissions`}>Manage Permissions</Button>
 			{/if}
 		</div>
 
@@ -120,7 +124,7 @@
 				<InfoCircleOutline class="mb-3 h-8 w-8 text-gray-400 dark:text-gray-500" />
 				<p class="text-gray-500 dark:text-gray-400">No permissions assigned to this role.</p>
 				{#if hasAnyPermission(currentUser(), ['role/add-permissions', 'role/delete-permissions'])}
-					<Button class="mt-4" size="sm" href="/admin/role/{role.id}/permissions">
+					<Button class="mt-4" size="sm" href={`/admin/role/${role?.id}/permissions`}>
 						Assign Permissions
 					</Button>
 				{/if}

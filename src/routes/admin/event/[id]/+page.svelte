@@ -19,13 +19,8 @@
 </script>
 
 <!-- Use Container component -->
-<Container breadcrumb={breadcrumbItems}>
-
-	<!-- Page header -->
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-			Event Details: {event?.name || ''}
-		</h1>
+<Container breadcrumb={breadcrumbItems} title={`Event Details: ${event?.name || ''}`}>
+	{#snippet headerActions()}
 		<div class="flex flex-shrink-0 gap-2">
 			{#if event?.id}
 				<Button href={`/admin/event/${event.id}/attendance`} color="blue">
@@ -42,7 +37,7 @@
 				<ListOutline class="me-2 h-4 w-4" /> Back to List
 			</Button>
 		</div>
-	</div>
+	{/snippet}
 
 	<!-- General Information Card -->
 	<Card size="xl" class="mb-8 p-5">

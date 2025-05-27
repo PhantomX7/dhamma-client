@@ -27,20 +27,16 @@
 
 	const breadcrumbItems = $derived([
 		{ href: '/admin/user', label: 'Users' },
-		{ href: `/admin/user/${user.id}`, label: user.username },
+		{ href: `/admin/user/${user?.id}`, label: user?.username || 'User Details' },
 		{ label: 'Manage Domains' }
 	]);
 
 	// Form submission handler with data refresh
 	function handleSubmit() {
 		return async ({ result, update }) => {
-			// Only proceed if we have a successful result
-			if (result && result.type === 'success') {
-				// First invalidate all data
+			if (result.type === 'success') {
 				await invalidateAll();
-				// Then run the default update behavior
 				await update({ invalidateAll: true });
-				// Close modal if open
 				showModal = false;
 			}
 		};
@@ -48,17 +44,17 @@
 </script>
 
 <!-- Use Container component -->
-<Container breadcrumb={breadcrumbItems}>
-
-	<!-- Page header -->
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-			Manage Domains for {user.username}
-		</h1>
-		<Button color="light" href="/admin/user/{user.id}">
-			<ChevronLeftOutline class="me-2 h-4 w-4" /> Back to User
-		</Button>
-	</div>
+<Container
+	breadcrumb={breadcrumbItems}
+	title={`Manage Domains for ${user?.username || 'Selected User'}`}
+>
+	{#snippet headerActions()}
+		{#if user?.id}
+			<Button color="light" href={`/admin/user/${user.id}`}>
+				<ChevronLeftOutline class="me-2 h-4 w-4" /> Back to User
+			</Button>
+		{/if}
+	{/snippet}
 
 	<!-- Current User Domains Card -->
 	<Card size="xl" class="mb-8 p-4">
@@ -69,7 +65,7 @@
 			</Button>
 		</div>
 
-		{#if user.domains.length === 0}
+		{#if user?.domains?.length === 0}
 			<div
 				class="rounded-lg border border-gray-200 bg-gray-100 px-6 py-10 text-center dark:border-gray-700 dark:bg-gray-800"
 			>
@@ -87,7 +83,7 @@
 						<TableHeadCell class="px-6 py-3">Actions</TableHeadCell>
 					</TableHead>
 					<TableBody class="divide-y divide-gray-200 dark:divide-gray-700">
-						{#each user.domains as domain (domain.id)}
+						{#each user?.domains as domain (domain.id)}
 							<TableBodyRow
 								class="bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-600"
 							>
@@ -130,6 +126,6 @@
 <AssignDomainModal
 	bind:open={showModal}
 	{userDomainIds}
-	userId={user.id}
+	userId={user?.id}
 	{handleSubmit}
 />

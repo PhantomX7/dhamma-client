@@ -63,18 +63,18 @@
 	let elementRef = $state()
 </script>
 
-<Container breadcrumb={breadcrumbItems}>
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-			Record Attendance for: {event?.name || 'Event'}
-		</h1>
+<Container
+	breadcrumb={breadcrumbItems}
+	title={`Record Attendance for: ${event?.name || 'Event'}`}
+>
+	{#snippet headerActions()}
 		{#if eventId}
 			<Button color="alternative" href={`/admin/event/${eventId}`}>
 				<ArrowLeftOutline class="me-2 h-4 w-4" />
 				Back to Event Details
 			</Button>
 		{/if}
-	</div>
+	{/snippet}
 
 	<Card size="xl" class="mb-8 p-4">
 		<form method="POST" use:enhance class="space-y-6">

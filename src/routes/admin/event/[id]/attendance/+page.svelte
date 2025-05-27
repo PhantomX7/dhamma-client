@@ -16,8 +16,8 @@
 	const breadcrumbItems = $derived([
 		{ href: '/admin/event', label: 'Events' },
 		{
-			href: `/admin/event/${data.event?.id}`,
-			label: data.event?.name || `Event ${data.event?.id}`
+			href: `/admin/event/${eventId}`, // Use derived eventId
+			label: event?.name || `Event ${eventId}` // Use derived event and eventId
 		},
 		{ label: 'Attendance' }
 	]);
@@ -34,22 +34,21 @@
 	});
 </script>
 
-<Container breadcrumb={breadcrumbItems}>
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-			Attendance for: {event?.name || 'Event'}
-		</h1>
-		{#if event?.id}
-			<Button color="alternative" href={`/admin/event/${event.id}`}>
+<Container
+	breadcrumb={breadcrumbItems}
+	title={`Attendance for: ${event?.name || 'Event'}`}
+>
+	{#snippet headerActions()}
+		{#if eventId}
+			<Button color="alternative" href={`/admin/event/${eventId}`}>
 				<ArrowLeftOutline class="me-2 h-4 w-4" />
 				Back to Event Details
 			</Button>
 		{/if}
-	</div>
+	{/snippet}
 
 	<Card size="xl" class="mb-8 p-4">
-		<h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">Attendance List</h2>	
-        
+		<h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">Attendance List</h2>
 		<DataTable data={attendanceList} meta={data.meta} {filterConfig}>
 			{#if attendanceList && attendanceList.length > 0}
 				<Table hoverable={true} class="w-full">

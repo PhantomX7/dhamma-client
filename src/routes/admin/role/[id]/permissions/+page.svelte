@@ -52,7 +52,7 @@
 	// Breadcrumb items
 	const breadcrumbItems = $derived([
 		{ href: '/admin/role', label: 'Roles' },
-		{ href: `/admin/role/${role.id}`, label: role.name },
+		{ href: `/admin/role/${role?.id}`, label: role?.name || 'Role Details' },
 		{ label: 'Manage Permissions' }
 	]);
 
@@ -171,16 +171,17 @@
 </script>
 
 <!-- Use Container component -->
-<Container breadcrumb={breadcrumbItems}>
-	<!-- Page header -->
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-			Manage Permissions for <span class="font-medium">{role.name}</span>
-		</h1>
-		<Button color="light" href="/admin/role/{role.id}" size="md">
-			<ChevronLeftOutline class="me-2 h-4 w-4" /> Back to Role
-		</Button>
-	</div>
+<Container
+	breadcrumb={breadcrumbItems}
+	title={`Manage Permissions for ${role?.name || 'Selected Role'}`}
+>
+	{#snippet headerActions()}
+		{#if role?.id}
+			<Button color="light" href={`/admin/role/${role.id}`} size="md">
+				<ChevronLeftOutline class="me-2 h-4 w-4" /> Back to Role
+			</Button>
+		{/if}
+	{/snippet}
 
 	<!-- Alert messages -->
 	{#if showSuccessAlert}

@@ -19,11 +19,11 @@
 	];
 
 	// Empty breadcrumb items for dashboard as it's the root
-	const breadcrumbItems = [];
+	const breadcrumbItems = $derived([]); // Use $derived for consistency
 </script>
 
 <!-- Use Container component -->
-<Container breadcrumb={breadcrumbItems}>
+<Container breadcrumb={breadcrumbItems} title="Admin Dashboard">
 	<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4"></div>
 
 	<!-- Recent Users Table -->

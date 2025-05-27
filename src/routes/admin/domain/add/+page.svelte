@@ -19,17 +19,18 @@
 	});
 
 	// Breadcrumb items definition
-	const breadcrumbItems = [{ href: '/admin/domain', label: 'Domains' }, { label: 'Add Domain' }];
+	const breadcrumbItems = $derived([
+		{ href: '/admin/domain', label: 'Domains' },
+		{ label: 'Add Domain' }
+	]);
 </script>
 
-<Container breadcrumb={breadcrumbItems}>
-	<!-- Page header section -->
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Add New Domain</h1>
+<Container breadcrumb={breadcrumbItems} title="Add New Domain">
+	{#snippet headerActions()}
 		<Button color="alternative" href="/admin/domain">
 			<ListOutline class="me-2 h-4 w-4" /> Back to List
 		</Button>
-	</div>
+	{/snippet}
 
 	<!-- Use Card component as the form container -->
 	<Card size="xl" class="mb-8 p-5">

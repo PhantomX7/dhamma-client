@@ -8,6 +8,8 @@
 
 	// Component props
 	let { data } = $props();
+	const role = $derived(data.role); // Use $derived for reactivity
+
 	// Initialize superForm for form handling
 	const { form, enhance, errors, message, submitting, delayed } = superForm(data.form, {
 		dataType: 'json',
@@ -19,29 +21,29 @@
 	});
 
 	// Define breadcrumb items dynamically
-	const breadcrumbItems = [
+	const breadcrumbItems = $derived([
 		{ href: '/admin/role', label: 'Roles' },
-		{ href: `/admin/role/${data.role.id}`, label: data.role.name }, // Link back to details
+		{ href: `/admin/role/${role?.id}`, label: role?.name || 'Role Details' }, // Link back to details
 		{ label: 'Edit' }
-	];
+	]);
 </script>
 
 <!-- Use Container component -->
-<Container breadcrumb={breadcrumbItems}>
-	<!-- Page header section with responsive layout and spacing -->
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<!-- Page title using h1 -->
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Role: {data.role.name}</h1>
+<Container
+	breadcrumb={breadcrumbItems}
+	title={`Edit Role: ${role?.name || ''}`}
+>
+	{#snippet headerActions()}
 		<!-- Back buttons container, styled like the reference -->
 		<div class="flex flex-shrink-0 gap-2">
-			<Button color="light" href="/admin/role/{data.role.id}">
+			<Button color="light" href={`/admin/role/${role?.id}`}>
 				<FileLinesOutline class="me-2 h-4 w-4" /> Back to Details
 			</Button>
 			<Button color="alternative" href="/admin/role">
 				<ListOutline class="me-2 h-4 w-4" /> Back to List
 			</Button>
 		</div>
-	</div>
+	{/snippet}
 
 	<!-- Form Card -->
 	<Card size="xl" class="mb-8 p-5">
@@ -106,7 +108,7 @@
 					loadingText="Saving..."
 				/>
 				<!-- Standard Cancel button linking back to details page -->
-				<Button type="button" color="alternative" href="/admin/role/{data.role.id}">Cancel</Button>
+				<Button type="button" color="alternative" href={`/admin/role/${role?.id}`}>Cancel</Button>
 			</div>
 		</form>
 	</Card>

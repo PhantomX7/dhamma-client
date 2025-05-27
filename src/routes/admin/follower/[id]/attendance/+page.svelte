@@ -15,8 +15,8 @@
 	const breadcrumbItems = $derived([
 		{ href: '/admin/follower', label: 'Followers' },
 		{
-			href: `/admin/follower/${data.follower?.id}`,
-			label: data.follower?.name || `Follower ${data.follower?.id}`
+			href: `/admin/follower/${follower?.id}`,
+			label: follower?.name || `Follower ${follower?.id}`
 		},
 		{ label: 'Attendance' }
 	]);
@@ -35,25 +35,24 @@
 </script>
 
 <!-- Use Container component -->
-<Container breadcrumb={breadcrumbItems}>
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-			Attendance for: {follower?.name || 'Follower'}
-		</h1>
+<Container
+	breadcrumb={breadcrumbItems}
+	title={`Attendance for: ${follower?.name || 'Follower'}`}
+>
+	{#snippet headerActions()}
 		{#if follower?.id}
-			<Button color="alternative" href={`/admin/follower/${follower.id}`}>
-				<ArrowLeftOutline class="me-2 h-4 w-4" />
-				Back to Follower Details
+			<Button color="alternative" href={`/admin/follower/${follower?.id}`}>
+				<ArrowLeftOutline class="me-2 h-4 w-4" /> Back to Follower Details
 			</Button>
 		{/if}
-	</div>
+	{/snippet}
 
 	<Card size="xl" class="mb-8 p-4">
 		<h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-white">Attendance List</h2>
-		
+
 		<DataTable data={attendanceList} meta={data.meta} {filterConfig}>
-		{#if attendanceList && attendanceList.length > 0}
-			<Table hoverable={true} class="w-full">
+			{#if attendanceList && attendanceList.length > 0}
+				<Table hoverable={true} class="w-full">
 				<TableHead>
 					<TableHeadCell>Event Name</TableHeadCell>
 					<TableHeadCell>Attended Time</TableHeadCell>
@@ -70,12 +69,12 @@
 						</TableBodyRow>
 					{/each}
 				</TableBody>
-			</Table>
-		{:else}
-			<div class="p-4 text-center text-gray-500 dark:text-gray-400">
-				No attendance records found for this follower.
-			</div>
-		{/if}
+				</Table>
+			{:else}
+				<div class="p-4 text-center text-gray-500 dark:text-gray-400">
+					No attendance records found for this follower.
+				</div>
+			{/if}
 		</DataTable>
 	</Card>
 </Container>

@@ -23,20 +23,18 @@
 	});
 
 	// Breadcrumb items definition
-	const breadcrumbItems = [{ href: '/admin/user', label: 'Users' }, { label: 'Add User' }];
+	const breadcrumbItems = $derived([{ href: '/admin/user', label: 'Users' }, { label: 'Add User' }]);
 </script>
 
 <!-- Main page container -->
 <!-- Use Container component -->
-<Container breadcrumb={breadcrumbItems}>
-	<!-- Page header -->
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Add New User</h1>
+<Container breadcrumb={breadcrumbItems} title="Add New User">
+	{#snippet headerActions()}
 		<Button color="alternative" href="/admin/user">
 			<ListOutline class="me-2 h-4 w-4" />
 			Back to List
 		</Button>
-	</div>
+	{/snippet}
 
 	<!-- Use Card component for the form container -->
 	<Card size="xl" class="mb-8 p-5">

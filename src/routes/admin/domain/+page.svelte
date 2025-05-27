@@ -8,7 +8,6 @@
 		TableBodyCell,
 		TableHead,
 		TableHeadCell,
-		breadcrumb
 	} from 'flowbite-svelte';
 	// Added icons for buttons
 	import { PlusOutline, EyeOutline, EditOutline } from 'flowbite-svelte-icons';
@@ -21,10 +20,10 @@
 	let { data } = $props();
 
 	// Breadcrumb items definition
-	const breadcrumbItems = [{ label: 'Domains' }];
+	const breadcrumbItems = $derived([{ label: 'Domains', href: '/admin/domain' }]);
 
 	// Configuration for the DataTable filter component
-	const filterConfig = {
+	const filterConfig = $derived({
 		id: {
 			type: FilterType.ID,
 			label: 'ID'
@@ -45,19 +44,15 @@
 			type: FilterType.DATE,
 			label: 'Created Date'
 		}
-	};
+	});
 </script>
 
-<Container breadcrumb={breadcrumbItems}>
-	<!-- Page header section with responsive layout and spacing -->
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<!-- Page title using h1 for semantic structure -->
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Domains</h1>
-		<!-- Add Domain button with icon -->
+<Container breadcrumb={breadcrumbItems} title="Domains">
+	{#snippet headerActions()}
 		<Button href="/admin/domain/add">
-			<PlusOutline class="me-2 h-4 w-4" /> Add Domain
+			<PlusOutline class="me-2 h-4 w-4" /> Add New Domain
 		</Button>
-	</div>
+	{/snippet}
 
 	<!-- DataTable component wrapping the table -->
 	<DataTable data={data.domains} meta={data.meta} {filterConfig}>

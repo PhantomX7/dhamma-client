@@ -24,10 +24,10 @@
 	const currentUser = getContext('user');
 
 	// Breadcrumb items definition
-	const breadcrumbItems = [{ label: 'Users' }];
+	const breadcrumbItems = $derived([{ label: 'Users', href: '/admin/user' }]);
 
 	// Configuration for the DataTable filter component
-	const filterConfig = {
+	const filterConfig = $derived({
 		username: {
 			type: FilterType.STRING,
 			label: 'Username'
@@ -41,22 +41,19 @@
 			label: 'Created Date'
 		}
 		// Add other relevant filters like 'is_super_admin' if needed
-	};
+	});
 </script>
 
 <!-- Main page container with Container component -->
-<Container breadcrumb={breadcrumbItems}>
-	<!-- Page header section with responsive layout and spacing -->
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<!-- Page title using h1 -->
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Users</h1>
+<Container breadcrumb={breadcrumbItems} title="Users">
+	{#snippet headerActions()}
 		<!-- Add User button with icon and link -->
 		{#if hasPermission(currentUser(), 'user/create')}
-		<Button href="/admin/user/add">
-			<PlusOutline class="me-2 h-4 w-4" /> Add User
-		</Button>
+			<Button href="/admin/user/add">
+				<PlusOutline class="me-2 h-4 w-4" /> Add User
+			</Button>
 		{/if}
-	</div>
+	{/snippet}
 
 	<!-- DataTable component wrapping the table -->
 	<DataTable data={data.users} meta={data.meta} {filterConfig}>

@@ -22,10 +22,12 @@
 	const currentUser = getContext('user');
 
 	// Breadcrumb items definition
-	const breadcrumbItems = [{ label: 'Permissions' }];
+	const breadcrumbItems = $derived([{ label: 'Permissions', href: '/admin/permission' }]);
 
 	// Configuration for the DataTable filter component
-	const filterConfig = {
+	// Use $derived for reactive configuration if it depends on other reactive state,
+	// or keep as const if static. For consistency with other refactored files, using $derived.
+	const filterConfig = $derived({
 		name: {
 			type: FilterType.STRING,
 			label: 'Name'
@@ -39,21 +41,18 @@
 			label: 'Type',
 			enumValues: ['API', 'WEB']
 		}
-		// Add other relevant filters like 'object', 'action', 'is_domain_specific' if needed
-	};
+		// Add other relevant filters like 'object', 'action', 'is_domain_specific' if needed.
+	});
 </script>
 
 <!-- Use Container component -->
-<Container breadcrumb={breadcrumbItems}>
-	<!-- Page header section with responsive layout and spacing -->
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<!-- Page title using h1 -->
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Permissions</h1>
+<Container breadcrumb={breadcrumbItems} title="Permissions">
+	{#snippet headerActions()}
 		<!-- Add Permission button with icon -->
 		<Button href="/admin/permission/add">
 			<PlusOutline class="me-2 h-4 w-4" /> Add New Permission
 		</Button>
-	</div>
+	{/snippet}
 
 	<!-- DataTable component wrapping the table -->
 	<DataTable data={data.permissions} meta={data.meta} {filterConfig}>

@@ -21,7 +21,7 @@
 	let { data } = $props(); // Contains events and meta from load function
 
 	// Breadcrumb items definition
-	const breadcrumbItems = $derived([{ label: 'Events' }]);
+	const breadcrumbItems = $derived([{ label: 'Events', href: '/admin/event' }]);
 
 	// Configuration for the DataTable filter component
 	const filterConfig = $derived({
@@ -47,15 +47,12 @@
 </script>
 
 <!-- Use Container component -->
-<Container breadcrumb={breadcrumbItems}>
-
-	<!-- Page header -->
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Events</h1>
+<Container breadcrumb={breadcrumbItems} title="Events">
+	{#snippet headerActions()}
 		<Button href="/admin/event/add">
 			<PlusOutline class="me-2 h-4 w-4" /> Add Event
 		</Button>
-	</div>
+	{/snippet}
 
 	<!-- DataTable component -->
 	<DataTable data={data.events} meta={data.meta} {filterConfig}>

@@ -68,24 +68,24 @@
 </script>
 
 <!-- Use Container component -->
-<Container breadcrumb={breadcrumbItems}>
-
-	<!-- Page header -->
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">User Details</h1>
+<Container
+	breadcrumb={breadcrumbItems}
+	title={`User Details: ${user?.username || ''}`}
+>
+	{#snippet headerActions()}
 		<div class="flex flex-shrink-0 gap-2">
 			<!-- {#if currentUser().is_super_admin || currentUser().id === user.id /* Or based on permissions */}
 				<Button href="/admin/user/{user.id}/edit">
 					<EditOutline class="me-2 h-4 w-4" /> Edit User
 				</Button>
 			{/if} -->
-			{#if currentUser().is_super_admin}
-				<Button href="/admin/user/{user.id}/domains">
+			{#if currentUser().is_super_admin && user?.id}
+				<Button href={`/admin/user/${user.id}/domains`}>
 					<CogOutline class="me-2 h-4 w-4" /> Manage Domains
 				</Button>
 			{/if}
-			{#if hasAnyPermission(currentUser(), ['user/assign-role', 'user/remove-role'])}
-				<Button href="/admin/user/{user.id}/roles">
+			{#if hasAnyPermission(currentUser(), ['user/assign-role', 'user/remove-role']) && user?.id}
+				<Button href={`/admin/user/${user.id}/roles`}>
 					<CogOutline class="me-2 h-4 w-4" /> Manage Roles
 				</Button>
 			{/if}
@@ -93,51 +93,51 @@
 				<ListOutline class="me-2 h-4 w-4" /> Back to List
 			</Button>
 		</div>
-	</div>
+	{/snippet}
 
 	<!-- General Information Card -->
 	<Card size="xl" class="mb-8 p-5">
 		<h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">General Information</h2>
 		<div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
 			<DetailItem label="ID">
-				<p class="text-base font-semibold text-gray-900 dark:text-white">{user.id}</p>
+				<p class="text-base font-semibold text-gray-900 dark:text-white">{user?.id}</p>
 			</DetailItem>
 
 			<DetailItem label="Username">
-				<p class="text-base font-semibold text-gray-900 dark:text-white">{user.username}</p>
+				<p class="text-base font-semibold text-gray-900 dark:text-white">{user?.username}</p>
 			</DetailItem>
 
 			<DetailItem label="UUID">
-				<p class="font-mono text-base text-gray-700 dark:text-gray-300">{user.uuid}</p>
+				<p class="font-mono text-base text-gray-700 dark:text-gray-300">{user?.uuid}</p>
 			</DetailItem>
 
 			<DetailItem label="Status">
-				<Badge large rounded color={user.is_active ? 'green' : 'gray'}>
-					{user.is_active ? 'Active' : 'Inactive'}
+				<Badge large rounded color={user?.is_active ? 'green' : 'gray'}>
+					{user?.is_active ? 'Active' : 'Inactive'}
 				</Badge>
 			</DetailItem>
 
 			{#if currentUser().is_super_admin}
 				<DetailItem label="Super Admin">
-					<Badge large rounded color={user.is_super_admin ? 'purple' : 'gray'}>
-						{user.is_super_admin ? 'Yes' : 'No'}
+					<Badge large rounded color={user?.is_super_admin ? 'purple' : 'gray'}>
+						{user?.is_super_admin ? 'Yes' : 'No'}
 					</Badge>
 				</DetailItem>
 			{/if}
 
 			<DetailItem label="Created At">
-				<p class="text-base text-gray-700 dark:text-gray-300">{formatDate(user.created_at)}</p>
+				<p class="text-base text-gray-700 dark:text-gray-300">{formatDate(user?.created_at)}</p>
 			</DetailItem>
 
 			<DetailItem label="Updated At">
-				<p class="text-base text-gray-700 dark:text-gray-300">{formatDate(user.updated_at)}</p>
+				<p class="text-base text-gray-700 dark:text-gray-300">{formatDate(user?.updated_at)}</p>
 			</DetailItem>
 		</div>
 	</Card>
 
 	{#if currentUser().is_super_admin}
 		<!-- Assigned Domains Card -->
-		<Card size="xl" class="mb-8 p-5">
+		<Card size="xl" class="mb-8 p-5"> <!-- Removed class="divide-y divide-gray-200 dark:divide-gray-700" as it's not needed on the Card itself -->
 			<h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">Assigned Domains</h2>
 			{#if user.domains && user.domains.length > 0}
 				<div class="flex flex-wrap gap-2">
@@ -152,7 +152,7 @@
 					<p class="text-gray-500 dark:text-gray-400">
 						This user currently has no domains assigned.
 					</p>
-					<Button class="mt-4" size="sm" href="/admin/user/{user.id}/domains">
+					<Button class="mt-4" size="sm" href={`/admin/user/${user?.id}/domains`}>
 						Manage Domains
 					</Button>
 				</div>
@@ -164,7 +164,7 @@
 	<Card size="xl" class="mb-8 p-5">
 		<div class="mb-6 flex items-center justify-between">
 			<h2 class="text-xl font-semibold text-gray-900 dark:text-white">User Roles by Domain</h2>
-			<Button size="xs" href="/admin/user/{user.id}/roles" class="px-3">
+			<Button size="xs" href={`/admin/user/${user?.id}/roles`} class="px-3">
 				<CogOutline class="me-2 h-4 w-4" /> Manage Roles
 			</Button>
 		</div>
@@ -172,7 +172,7 @@
 		{#if user.user_roles && user.user_roles.length > 0}
 			<div class="space-y-6">
 				{#each rolesByDomain as domainData}
-					<div class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+					<div class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700"> <!-- Removed class="divide-y divide-gray-200 dark:divide-gray-700" as it's applied to TableBody -->
 						<!-- Domain Header -->
 						<div class="bg-gray-50 px-4 py-3 dark:bg-gray-800">
 							<div class="flex items-center justify-between">
@@ -239,7 +239,7 @@
 				class="rounded-lg border border-gray-200 bg-gray-50 px-6 py-10 text-center dark:border-gray-700 dark:bg-gray-800"
 			>
 				<div class="mb-4 flex justify-center">
-					<UserCircleSolid class="h-12 w-12 text-gray-400" />
+					<UserCircleSolid class="h-12 w-12 text-gray-400 dark:text-gray-500" />
 				</div>
 				<p class="mb-2 text-lg font-medium text-gray-900 dark:text-white">No Roles Assigned</p>
 				<p class="mb-4 text-gray-500 dark:text-gray-400">
@@ -247,7 +247,7 @@
 				</p>
 				{#if hasAnyPermission(currentUser(), ['user/assign-role', 'user/remove-role'])}
 					<Button href="/admin/user/{user.id}/roles">
-						<CogOutline class="me-2 h-4 w-4" /> Manage Roles
+						<CogOutline class="me-2 h-4 w-4" /> Assign Roles
 					</Button>
 				{/if}
 			</div>

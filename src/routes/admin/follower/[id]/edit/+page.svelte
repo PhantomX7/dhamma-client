@@ -1,11 +1,13 @@
 <script>
-	import { Button } from 'flowbite-svelte'; 
+	import { Button, Card } from 'flowbite-svelte';
 	import { FileLinesOutline, ListOutline } from 'flowbite-svelte-icons';
 	import { FormInput, FormToggle, FormButton, ErrorAlert } from '$lib/components/form'; 
 	import { superForm } from 'sveltekit-superforms/client'; 
 	import { Container } from '$lib/components/layout'; 
 
 	let { data } = $props();
+	const follower = $derived(data.follower);
+
 	const { form, enhance, errors, submitting, delayed } = superForm(data.form, {
 		dataType: 'json',
 		resetForm: false,
@@ -14,31 +16,29 @@
 	});
 
 	// Define breadcrumb items
-	const breadcrumbItems = [
+	const breadcrumbItems = $derived([
 		{ href: '/admin/follower', label: 'Followers' },
-		{ href: `/admin/follower/${data.follower.id}`, label: data.follower.name },
+		{ href: `/admin/follower/${follower?.id}`, label: follower?.name || 'Follower Details' },
 		{ label: 'Edit' }
-	];
+	]);
 </script>
 
 <!-- Use Container component -->
-<Container breadcrumb={breadcrumbItems}>
-
-	<!-- Page header -->
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Edit Follower: {data.follower.name}</h1>
+<Container
+	breadcrumb={breadcrumbItems}
+	title={`Edit Follower: ${follower?.name || ''}`}
+>
+	{#snippet headerActions()}
 		<div class="flex flex-shrink-0 gap-2">
-			<Button color="light" href="/admin/follower/{data.follower.id}">
+			<Button color="light" href={`/admin/follower/${follower?.id}`}>
 				<FileLinesOutline class="me-2 h-4 w-4" /> Back to Details
 			</Button>
 			<Button color="alternative" href="/admin/follower">
 				<ListOutline class="me-2 h-4 w-4" /> Back to List
 			</Button>
 		</div>
-	</div>
-
-	<!-- Form Card -->
-	<div class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+	{/snippet}
+	<Card size="xl" class="p-6">
 		<form method="POST" use:enhance class="space-y-6">
 			<input type="hidden" name="_original" bind:value={$form._original} />
 
@@ -81,8 +81,8 @@
 					text="Save Changes"
 					loadingText="Saving..."
 				/>
-				<Button type="button" color="alternative" href="/admin/follower/{data.follower.id}">Cancel</Button>
+				<Button type="button" color="alternative" href={`/admin/follower/${follower?.id}`}>Cancel</Button>
 			</div>
 		</form>
-	</div>
+	</Card>
 </Container>

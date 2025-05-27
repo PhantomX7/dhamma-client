@@ -1,6 +1,11 @@
 <script>
+	import { onMount } from 'svelte';
 	import { Button, Card, Alert } from 'flowbite-svelte';
-	import { ArrowLeftOutline, ExclamationCircleSolid, CheckCircleSolid } from 'flowbite-svelte-icons';
+	import {
+		ArrowLeftOutline,
+		ExclamationCircleSolid,
+		CheckCircleSolid
+	} from 'flowbite-svelte-icons';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { FormInput, FormButton } from '$lib/components/form';
 	import { Container } from '$lib/components/layout';
@@ -9,6 +14,9 @@
 	let { data } = $props();
 	const event = $derived(data.event);
 	const eventId = $derived(data.eventId);
+
+	// Force focus variables
+	let shouldMaintainFocus = $state(true);
 
 	// Initialize SuperForm for client-side form handling
 	const { form, errors, enhance, submitting, delayed, message, submit } = superForm(data.form, {
@@ -42,7 +50,7 @@
 
 	// Auto-submit functionality for RFID scanner
 	let debounceTimer;
-	
+
 	/**
 	 * Handles input changes and auto-submits after typing stops
 	 * @param {Event} e - The input event
@@ -50,7 +58,7 @@
 	function handleCardCodeInput(e) {
 		// Clear any existing timer
 		if (debounceTimer) clearTimeout(debounceTimer);
-		
+
 		// Set a new timer to submit the form after typing stops
 		debounceTimer = setTimeout(() => {
 			const value = e.target.value.trim();
@@ -60,20 +68,70 @@
 		}, 500); // 500ms delay - adjust if needed for your RFID scanner
 	}
 
-	let elementRef = $state()
+	let elementRef = $state();
+
+	// Force focus event handlers
+	function handleBlur() {
+		if (shouldMaintainFocus && elementRef) {
+			setTimeout(() => {
+				elementRef?.focus();
+			}, 0);
+		}
+	}
+
+	function handleDocumentClick(e) {
+		// Only refocus if not clicking on interactive elements
+		if (
+			shouldMaintainFocus &&
+			elementRef &&
+			!e.target.matches(
+				'button, a, select, input, textarea, [tabindex], [role="button"], .alert button'
+			)
+		) {
+			setTimeout(() => {
+				elementRef?.focus();
+			}, 0);
+		}
+	}
+
+	// Effect to focus the input when the component mounts and manage force focus
+	$effect(() => {
+		if (elementRef && typeof document !== 'undefined') {
+			// Initial focus
+			if (document.activeElement !== elementRef) {
+				elementRef.focus();
+			}
+
+			// Add blur event listener to the input element
+			elementRef.addEventListener('blur', handleBlur);
+
+			// Cleanup function
+			return () => {
+				if (elementRef) {
+					elementRef.removeEventListener('blur', handleBlur);
+				}
+			};
+		}
+	});
+
+	// Mount effect for document click listener
+	onMount(() => {
+		document.addEventListener('click', handleDocumentClick);
+
+		return () => {
+			document.removeEventListener('click', handleDocumentClick);
+		};
+	});
 </script>
 
-<Container
-	breadcrumb={breadcrumbItems}
-	title={`Record Attendance for: ${event?.name || 'Event'}`}
->
+<Container breadcrumb={breadcrumbItems} title={`Record Attendance for: ${event?.name || 'Event'}`}>
 	{#snippet headerActions()}
-		{#if eventId}
-			<Button color="alternative" href={`/admin/event/${eventId}`}>
-				<ArrowLeftOutline class="me-2 h-4 w-4" />
-				Back to Event Details
-			</Button>
-		{/if}
+		<Button color="alternative" href={`/admin/event/${eventId}`}>
+			<ArrowLeftOutline class="me-2 h-4 w-4" />
+			Back to Event Details
+		</Button>
+
+		<!-- Toggle button for force focus -->
 	{/snippet}
 
 	<Card size="xl" class="mb-8 p-4">
@@ -86,7 +144,7 @@
 					onclose={() => message.set(null)}
 					class="items-center"
 				>
-				{#snippet icon()}
+					{#snippet icon()}
 						{#if $message.type === 'error'}
 							<ExclamationCircleSolid class="me-2 h-5 w-5 flex-shrink-0" />
 						{:else}
@@ -110,11 +168,14 @@
 			/>
 
 			<div class="flex items-center justify-end space-x-3 pt-2">
-				{#if eventId}
-					<Button type="button" color="alternative" href={`/admin/event/${eventId}`}>
-						Cancel
-					</Button>
-				{/if}
+				<Button
+					color={shouldMaintainFocus ? 'red' : 'green'}
+					onclick={() => (shouldMaintainFocus = !shouldMaintainFocus)}
+					size="sm"
+				>
+					Force Focus: {shouldMaintainFocus ? 'ON' : 'OFF'}
+				</Button>
+				<Button type="button" color="alternative" href={`/admin/event/${eventId}`}>Cancel</Button>
 			</div>
 		</form>
 	</Card>

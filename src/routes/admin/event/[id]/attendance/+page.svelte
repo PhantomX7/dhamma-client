@@ -1,5 +1,14 @@
 <script>
-	import { Button, Card, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from 'flowbite-svelte';
+	import {
+		Button,
+		Card,
+		Table,
+		TableBody,
+		TableBodyCell,
+		TableBodyRow,
+		TableHead,
+		TableHeadCell
+	} from 'flowbite-svelte';
 	import { ArrowLeftOutline } from 'flowbite-svelte-icons';
 	import { formatDateTime } from '$lib/utils';
 	import { Container } from '$lib/components/layout';
@@ -10,14 +19,13 @@
 	let { data } = $props();
 	const event = $derived(data.event);
 	const attendanceList = $derived(data.attendances);
-	const eventId = $derived(data.eventId);
 
 	// Breadcrumb items
 	const breadcrumbItems = $derived([
 		{ href: '/admin/event', label: 'Events' },
 		{
-			href: `/admin/event/${eventId}`, // Use derived eventId
-			label: event?.name || `Event ${eventId}` // Use derived event and eventId
+			href: `/admin/event/${event.id}`, // Use derived eventId
+			label: event?.name || `Event ${event.id}` // Use derived event and eventId
 		},
 		{ label: 'Attendance' }
 	]);
@@ -34,17 +42,12 @@
 	});
 </script>
 
-<Container
-	breadcrumb={breadcrumbItems}
-	title={`Attendance for: ${event?.name || 'Event'}`}
->
+<Container breadcrumb={breadcrumbItems} title={`Attendance for: ${event?.name || 'Event'}`}>
 	{#snippet headerActions()}
-		{#if eventId}
-			<Button color="alternative" href={`/admin/event/${eventId}`}>
-				<ArrowLeftOutline class="me-2 h-4 w-4" />
-				Back to Event Details
-			</Button>
-		{/if}
+		<Button color="alternative" href={`/admin/event/${event.id}`}>
+			<ArrowLeftOutline class="me-2 h-4 w-4" />
+			Back to Event Details
+		</Button>
 	{/snippet}
 
 	<Card size="xl" class="mb-8 p-4">

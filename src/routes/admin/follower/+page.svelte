@@ -14,18 +14,19 @@
 	import DataTable from '$lib/components/DataTable.svelte';
 	import { FilterType } from '$lib/utils/filter';
 	import { getContext } from 'svelte';
-	import { Container } from '$lib/components/layout'; // Import Container
+	import { Container } from '$lib/components/layout';
+	import { hasPermission } from '$lib/utils/permissions'; // Import hasPermission
 
-    const currentUser = getContext('user');
+	const currentUser = getContext('user');
 
 	// Component props
 	let { data } = $props();
 
 	// Breadcrumb items definition
-	const breadcrumbItems = [{ label: 'Followers' }];
+	const breadcrumbItems = $derived([{ label: 'Followers', href: '/admin/follower' }]);
 
 	// Configuration for the DataTable filter component
-	const filterConfig = {
+	const filterConfig = $derived({
 		name: {
 			type: FilterType.STRING,
 			label: 'Name'
@@ -48,20 +49,20 @@
 			type: FilterType.DATE,
 			label: 'Created Date'
 		}
-	};
+	});
 
 	const tableColspan = $derived(currentUser().is_super_admin ? 9 : 8);
 </script>
 
 <!-- Use Container component -->
-<Container breadcrumb={breadcrumbItems}>
-	<!-- Page header -->
-	<div class="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-		<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Followers</h1>
-		<Button href="/admin/follower/add">
-			<PlusOutline class="me-2 h-4 w-4" /> Add Follower
-		</Button>
-	</div>
+<Container breadcrumb={breadcrumbItems} title="Followers">
+	{#snippet headerActions()}
+		{#if hasPermission(currentUser(), 'follower/create')}
+			<Button href="/admin/follower/add">
+				<PlusOutline class="me-2 h-4 w-4" /> Add Follower
+			</Button>
+		{/if}
+	{/snippet}
 
 	<!-- DataTable component -->
 	<DataTable data={data.followers} meta={data.meta} {filterConfig}>
@@ -106,12 +107,16 @@
 						<TableBodyCell>{formatDate(follower.created_at)}</TableBodyCell>
 						<TableBodyCell>
 							<div class="flex space-x-2">
-								<Button size="xs" color="alternative" href="/admin/follower/{follower.id}">
-									<EyeOutline class="me-1.5 h-3.5 w-3.5" /> View
-								</Button>
-								<Button size="xs" color="primary" href="/admin/follower/{follower.id}/edit">
-									<EditOutline class="me-1.5 h-3.5 w-3.5" /> Edit
-								</Button>
+								{#if hasPermission(currentUser(), 'follower/show')}
+									<Button size="xs" color="alternative" href="/admin/follower/{follower.id}">
+										<EyeOutline class="me-1.5 h-3.5 w-3.5" /> View
+									</Button>
+								{/if}
+								{#if hasPermission(currentUser(), 'follower/update')}
+									<Button size="xs" color="primary" href="/admin/follower/{follower.id}/edit">
+										<EditOutline class="me-1.5 h-3.5 w-3.5" /> Edit
+									</Button>
+								{/if}
 							</div>
 						</TableBodyCell>
 					</TableBodyRow>

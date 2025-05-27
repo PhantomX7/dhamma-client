@@ -3,6 +3,7 @@
 	import { ListOutline, EditOutline, UserAddOutline, UsersOutline } from 'flowbite-svelte-icons'; // Added UsersOutline
 	import { formatDate } from '$lib/utils';
 	import { Container, DetailItem } from '$lib/components/layout'; // Import Container and DetailItem
+	import { hasPermission } from '$lib/utils/permissions'; // Import hasPermission
 	import { getContext } from 'svelte';
 
 	const currentUser = getContext('user');
@@ -23,15 +24,21 @@
 	{#snippet headerActions()}
 		<div class="flex flex-shrink-0 gap-2">
 			{#if event?.id}
-				<Button href={`/admin/event/${event.id}/attendance`} color="blue">
-					<UsersOutline class="me-2 h-4 w-4" /> View Attendance
-				</Button>
-				<Button href={`/admin/event/${event.id}/attend`} color="green">
-					<UserAddOutline class="me-2 h-4 w-4" /> Attend Event
-				</Button>
-				<Button href={`/admin/event/${event.id}/edit`}>
-					<EditOutline class="me-2 h-4 w-4" /> Edit Event
-				</Button>
+				{#if hasPermission(currentUser(), 'event-attendance/index')}
+					<Button href={`/admin/event/${event.id}/attendance`} color="blue">
+						<UsersOutline class="me-2 h-4 w-4" /> View Attendance
+					</Button>
+				{/if}
+				{#if hasPermission(currentUser(), 'event/attend')}
+					<Button href={`/admin/event/${event.id}/attend`} color="green">
+						<UserAddOutline class="me-2 h-4 w-4" /> Attend Event
+					</Button>
+				{/if}
+				{#if hasPermission(currentUser(), 'event/update')}
+					<Button href={`/admin/event/${event.id}/edit`}>
+						<EditOutline class="me-2 h-4 w-4" /> Edit Event
+					</Button>
+				{/if}
 			{/if}
 			<Button color="light" href="/admin/event">
 				<ListOutline class="me-2 h-4 w-4" /> Back to List

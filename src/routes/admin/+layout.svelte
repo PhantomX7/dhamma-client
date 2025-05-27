@@ -71,6 +71,9 @@
 		isSidebarCollapsed = !isSidebarCollapsed;
 		if (isOpen) isOpen = false; // Close mobile overlay if sidebar state changes
 	}
+
+	const activeClass =
+		'flex items-center p-2 text-base font-normal text-white bg-primary-600 dark:bg-primary-700 rounded-lg dark:text-white hover:bg-primary-800 dark:hover:bg-primary-800';
 </script>
 
 <!-- Add dark mode background class to the main container -->
@@ -82,6 +85,7 @@
 			: 'w-64 translate-x-0 opacity-100'}"
 		activeUrl={sidebarItems.find((item) => $page.url.pathname.startsWith(item.href))?.href ||
 			$page.url.pathname}
+		{activeClass}
 	>
 		<!-- Add dark mode background class to the sidebar wrapper -->
 		<SidebarWrapper divClass="h-full overflow-y-auto bg-white px-3 py-4 dark:bg-gray-800">

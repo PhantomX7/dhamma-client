@@ -13,6 +13,7 @@
 	import DataTable from '$lib/components/DataTable.svelte';
 	import { FilterType } from '$lib/utils/filter';
 	import { Container } from '$lib/components/layout'; // Import Container
+	import { hasPermission } from '$lib/utils/permissions'; // Import hasPermission
 	import { getContext } from 'svelte';
 
 	const currentUser = getContext('user');
@@ -49,9 +50,11 @@
 <!-- Use Container component -->
 <Container breadcrumb={breadcrumbItems} title="Events">
 	{#snippet headerActions()}
-		<Button href="/admin/event/add">
-			<PlusOutline class="me-2 h-4 w-4" /> Add Event
-		</Button>
+		{#if hasPermission(currentUser(), 'event/create')}
+			<Button href="/admin/event/add">
+				<PlusOutline class="me-2 h-4 w-4" /> Add Event
+			</Button>
+		{/if}
 	{/snippet}
 
 	<!-- DataTable component -->
@@ -83,22 +86,26 @@
 						<TableBodyCell>{event.points_awarded}</TableBodyCell>
 						<TableBodyCell>{formatDate(event.created_at)}</TableBodyCell>
 						<TableBodyCell class="flex space-x-2">
-							<Button
-								size="sm"
-								color="alternative"
-								href={`/admin/event/${event.id}`}
-								aria-label="View event"
-							>
-								<EyeOutline class="h-4 w-4" />
-							</Button>
-							<Button
-								size="sm"
-								color="blue"
-								href={`/admin/event/${event.id}/edit`}
-								aria-label="Edit event"
-							>
-								<EditOutline class="h-4 w-4" />
-							</Button>
+							{#if hasPermission(currentUser(), 'event/show')}
+								<Button
+									size="sm"
+									color="alternative"
+									href={`/admin/event/${event.id}`}
+									aria-label="View event"
+								>
+									<EyeOutline class="h-4 w-4" />
+								</Button>
+							{/if}
+							{#if hasPermission(currentUser(), 'event/update')}
+								<Button
+									size="sm"
+									color="blue"
+									href={`/admin/event/${event.id}/edit`}
+									aria-label="Edit event"
+								>
+									<EditOutline class="h-4 w-4" />
+								</Button>
+							{/if}
 						</TableBodyCell>
 					</TableBodyRow>
 				{/each}

@@ -2,8 +2,14 @@
 	import { Button, Card } from 'flowbite-svelte';
 	import { ListOutline } from 'flowbite-svelte-icons';
 	import { superForm } from 'sveltekit-superforms/client';
-	import { FormInput, FormToggle, FormButton, FormSearchSelect, ErrorAlert } from '$lib/components/form'; // Added ErrorAlert
-	import { Container } from '$lib/components/layout'; 
+	import {
+		FormInput,
+		FormToggle,
+		FormButton,
+		FormSearchSelect,
+		ErrorAlert
+	} from '$lib/components/form'; // Added ErrorAlert
+	import { Container } from '$lib/components/layout';
 	import { getContext } from 'svelte';
 
 	const currentUser = getContext('user');
@@ -18,7 +24,7 @@
 		multipleSubmits: 'prevent',
 		dataType: 'json',
 		invalidateAll: true,
-		applyAction: true 
+		applyAction: true
 	});
 
 	// Breadcrumb items definition
@@ -63,6 +69,8 @@
 							helperText="Select the domain this role belongs to."
 						/>
 					</div>
+				{:else if $form.domain_id}
+					<input type="hidden" name="domain_id" bind:value={$form.domain_id} />
 				{/if}
 
 				<FormInput

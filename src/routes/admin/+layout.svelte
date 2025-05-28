@@ -101,12 +101,12 @@
 <div class="relative min-h-screen bg-gray-50 dark:bg-gray-900">
 	<!-- Sidebar -->
 	<Sidebar
-		class="z-50 h-full bg-gray-50 {isOpen
+		class="fixed pt-16 z-50 h-full bg-gray-50 {isOpen
 			? 'w-64 translate-x-0 opacity-100'
 			: 'w-0 -translate-x-full opacity-0'}"
-		position="fixed"
 		{isOpen}
-		backdrop={false}
+		backdrop={true}
+		backdropClass="hidden"
 		{activeUrl}
 		{activeClass}
 	>
@@ -148,7 +148,7 @@
 		<div class="flex items-center gap-4">
 			<!-- Add aria-label for accessibility -->
 			<Button
-				class="lg:inline-flex"
+				class="cursor-pointer lg:inline-flex"
 				color="light"
 				size="sm"
 				onclick={toggleSidebarCollapse}

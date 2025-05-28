@@ -1,8 +1,8 @@
 <script>
-	import { Button, Card } from 'flowbite-svelte'; // Removed Alert
-	import { ListOutline } from 'flowbite-svelte-icons'; // Removed ExclamationCircleSolid
+	import { Button, Card } from 'flowbite-svelte';
+	import { ListOutline } from 'flowbite-svelte-icons';
 	import { superForm } from 'sveltekit-superforms/client';
-	import { FormInput, FormTextarea, FormButton, FormSearchSelect, ErrorAlert } from '$lib/components/form'; // Added ErrorAlert
+	import { FormInput, FormTextarea, FormButton, FormSearchSelect, ErrorAlert } from '$lib/components/form';
 	import { Container } from '$lib/components/layout'; 
 	import { getContext } from 'svelte';
 
@@ -10,6 +10,11 @@
 
 	// Component props
 	let { data } = $props();
+
+	// Derived state for showing domain select
+	const showDomainSelect = $derived(
+		data.tenant === 'main'
+	);
 
 	// Initialize SuperForm
 	const { form, errors, enhance, submitting, delayed, message } = superForm(data.form, {
@@ -44,7 +49,7 @@
 
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 				<!-- Domain Selection -->
-				{#if currentUser()?.is_super_admin}
+				{#if showDomainSelect}
 					<div class="md:col-span-2">
 						<FormSearchSelect
 							label="Domain"
@@ -61,7 +66,7 @@
 							helperText="Select the domain this event belongs to."
 						/>
 					</div>
-				{:else if $form.domain_id}
+				{:else}
 					<input type="hidden" name="domain_id" bind:value={$form.domain_id} />
 				{/if}
 

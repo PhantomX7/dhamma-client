@@ -10,21 +10,23 @@ import { createResource } from '$lib/utils/data';
  */
 export async function load(event) {
 	await event.parent();
-	let { user } = event.locals;
+	let { user, tenant } = event.locals;
 
 	// Initialize an empty form using the role schema
 	const form = await superValidate(zod(roleSchema));
 
 	// Set default values
 	form.data.is_active = true;
-    form.data.domain_id = null;
+	form.data.domain_id = null;
 
-	if (user && !user.is_super_admin) {
+	// Auto-populate domain_id for non-main tenants when user is not super admin
+	if (tenant.code !== 'main') {
 		form.data.domain_id = user.domain_id;
 	}
 
 	return {
-		form
+		form,
+		tenant
 	};
 }
 

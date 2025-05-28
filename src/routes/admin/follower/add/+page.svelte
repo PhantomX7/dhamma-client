@@ -8,7 +8,7 @@
 		FormButton,
 		FormSearchSelect,
 		ErrorAlert
-	} from '$lib/components/form'; // Added ErrorAlert
+	} from '$lib/components/form';
 	import { Container } from '$lib/components/layout';
 	import { getContext } from 'svelte';
 
@@ -16,6 +16,11 @@
 
 	// Component props
 	let { data } = $props();
+
+	// Derived state for showing domain select
+	const showDomainSelect = $derived(
+		data.tenant === 'main'
+	);
 
 	// Initialize SuperForm
 	const { form, errors, enhance, submitting, delayed } = superForm(data.form, {
@@ -52,7 +57,7 @@
 
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 				<!-- Domain Selection -->
-				{#if currentUser().is_super_admin}
+				{#if showDomainSelect}
 					<div class="md:col-span-2">
 						<FormSearchSelect
 							label="Domain"
@@ -66,10 +71,10 @@
 							searchParam="code"
 							displayField="name"
 							valueField="id"
-							helperText="Select the domain this role belongs to."
+							helperText="Select the domain this follower belongs to."
 						/>
 					</div>
-				{:else if $form.domain_id}
+				{:else}
 					<input type="hidden" name="domain_id" bind:value={$form.domain_id} />
 				{/if}
 

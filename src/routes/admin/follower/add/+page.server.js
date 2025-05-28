@@ -10,20 +10,21 @@ import { createResource } from '$lib/utils/data';
  */
 export async function load(event) {
 	await event.parent();
-
-    let { user } = event.locals;
+	let { user, tenant } = event.locals;
 
 	// Initialize an empty form with default values from schema
 	const form = await superValidate(zod(followerSchema));
 	form.data.is_blood_donor = false;
 	form.data.is_youth = false;
 
-    if (user && !user.is_super_admin) {
+	// Auto-populate domain_id for non-main tenants when user is not super admin
+	if (tenant !== 'main') {
 		form.data.domain_id = user.domain_id;
 	}
 
 	return {
-		form
+		form,
+		tenant,
 	};
 }
 
@@ -31,7 +32,7 @@ export async function load(event) {
  * Handles the default form submission for creating a new follower.
  */
 export const actions = {
-	default: async (event) => {
+	default: async (event) => {		
 		return await createResource(
 			event,
 			'/follower',      // API path for followers

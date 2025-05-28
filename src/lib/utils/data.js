@@ -117,15 +117,7 @@ export async function updateResourceById(
 
 	// Send only changed fields via PATCH request
 	const [response, fetchError] = await runPromise(
-		api.fetch(
-			`${resourcePath}/${params.id}`,
-			{
-				method: 'PATCH',
-				body: JSON.stringify(changes),
-				headers: { 'Content-Type': 'application/json' }
-			},
-			event
-		)
+		api.patch(`${resourcePath}/${params.id}`, changes, event)
 	);
 
 	// Handle fetch errors (network issues, etc.)
@@ -199,17 +191,7 @@ export async function createResource(
 	}
 
 	// Send POST request to create the resource
-	const [response, fetchError] = await runPromise(
-		api.fetch(
-			resourcePath, // Use the base path for creation
-			{
-				method: 'POST',
-				body: JSON.stringify(form.data),
-				headers: { 'Content-Type': 'application/json' }
-			},
-			event
-		)
-	);
+	const [response, fetchError] = await runPromise(api.post(resourcePath, form.data, event));
 
 	// Handle fetch errors (network issues, etc.)
 	if (fetchError) {

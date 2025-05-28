@@ -189,6 +189,14 @@ class HttpClient {
 		}, event);
 	}
 
+	async patch(endpoint, data, event = null) {
+		return this.fetch(endpoint, {
+			method: 'PATCH',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(data)
+		}, event);
+	}
+
 	async delete(endpoint, event = null) {
 		return this.fetch(endpoint, { method: 'DELETE' }, event);
 	}

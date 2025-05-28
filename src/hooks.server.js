@@ -11,30 +11,23 @@ const REDIRECT_STATUS = 302;
  * @type {import('@sveltejs/kit').Handle}
  */
 export async function handle({ event, resolve }) {
-	try {
-		// Early return for static assets to improve performance
-		if (isStaticAsset(event.url.pathname)) {
-			return resolve(event);
-		}
-
-		// Handle authentication
-		handleAuthentication(event);
-
-		// Handle multi-tenant setup
-		const tenant = extractTenant(event.request);
-		if (!tenant) {
-			return new Response('Tenant not found', { status: 404 });
-		}
-		event.locals.tenant = tenant;
-
-		// Continue with the request
-		return await resolve(event);
-	} catch (error) {
-		// Log error for debugging (you might want to use a proper logger)
-		console.error('Error in hooks.server.js:', error);
-		// Return a generic error response
-		return new Response('Internal Server Error', { status: 500 });
+	// Early return for static assets to improve performance
+	if (isStaticAsset(event.url.pathname)) {
+		return resolve(event);
 	}
+
+	// Handle authentication
+	handleAuthentication(event);
+
+	// Handle multi-tenant setup
+	const tenant = extractTenant(event.request);
+	if (!tenant) {
+		return new Response('Tenant not found', { status: 404 });
+	}
+	event.locals.tenant = tenant;
+
+	// Continue with the request
+	return await resolve(event);
 }
 
 /**
@@ -43,7 +36,7 @@ export async function handle({ event, resolve }) {
  * @returns {boolean} True if it's a static asset
  */
 function isStaticAsset(pathname) {
-	return STATIC_ASSET_PATHS.some(path => pathname.startsWith(path));
+	return STATIC_ASSET_PATHS.some((path) => pathname.startsWith(path));
 }
 
 /**
@@ -57,7 +50,7 @@ function handleAuthentication(event) {
 
 	// Check if route requires authentication
 	if (!accessToken && !UNPROTECTED_ROUTES.includes(event.url.pathname)) {
-		throw redirect(REDIRECT_STATUS, '/login');
+		return redirect(REDIRECT_STATUS, '/login');
 	}
 
 	// Set tokens in locals (initialize as null first)
@@ -77,7 +70,7 @@ function handleAuthentication(event) {
  */
 function extractTenant(request) {
 	const host = request.headers.get('host');
-	
+
 	// Handle missing host header
 	if (!host) {
 		return null;

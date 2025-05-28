@@ -1,6 +1,6 @@
 <script>
-	import { Button, Card } from 'flowbite-svelte'; // Removed Alert
-	import { ListOutline } from 'flowbite-svelte-icons'; // Removed ExclamationCircleSolid
+	import { Button, Card } from 'flowbite-svelte';
+	import { ListOutline } from 'flowbite-svelte-icons';
 	import { superForm } from 'sveltekit-superforms/client';
 	import {
 		FormInput,
@@ -8,28 +8,33 @@
 		FormToggle,
 		FormButton,
 		FormSearchSelect,
-		ErrorAlert // Added ErrorAlert
+		ErrorAlert
 	} from '$lib/components/form';
-	import { Container } from '$lib/components/layout'; 
+	import { Container } from '$lib/components/layout';
 	import { getContext } from 'svelte';
 
 	// Component props
 	let { data } = $props();
 	const currentUser = getContext('user');
 
+	// Derived state for showing domain select
+	const showDomainSelect = $derived(data.tenant === 'main');
+
 	// Initialize SuperForm
-	// Ensure the server load function initializes form with domain_id: null or appropriate default
 	const { form, errors, enhance, submitting, delayed } = superForm(data.form, {
-		resetForm: false, // Keep false or set to true depending on desired behavior after creation
+		resetForm: false,
 		taintedMessage: null,
 		multipleSubmits: 'prevent',
 		dataType: 'json',
-		invalidateAll: true, // Invalidate data on success/error to reflect changes
-		applyAction: true // Apply server action results (errors, etc.)
+		invalidateAll: true,
+		applyAction: true
 	});
 
 	// Breadcrumb items definition
-	const breadcrumbItems = $derived([{ href: '/admin/role', label: 'Roles' }, { label: 'Add Role' }]);
+	const breadcrumbItems = $derived([
+		{ href: '/admin/role', label: 'Roles' },
+		{ label: 'Add Role' }
+	]);
 </script>
 
 <!-- Use Container component -->
@@ -49,7 +54,7 @@
 			<!-- Form fields grid layout -->
 			<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 				<!-- Domain Selection -->
-				{#if currentUser().is_super_admin}
+				{#if showDomainSelect}
 					<div class="md:col-span-2">
 						<FormSearchSelect
 							label="Domain"
@@ -66,6 +71,8 @@
 							helperText="Select the domain this role belongs to."
 						/>
 					</div>
+				{:else}
+					<input type="hidden" name="domain_id" bind:value={$form.domain_id} />
 				{/if}
 
 				<!-- Name Input -->

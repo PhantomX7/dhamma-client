@@ -34,7 +34,7 @@
 	let { data, children } = $props();
 
 	// State variables
-	let isOpen = $state(false);
+	let isOpen = $state(true);
 	let isSidebarCollapsed = $state(false);
 
 	// Get context data
@@ -63,13 +63,34 @@
 		// { href: '/admin/settings', label: 'Settings', icon: CogOutline } // Updated Settings icon
 	];
 
+	// Create a derived state for activeUrl that updates when page changes
+	const activeUrl = $derived(getCurrentActiveUrl());
+
+	/**
+	 * Determines the current active URL based on the page pathname
+	 * @returns {string} The active URL for sidebar highlighting
+	 */
+	function getCurrentActiveUrl() {
+		const pathname = $page.url.pathname;
+
+		// Find matching sidebar item
+		for (const item of sidebarItems) {
+			if (pathname.startsWith(item.href)) {
+				return item.href;
+			}
+		}
+
+		// Default to current pathname if no match found
+		return pathname;
+	}
+
 	/**
 	 * Toggles the collapsed state of the sidebar.
 	 * Also ensures the mobile overlay is closed if open.
 	 */
 	function toggleSidebarCollapse() {
 		isSidebarCollapsed = !isSidebarCollapsed;
-		if (isOpen) isOpen = false; // Close mobile overlay if sidebar state changes
+		isOpen = !isOpen;
 	}
 
 	const activeClass =
@@ -77,43 +98,39 @@
 </script>
 
 <!-- Add dark mode background class to the main container -->
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+<div class="relative min-h-screen bg-gray-50 dark:bg-gray-900">
 	<!-- Sidebar -->
 	<Sidebar
-		class="fixed top-0 left-0 z-40 h-screen border-r border-gray-200 pt-14 transition-transform duration-300 dark:border-gray-700 {isSidebarCollapsed
-			? 'w-0 -translate-x-full opacity-0'
-			: 'w-64 translate-x-0 opacity-100'}"
-		activeUrl={sidebarItems.find((item) => $page.url.pathname.startsWith(item.href))?.href ||
-			$page.url.pathname}
+		class="z-50 h-full bg-gray-50 {isOpen
+			? 'w-64 translate-x-0 opacity-100'
+			: 'w-0 -translate-x-full opacity-0'}"
+		position="fixed"
+		{isOpen}
+		backdrop={false}
+		{activeUrl}
 		{activeClass}
 	>
 		<!-- Add dark mode background class to the sidebar wrapper -->
-		<SidebarWrapper divClass="h-full overflow-y-auto bg-white px-3 py-4 dark:bg-gray-800">
+		<SidebarWrapper>
 			<SidebarGroup>
 				{#each sidebarItems as item}
 					{#if hasPermission(user(), item.permission)}
 						{#if item.child}
-							<SidebarDropdownWrapper label={isSidebarCollapsed ? '' : item.label}>
+							<SidebarDropdownWrapper label={item.label}>
 								{#snippet icon()}
-									{#if item.icon}{@const Icon = item.icon}<Icon
-											class="{isSidebarCollapsed ? 'mx-auto' : 'mr-5'} h-5 w-5"
-										/>{/if}
+									{#if item.icon}{@const Icon = item.icon}<Icon class="h-5 w-5" />{/if}
 								{/snippet}
 								{#each item.child as child}
 									{#if hasPermission(user(), child.permission)}
-										<SidebarDropdownItem
-											href={child.href}
-											label={isSidebarCollapsed ? '' : child.label}
+										<SidebarDropdownItem href={child.href} label={child.label}
 										></SidebarDropdownItem>
 									{/if}
 								{/each}
 							</SidebarDropdownWrapper>
 						{:else}
-							<SidebarItem href={item.href} label={isSidebarCollapsed ? '' : item.label}>
+							<SidebarItem href={item.href} label={item.label}>
 								{#snippet icon()}
-									{#if item.icon}{@const Icon = item.icon}<Icon
-											class="{isSidebarCollapsed ? 'mx-auto' : 'mr-5'} h-5 w-5"
-										/>{/if}
+									{#if item.icon}{@const Icon = item.icon}<Icon class="h-5 w-5" />{/if}
 								{/snippet}
 							</SidebarItem>
 						{/if}

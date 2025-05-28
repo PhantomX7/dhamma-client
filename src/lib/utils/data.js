@@ -106,7 +106,6 @@ export async function updateResourceById(
 
 	// Check for changes
 	const changes = getChangedFields(originalData, formData);
-	// console.log(`Changes detected for ${resourceName.toLowerCase()}:`, changes);
 	if (Object.keys(changes).length === 0) {
 		setFlash(
 			{ type: 'info', message: `No changes detected for this ${resourceName.toLowerCase()}.` },

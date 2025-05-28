@@ -1,196 +1,112 @@
 import { redirect } from '@sveltejs/kit';
-import { dev } from '$app/environment';
 
-// Configuration
-const UNPROTECTED_ROUTES = ['/login', '/signup', '/forgot-password', '/reset-password'];
-const API_ROUTES_PREFIX = '/api';
-const STATIC_ROUTES = ['/favicon.ico', '/_app/', '/images/', '/assets/'];
+// Configuration constants
+const UNPROTECTED_ROUTES = ['/login'];
+const STATIC_ASSET_PATHS = ['/favicon.ico', '/_app/'];
 const DEFAULT_TENANT = 'main';
-const LOCALHOST_PATTERNS = ['localhost', '127.0.0.1', '0.0.0.0'];
+const REDIRECT_STATUS = 302;
 
-/** @type {import('@sveltejs/kit').Handle} */
+/**
+ * Main request handler for authentication and multi-tenant support
+ * @type {import('@sveltejs/kit').Handle}
+ */
 export async function handle({ event, resolve }) {
-	const pathname = event.url.pathname;
+	try {
+		// Early return for static assets to improve performance
+		if (isStaticAsset(event.url.pathname)) {
+			return resolve(event);
+		}
 
-	// Skip processing for static assets early
-	if (isStaticRoute(pathname)) {
-		return resolve(event);
+		// Handle authentication
+		handleAuthentication(event);
+
+		// Handle multi-tenant setup
+		const tenant = extractTenant(event.request);
+		if (!tenant) {
+			return new Response('Tenant not found', { status: 404 });
+		}
+		event.locals.tenant = tenant;
+
+		// Continue with the request
+		return await resolve(event);
+	} catch (error) {
+		// Log error for debugging (you might want to use a proper logger)
+		console.error('Error in hooks.server.js:', error);
+		// Return a generic error response
+		return new Response('Internal Server Error', { status: 500 });
 	}
+}
 
-	// Extract tenant information first
-	const host = event.request.headers.get('host');
-	const tenant = extractTenant(host);
+/**
+ * Check if the request is for a static asset
+ * @param {string} pathname - The request pathname
+ * @returns {boolean} True if it's a static asset
+ */
+function isStaticAsset(pathname) {
+	return STATIC_ASSET_PATHS.some(path => pathname.startsWith(path));
+}
 
-	// Set tenant in locals
-	event.locals.tenant = tenant;
-
+/**
+ * Handle user authentication and token management
+ * @param {import('@sveltejs/kit').RequestEvent} event - The request event
+ */
+function handleAuthentication(event) {
 	// Get tokens from cookies
 	const accessToken = event.cookies.get('access_token');
 	const refreshToken = event.cookies.get('refresh_token');
 
-	// Initialize token locals
-	event.locals.token = null;
+	// Check if route requires authentication
+	if (!accessToken && !UNPROTECTED_ROUTES.includes(event.url.pathname)) {
+		throw redirect(REDIRECT_STATUS, '/login');
+	}
 
-	// Validate and set tokens if they exist
-	if (accessToken && isValidTokenFormat(accessToken)) {
+	// Set tokens in locals (initialize as null first)
+	event.locals.token = null;
+	if (accessToken) {
 		event.locals.token = {
 			accessToken,
-			refreshToken: refreshToken || null
+			refreshToken
 		};
 	}
-
-	// Check authentication for protected routes
-	const needsAuth = !isUnprotectedRoute(pathname) && !pathname.startsWith(API_ROUTES_PREFIX);
-
-	if (needsAuth) {
-		// No token at all
-		if (!event.locals.token) {
-			// Preserve the original URL for redirect after login
-			const redirectUrl = `${pathname}${event.url.search}`;
-			const loginUrl = `/login${redirectUrl !== '/' ? `?redirect=${encodeURIComponent(redirectUrl)}` : ''}`;
-			return redirect(302, loginUrl);
-		}
-
-		// Check if access token is expired
-		if (isTokenExpired(event.locals.token.accessToken)) {
-			// If we have a refresh token, the HttpClient will handle the refresh
-			// If no refresh token, redirect to login
-			if (!event.locals.token.refreshToken) {
-				// Clear invalid tokens
-				event.cookies.delete('access_token', { path: '/' });
-				event.cookies.delete('refresh_token', { path: '/' });
-
-				const redirectUrl = `${pathname}${event.url.search}`;
-				const loginUrl = `/login${redirectUrl !== '/' ? `?redirect=${encodeURIComponent(redirectUrl)}` : ''}`;
-				return redirect(302, loginUrl);
-			}
-		}
-	}
-
-	// Handle API routes differently - they should return JSON errors instead of redirects
-	if (pathname.startsWith(API_ROUTES_PREFIX) && needsAuth && !event.locals.token) {
-		return new Response(
-			JSON.stringify({
-				error: 'Unauthorized',
-				message: 'Authentication required'
-			}),
-			{
-				status: 401,
-				headers: {
-					'Content-Type': 'application/json'
-				}
-			}
-		);
-	}
-
-	// Tenant validation (optional - uncomment if you want to restrict tenants)
-	/*
-	const validTenants = ['main', 'tenant1', 'tenant2']; // Define your valid tenants
-	if (!validTenants.includes(tenant)) {
-		return new Response('Tenant not found', { 
-			status: 404,
-			headers: {
-				'Content-Type': 'text/plain'
-			}
-		});
-	}
-	*/
-
-	// Add security headers
-	const response = await resolve(event);
-
-	// Add security headers (optional)
-	if (!dev) {
-		response.headers.set('X-Frame-Options', 'DENY');
-		response.headers.set('X-Content-Type-Options', 'nosniff');
-		response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-	}
-
-	return response;
 }
 
 /**
- * Extract tenant from host header
- * @param {string} host - The host header value
- * @returns {string} - The tenant identifier
+ * Extract tenant information from the request host header
+ * @param {Request} request - The incoming request
+ * @returns {string|null} The tenant identifier or null if invalid
  */
-function extractTenant(host) {
+function extractTenant(request) {
+	const host = request.headers.get('host');
+	
+	// Handle missing host header
 	if (!host) {
-		return DEFAULT_TENANT;
+		return null;
 	}
 
-	// Handle localhost and development scenarios
-	if (dev && LOCALHOST_PATTERNS.some((pattern) => host.includes(pattern))) {
-		return DEFAULT_TENANT;
-	}
-
+	// Extract subdomain from host
 	const hostParts = host.split('.');
+	const subdomain = hostParts[0];
 
-	// If it's a single domain or www subdomain, use main tenant
-	if (hostParts.length < 2 || hostParts[0] === 'www') {
+	// Return default tenant for invalid subdomains or www
+	if (hostParts.length < 2 || subdomain === 'www') {
 		return DEFAULT_TENANT;
 	}
 
-	// Return the subdomain as tenant
-	return hostParts[0];
-}
-
-/**
- * Check if route should skip authentication
- * @param {string} pathname - The request pathname
- * @returns {boolean}
- */
-function isUnprotectedRoute(pathname) {
-	return UNPROTECTED_ROUTES.some((route) => {
-		// Exact match or starts with for nested routes
-		return pathname === route || pathname.startsWith(`${route}/`);
-	});
-}
-
-/**
- * Check if route is a static asset
- * @param {string} pathname - The request pathname
- * @returns {boolean}
- */
-function isStaticRoute(pathname) {
-	return STATIC_ROUTES.some((route) => pathname.startsWith(route));
-}
-
-/**
- * Validate token structure (basic validation)
- * @param {string} token - JWT token string
- * @returns {boolean}
- */
-function isValidTokenFormat(token) {
-	if (!token || typeof token !== 'string') {
-		return false;
+	// Validate subdomain format (basic validation)
+	if (!isValidSubdomain(subdomain)) {
+		return null;
 	}
 
-	// Basic JWT format check (3 parts separated by dots)
-	const parts = token.split('.');
-	return parts.length === 3;
+	return subdomain;
 }
 
 /**
- * Check if token is expired (without verification)
- * @param {string} token - JWT token string
- * @returns {boolean}
+ * Validate subdomain format
+ * @param {string} subdomain - The subdomain to validate
+ * @returns {boolean} True if valid subdomain
  */
-function isTokenExpired(token) {
-	try {
-		if (!isValidTokenFormat(token)) {
-			return true;
-		}
-
-		const payload = JSON.parse(atob(token.split('.')[1]));
-		const currentTime = Math.floor(Date.now() / 1000);
-
-		return payload.exp && payload.exp < currentTime;
-	} catch (error) {
-		console.warn('Error checking token expiration:', error);
-		return true; // Assume expired if we can't parse it
-	}
+function isValidSubdomain(subdomain) {
+	// Basic validation: alphanumeric and hyphens, not starting/ending with hyphen
+	const subdomainRegex = /^[a-zA-Z0-9]([a-zA-Z0-9-]*[a-zA-Z0-9])?$/;
+	return subdomainRegex.test(subdomain) && subdomain.length <= 63;
 }
-
-// Optional: Export utility functions for use in other parts of your app
-export { extractTenant, isUnprotectedRoute, isValidTokenFormat, isTokenExpired };

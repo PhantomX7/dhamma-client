@@ -89,7 +89,7 @@
 							class="px-6 py-4 font-medium whitespace-nowrap text-gray-900 dark:text-white"
 							>{follower.id}</TableBodyCell
 						> {#if currentUser().is_super_admin}
-							<TableBodyCell>{follower.domain.name}</TableBodyCell>
+							<TableBodyCell>{follower.domain?.name}</TableBodyCell>
 						{/if}
 						<TableBodyCell>{follower.name}</TableBodyCell>
 						<TableBodyCell>{follower.phone || 'N/A'}</TableBodyCell>

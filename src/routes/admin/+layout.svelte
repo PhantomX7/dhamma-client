@@ -27,7 +27,8 @@
 		BarsOutline,
 		UsersGroupOutline,
 		ApiKeyOutline,
-		CalendarPlusOutline
+		CalendarPlusOutline,
+		MessageDotsOutline
 	} from 'flowbite-svelte-icons';
 	import { hasPermission } from '$lib/utils/permissions.js';
 
@@ -52,7 +53,8 @@
 			label: 'Followers',
 			icon: UsersGroupOutline
 		},
-		{ href: '/admin/event', permission: 'event/index', label: 'Events', icon: CalendarPlusOutline }, // Added Event link
+		{ href: '/admin/event', permission: 'event/index', label: 'Events', icon: CalendarPlusOutline },
+		{ href: '/admin/chat-template', permission: 'chat-template/index', label: 'Chat Templates', icon: MessageDotsOutline },
 		{ href: '/admin/permission', permission: 'root', label: 'Permissions', icon: ApiKeyOutline }
 		// {
 		// 	href: '/admin',

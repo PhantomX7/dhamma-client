@@ -65,7 +65,7 @@ export async function loadResourceById(event, resourcePath, resourceName, redire
 	}
 
 	return {
-		[resourceName.toLowerCase()]: response.data.data
+		[resourceName]: response.data.data
 	};
 }
 

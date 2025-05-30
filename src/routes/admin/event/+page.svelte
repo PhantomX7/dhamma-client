@@ -1,20 +1,13 @@
 <script>
-	import {
-		Button,
-		Table,
-		TableBody,
-		TableBodyRow,
-		TableBodyCell,
-		TableHead,
-		TableHeadCell
-	} from 'flowbite-svelte';
-	import { PlusOutline, EyeOutline, EditOutline } from 'flowbite-svelte-icons';
-	import { formatDate } from '$lib/utils';
+	import { Button } from 'flowbite-svelte';
+	import { PlusOutline } from 'flowbite-svelte-icons';
 	import DataTable from '$lib/components/DataTable.svelte';
+	import AdminTable from '$lib/components/AdminTable.svelte';
 	import { FilterType } from '$lib/utils/filter';
-	import { Container } from '$lib/components/layout'; // Import Container
-	import { hasPermission } from '$lib/utils/permissions'; // Import hasPermission
+	import { Container } from '$lib/components/layout';
+	import { hasPermission } from '$lib/utils/permissions';
 	import { getContext } from 'svelte';
+	import { getEventTableConfig } from '$lib/utils/tableConfig/event.js';
 
 	const currentUser = getContext('user');
 
@@ -45,6 +38,9 @@
 			label: 'Created Date'
 		}
 	});
+
+	// Table configuration
+	const tableConfig = $derived(getEventTableConfig(currentUser()?.is_super_admin));
 </script>
 
 <!-- Use Container component -->
@@ -57,59 +53,8 @@
 		{/if}
 	{/snippet}
 
-	<!-- DataTable component -->
+	<!-- DataTable component wrapping the AdminTable -->
 	<DataTable data={data.events} meta={data.meta} {filterConfig}>
-		<Table hoverable={true} shadow divClass="relative max-h-[70vh] overflow-x-auto overflow-y-auto">
-			<TableHead
-				class="sticky top-0 z-10 bg-gray-50 text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400"
-			>
-				<TableHeadCell>ID</TableHeadCell>
-				{#if currentUser()?.is_super_admin}
-					<TableHeadCell>Domain</TableHeadCell>
-				{/if}
-				<TableHeadCell>Name</TableHeadCell>
-				<TableHeadCell>Points Awarded</TableHeadCell>
-				<TableHeadCell>Created At</TableHeadCell>
-				<TableHeadCell>Actions</TableHeadCell>
-			</TableHead>
-			<TableBody class="divide-y divide-gray-200 dark:divide-gray-700">
-				{#each data.events as event (event.id)}
-					<TableBodyRow class="bg-white dark:bg-gray-800">
-						<TableBodyCell
-							class="px-6 py-4 font-medium whitespace-nowrap text-gray-900 dark:text-white"
-							>{event.id}</TableBodyCell
-						>
-						{#if currentUser()?.is_super_admin}
-							<TableBodyCell>{event.domain?.name || 'N/A'}</TableBodyCell>
-						{/if}
-						<TableBodyCell>{event.name}</TableBodyCell>
-						<TableBodyCell>{event.points_awarded}</TableBodyCell>
-						<TableBodyCell>{formatDate(event.created_at)}</TableBodyCell>
-						<TableBodyCell class="flex space-x-2">
-							{#if hasPermission(currentUser(), 'event/show')}
-								<Button
-									size="sm"
-									color="alternative"
-									href={`/admin/event/${event.id}`}
-									aria-label="View event"
-								>
-									<EyeOutline class="h-4 w-4" />
-								</Button>
-							{/if}
-							{#if hasPermission(currentUser(), 'event/update')}
-								<Button
-									size="sm"
-									color="blue"
-									href={`/admin/event/${event.id}/edit`}
-									aria-label="Edit event"
-								>
-									<EditOutline class="h-4 w-4" />
-								</Button>
-							{/if}
-						</TableBodyCell>
-					</TableBodyRow>
-				{/each}
-			</TableBody>
-		</Table>
+		<AdminTable data={data.events} config={tableConfig} />
 	</DataTable>
 </Container>

@@ -58,15 +58,17 @@
 					<div class="md:col-span-2">
 						<FormSearchSelect
 							label="Domain"
+							id="domain_id"
 							name="domain_id"
 							bind:value={$form.domain_id}
-							api="/api/domain"
-							searchParam="search"
+							error={$errors.domain_id?.join(', ')}
+							required
+							placeholder="Click to select Domain"
+							apiPath="/api/domain"
+							searchParam="code"
 							displayField="name"
 							valueField="id"
-							helperText="Select the domain this chat template belongs to"
-							error={$errors.domain_id}
-							required
+							helperText="Select the domain this chat template belongs to."
 						/>
 					</div>
 				{:else}
@@ -82,17 +84,6 @@
 					placeholder="Enter template name"
 					helperText="A descriptive name for the chat template"
 					error={$errors.name}
-					required
-				/>
-
-				<!-- Category -->
-				<FormInput
-					label="Category"
-					name="category"
-					bind:value={$form.category}
-					placeholder="Enter category (e.g., greeting, support, announcement)"
-					helperText="Category to organize templates"
-					error={$errors.category}
 					required
 				/>
 
@@ -116,12 +107,13 @@
 						name="content"
 						bind:value={$form.content}
 						placeholder="Enter the chat template content here..."
-						helperText="The actual message content that will be used in chats. You can use variables like {name}, {date}, etc."
+						helperText="The actual message content that will be used in chats. You can use variables like {'{name}'}, {'{date}'}, etc."
 						error={$errors.content}
 						rows={8}
 						required
 					/>
 				</div>
+				
 
 				<!-- Active Status -->
 				<div class="md:col-span-2">
@@ -131,6 +123,17 @@
 						bind:checked={$form.is_active}
 						helperText="Enable this template for use in chat applications"
 						error={$errors.is_active}
+					/>
+				</div>
+
+				<!-- Set Default Status -->
+				<div class="md:col-span-2">
+					<FormToggle
+						label="Set as Default"
+						name="is_default"
+						bind:checked={$form.is_default}
+						helperText="Set this template as the default for new chats"
+						error={$errors.is_default}
 					/>
 				</div>
 			</div>

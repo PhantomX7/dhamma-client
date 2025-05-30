@@ -51,6 +51,11 @@
 		<div class="grid gap-6 md:grid-cols-2">
 			<!-- Basic Information -->
 			<div class="space-y-4">
+				<DetailItem label="Set As Default">
+					<Badge color={chatTemplate?.is_default ? 'yellow' : 'gray'} class="text-xs">
+						{chatTemplate?.is_default ? 'Yes' : 'No'}
+					</Badge>
+				</DetailItem>
 				<DetailItem label="ID">
 					<span class="font-mono text-sm">{chatTemplate?.id}</span>
 				</DetailItem>

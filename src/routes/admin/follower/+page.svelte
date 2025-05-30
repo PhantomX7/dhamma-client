@@ -1,21 +1,13 @@
 <script>
-	import {
-		Button,
-		Badge,
-		Table,
-		TableBody,
-		TableBodyRow,
-		TableBodyCell,
-		TableHead,
-		TableHeadCell
-	} from 'flowbite-svelte';
-	import { PlusOutline, EyeOutline, EditOutline } from 'flowbite-svelte-icons';
-	import { formatDate } from '$lib/utils';
+	import { Button } from 'flowbite-svelte';
+	import { PlusOutline } from 'flowbite-svelte-icons';
 	import DataTable from '$lib/components/DataTable.svelte';
+	import AdminTable from '$lib/components/AdminTable.svelte';
 	import { FilterType } from '$lib/utils/filter';
 	import { getContext } from 'svelte';
 	import { Container } from '$lib/components/layout';
-	import { hasPermission } from '$lib/utils/permissions'; // Import hasPermission
+	import { hasPermission } from '$lib/utils/permissions';
+	import { getFollowerTableConfig } from '$lib/utils/tableConfig/follower.js';
 
 	const currentUser = getContext('user');
 
@@ -51,7 +43,8 @@
 		}
 	});
 
-	const tableColspan = $derived(currentUser().is_super_admin ? 9 : 8);
+	// Table configuration
+	const tableConfig = $derived(getFollowerTableConfig(currentUser()?.is_super_admin));
 </script>
 
 <!-- Use Container component -->
@@ -64,68 +57,8 @@
 		{/if}
 	{/snippet}
 
-	<!-- DataTable component -->
+	<!-- DataTable component wrapping the AdminTable -->
 	<DataTable data={data.followers} meta={data.meta} {filterConfig}>
-		<Table hoverable={true} shadow divClass="relative max-h-[70vh] overflow-x-auto overflow-y-auto">
-			<TableHead
-				class="sticky top-0 z-10 bg-gray-50 text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400"
-			>
-				<TableHeadCell>ID</TableHeadCell>
-				{#if currentUser().is_super_admin}
-					<TableHeadCell>Domain</TableHeadCell>
-				{/if}
-				<TableHeadCell>Name</TableHeadCell>
-				<TableHeadCell>Phone</TableHeadCell>
-				<TableHeadCell>Points</TableHeadCell>
-				<TableHeadCell>Blood Donor</TableHeadCell>
-				<TableHeadCell>Muda Mudi</TableHeadCell>
-				<TableHeadCell>Created At</TableHeadCell>
-				<TableHeadCell>Actions</TableHeadCell>
-			</TableHead>
-			<TableBody class="divide-y divide-gray-200 dark:divide-gray-700">
-				{#each data.followers as follower (follower.id)}
-					<TableBodyRow class="bg-white dark:bg-gray-800">
-						<TableBodyCell
-							class="px-6 py-4 font-medium whitespace-nowrap text-gray-900 dark:text-white"
-							>{follower.id}</TableBodyCell
-						> {#if currentUser().is_super_admin}
-							<TableBodyCell>{follower.domain?.name}</TableBodyCell>
-						{/if}
-						<TableBodyCell>{follower.name}</TableBodyCell>
-						<TableBodyCell>{follower.phone || 'N/A'}</TableBodyCell>
-						<TableBodyCell>{follower.points}</TableBodyCell>
-						<TableBodyCell>
-							<Badge large rounded color={follower.is_blood_donor ? 'green' : 'red'}>
-								{follower.is_blood_donor ? 'Yes' : 'No'}
-							</Badge>
-						</TableBodyCell>
-						<TableBodyCell>
-							<Badge large rounded color={follower.is_youth ? 'green' : 'red'}>
-								{follower.is_youth ? 'Yes' : 'No'}
-							</Badge>
-						</TableBodyCell>
-						<TableBodyCell>{formatDate(follower.created_at)}</TableBodyCell>
-						<TableBodyCell>
-							<div class="flex space-x-2">
-								{#if hasPermission(currentUser(), 'follower/show')}
-									<Button size="xs" color="alternative" href="/admin/follower/{follower.id}">
-										<EyeOutline class="me-1.5 h-3.5 w-3.5" /> View
-									</Button>
-								{/if}
-								{#if hasPermission(currentUser(), 'follower/update')}
-									<Button size="xs" color="primary" href="/admin/follower/{follower.id}/edit">
-										<EditOutline class="me-1.5 h-3.5 w-3.5" /> Edit
-									</Button>
-								{/if}
-							</div>
-						</TableBodyCell>
-					</TableBodyRow>
-				{:else}
-					<TableBodyRow>
-						<TableBodyCell colspan={tableColspan} class="text-center">No followers found.</TableBodyCell>
-					</TableBodyRow>
-				{/each}
-			</TableBody>
-		</Table>
+		<AdminTable data={data.followers} config={tableConfig} />
 	</DataTable>
 </Container>

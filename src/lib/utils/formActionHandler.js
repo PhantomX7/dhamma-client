@@ -78,6 +78,39 @@ export function createFormActionHandler({
  */
 export const commonActions = {
 	/**
+	 * Generic action configuration with customizable form data
+	 * @param {string} actionName - Name of the action
+	 * @param {Object} options - Configuration options
+	 * @param {Object|Function} options.formFields - Object mapping field names to values, or function that returns such object
+	 * @param {string} options.method - HTTP method (default: 'POST')
+	 * @param {Function} options.validateItem - Optional validation function
+	 * @param {string} options.itemType - Type of item for messages (default: 'item')
+	 * @param {string} options.successMessage - Custom success message
+	 * @param {string} options.errorMessage - Custom error message
+	 * @param {string} options.validationErrorMessage - Custom validation error message
+	 * @returns {Object} Action configuration
+	 */
+	generic: (actionName, options = {}) => ({
+		action: actionName,
+		method: options.method || 'POST',
+		getFormData: (item) => {
+			const formData = new FormData();
+			const fields = typeof options.formFields === 'function' 
+				? options.formFields(item) 
+				: options.formFields || {};
+			
+			Object.entries(fields).forEach(([key, value]) => {
+				formData.append(key, value);
+			});
+			
+			return formData;
+		},
+		validateItem: options.validateItem,
+		successMessage: options.successMessage || `${options.itemType || 'item'} ${actionName} completed successfully`,
+		errorMessage: options.errorMessage || `Failed to ${actionName} ${options.itemType || 'item'}`,
+		validationErrorMessage: options.validationErrorMessage
+	}),
+	/**
 	 * Set default action configuration
 	 * @param {string} itemType - Type of item (e.g., 'template', 'user')
 	 * @returns {Object} Action configuration

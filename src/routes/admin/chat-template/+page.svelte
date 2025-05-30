@@ -48,17 +48,6 @@
 		},
 	});
 
-	// Table configuration with setDefault action handler
-	const tableConfig = $derived({
-		...getChatTemplateTableConfig(currentUser()?.is_super_admin),
-		actions: getChatTemplateTableConfig(currentUser()?.is_super_admin).actions.map(action => {
-			if (action.onclick === 'setDefault') {
-				return { ...action, onclick: setDefault };
-			}
-			return action;
-		})
-	});
-
 	// Alert state
 	let showSuccessAlert = $state(false);
 	let showErrorAlert = $state(false);
@@ -73,6 +62,17 @@
 
 	// Create setDefault action
 	const setDefault = actionHandler(commonActions.setDefault('template'));
+
+	// Table configuration with setDefault action handler
+	const tableConfig = $derived({
+		...getChatTemplateTableConfig(currentUser()?.is_super_admin),
+		actions: getChatTemplateTableConfig(currentUser()?.is_super_admin).actions.map(action => {
+			if (action.onclick === 'setDefault') {
+				return { ...action, onclick: setDefault };
+			}
+			return action;
+		})
+	});
 
 	/**
 	 * Extract template variables from content using regex

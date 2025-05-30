@@ -79,13 +79,29 @@ export function createViewAction(baseUrl, permission) {
   };
 }
 
-export function createCustomAction(label, color, url, permission) {
-  return {
+/**
+ * Creates a custom action configuration
+ * @param {string} label - The action label
+ * @param {string} color - The button color
+ * @param {string} url - The action URL (optional if using onclick)
+ * @param {string} permission - The permission required for the action
+ * @param {string} onclick - Optional onclick handler for form submissions
+ * @returns {Object} Action configuration for custom action
+ */
+export function createCustomAction(label, color, url, permission, onclick = null) {
+  const action = {
     label,
     color,
-    href: `${url}`,
     permission
   };
+  
+  if (onclick) {
+    action.onclick = onclick;
+  } else {
+    action.href = url;
+  }
+  
+  return action;
 }
 
 /**

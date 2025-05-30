@@ -1,5 +1,5 @@
 <script>
-	import { Button } from 'flowbite-svelte';
+	import { Button, Alert } from 'flowbite-svelte';
 	import { PlusOutline } from 'flowbite-svelte-icons';
 	import DataTable from '$lib/components/DataTable.svelte';
 	import AdminTable from '$lib/components/AdminTable.svelte';
@@ -8,6 +8,7 @@
 	import { Container } from '$lib/components/layout';
 	import { hasPermission } from '$lib/utils/permissions';
 	import { getChatTemplateTableConfig } from '$lib/utils/tableConfig/chatTemplate.js';
+	import { invalidateAll } from '$app/navigation';
 
 	const currentUser = getContext('user');
 
@@ -47,8 +48,74 @@
 		},
 	});
 
-	// Table configuration
-	const tableConfig = $derived(getChatTemplateTableConfig(currentUser()?.is_super_admin));
+	// Table configuration with setDefault action handler
+	const tableConfig = $derived({
+		...getChatTemplateTableConfig(currentUser()?.is_super_admin),
+		actions: getChatTemplateTableConfig(currentUser()?.is_super_admin).actions.map(action => {
+			if (action.onclick === 'setDefault') {
+				return { ...action, onclick: setDefault };
+			}
+			return action;
+		})
+	});
+
+	// Alert state
+	let showSuccessAlert = $state(false);
+	let showErrorAlert = $state(false);
+	let alertMessage = $state('');
+
+	/**
+	 * Sets a chat template as default
+	 * @param {Object} item - The template item
+	 */
+	async function setDefault(item) {
+		if (item.is_default) {
+			// Already default, show message
+			showErrorAlert = true;
+			alertMessage = 'This template is already set as default';
+			setTimeout(() => {
+				showErrorAlert = false;
+			}, 3000);
+			return;
+		}
+
+		// Create form data
+		const formData = new FormData();
+		formData.append('templateId', item.id);
+
+		// Submit using fetch to avoid page refresh
+		try {
+			const response = await fetch('?/setDefault', {
+				method: 'POST',
+				body: formData
+			});
+
+			const result = await response.json();
+			
+			if (result.type === 'success') {
+				showSuccessAlert = true;
+				alertMessage = result.data?.message || 'Template set as default successfully';
+				await invalidateAll();
+				setTimeout(() => {
+					showSuccessAlert = false;
+				}, 3000);
+			} else {
+				showErrorAlert = true;
+				alertMessage = result.data?.message || 'Failed to set template as default';
+				setTimeout(() => {
+					showErrorAlert = false;
+				}, 3000);
+			}
+		} catch (error) {
+			showErrorAlert = true;
+			alertMessage = 'An error occurred while setting template as default';
+			setTimeout(() => {
+				showErrorAlert = false;
+			}, 3000);
+		}
+	}
+
+
 
 	/**
 	 * Extract template variables from content using regex
@@ -88,6 +155,21 @@
 			</Button>
 		{/if}
 	{/snippet}
+
+	<!-- Alert messages -->
+	{#if showSuccessAlert}
+		<Alert color="green" class="mb-4" dismissable on:close={() => (showSuccessAlert = false)}>
+			<span class="font-medium">Success!</span>
+			{alertMessage}
+		</Alert>
+	{/if}
+
+	{#if showErrorAlert}
+		<Alert color="red" class="mb-4" dismissable on:close={() => (showErrorAlert = false)}>
+			<span class="font-medium">Error!</span>
+			{alertMessage}
+		</Alert>
+	{/if}
 
 	<!-- DataTable component wrapping the AdminTable -->
 	<DataTable data={data.chatTemplates} meta={data.meta} {filterConfig}>

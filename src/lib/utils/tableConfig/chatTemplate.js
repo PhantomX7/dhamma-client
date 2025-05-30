@@ -122,7 +122,7 @@ export function getChatTemplateTableConfig(isSuperAdmin = false) {
 	const actions = [
 		createViewAction('/admin/chat-template', 'chat-template/show'),
 		createEditAction('/admin/chat-template', 'chat-template/update'),
-		createCustomAction('Set Default', 'green', '/admin/chat-template/{id}/default', 'chat-template/set-as-default'),
+		createCustomAction('Set Default', 'green', null, 'chat-template/set-as-default', 'setDefault'),
 	];
 
 	return {

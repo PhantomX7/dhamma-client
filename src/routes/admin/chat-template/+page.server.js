@@ -1,4 +1,8 @@
 import { loadResourceList } from '$lib/utils/data';
+import api from '$lib/api';
+import { fail } from '@sveltejs/kit';
+import { runPromise } from '$lib/utils';
+import { setFlash } from 'sveltekit-flash-message/server';
 
 /**
  * Loads a list of chat templates using the reusable loadResourceList utility.
@@ -16,3 +20,39 @@ export async function load(event) {
 		meta
 	};
 }
+
+/**
+ * Defines the server-side actions for the chat template page.
+ */
+export const actions = {
+	/**
+	 * Sets a chat template as default.
+	 */
+	setDefault: async (event) => {
+		const { request, cookies } = event;
+		const formData = await request.formData();
+		const templateId = formData.get('templateId');
+
+		if (!templateId) {
+			setFlash({ type: 'error', message: 'Template ID is required' }, cookies);
+			return fail(400, { error: 'Template ID is required' });
+		}
+
+		// Call API to set chat template as default
+		const [response, fetchError] = await runPromise(
+			api.post(
+				`chat-template/${templateId}/set-default`,
+				{},
+				event
+			)
+		);
+
+		if (fetchError || !response.ok) {
+			setFlash({ type: 'error', message: 'Failed to set chat template as default' }, cookies);
+			return fail(400, { error: 'Failed to set chat template as default' });
+		}
+
+		setFlash({ type: 'success', message: 'Chat template set as default successfully' }, cookies);
+		return { success: true, message: 'Chat template set as default successfully' };
+	},
+};

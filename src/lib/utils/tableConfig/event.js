@@ -8,7 +8,8 @@ import {
   createTextColumn,
   createDateColumn,
   createViewAction,
-  createEditAction
+  createEditAction,
+  createDomainColumn
 } from './index.js';
 
 /**
@@ -19,12 +20,7 @@ import {
 export function getEventTableConfig(isSuperAdmin = false) {
   const columns = [
     createIdColumn(),
-    ...(isSuperAdmin ? [{
-			key: 'domain',
-			label: 'Domain',
-			type: 'custom',
-			formatter: (item) => item.domain?.name || '<span class="text-gray-400 dark:text-gray-500">N/A</span>'
-		}] : []),
+    ...(isSuperAdmin ? [createDomainColumn()] : []),
     createTextColumn('name', 'Name'),
     {
       key: 'points_awarded',

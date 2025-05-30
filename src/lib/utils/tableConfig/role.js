@@ -1,14 +1,9 @@
-import { createTextColumn, createDateColumn, createViewAction, createEditAction, createBadgeColumn } from './index.js';
+import { createTextColumn, createDateColumn, createViewAction, createEditAction, createBadgeColumn, createDomainColumn } from './index.js';
 
 export function getRoleTableConfig(isSuperAdmin = false) {
 	const columns = [
 		createTextColumn('id', 'ID'),
-		...(isSuperAdmin ? [{
-			key: 'domain',
-			label: 'Domain',
-			type: 'custom',
-			formatter: (item) => item.domain?.name || '<span class="text-gray-400 dark:text-gray-500">N/A</span>'
-		}] : []),
+		...(isSuperAdmin ? [createDomainColumn()] : []),
 		createTextColumn('name', 'Role Name'),
 		{
 			key: 'description',

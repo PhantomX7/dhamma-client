@@ -174,6 +174,11 @@
 <Container
 	breadcrumb={breadcrumbItems}
 	title={`Manage Permissions for ${role?.name || 'Selected Role'}`}
+	{showSuccessAlert}
+	{showErrorAlert}
+	{alertMessage}
+	onCloseSuccessAlert={() => (showSuccessAlert = false)}
+	onCloseErrorAlert={() => (showErrorAlert = false)}
 >
 	{#snippet headerActions()}
 		{#if role?.id}
@@ -182,21 +187,6 @@
 			</Button>
 		{/if}
 	{/snippet}
-
-	<!-- Alert messages -->
-	{#if showSuccessAlert}
-		<Alert color="green" class="mb-4" dismissable on:close={() => (showSuccessAlert = false)}>
-			<span class="font-medium">Success!</span>
-			{alertMessage}
-		</Alert>
-	{/if}
-
-	{#if showErrorAlert}
-		<Alert color="red" class="mb-4" dismissable on:close={() => (showErrorAlert = false)}>
-			<span class="font-medium">Error!</span>
-			{alertMessage}
-		</Alert>
-	{/if}
 
 	<!-- Permissions Table Card -->
 	<Card size="xl" class="mb-8 p-4">

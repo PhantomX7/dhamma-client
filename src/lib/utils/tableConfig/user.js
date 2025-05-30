@@ -9,7 +9,6 @@ import {
   createBadgeColumn,
   createDateColumn,
   createViewAction,
-  // createEditAction
 } from './index.js';
 
 /**
@@ -26,7 +25,7 @@ export function getUserTableConfig(isSuperAdmin = false) {
       'is_active',
       'Status',
       (value) => value ? 'Active' : 'Inactive',
-      'gray',
+      'gray', 
       (value) => value ? 'green' : 'red'
     ),
     createBadgeColumn(
@@ -41,17 +40,18 @@ export function getUserTableConfig(isSuperAdmin = false) {
 
   // Add domain column for super admins
   if (isSuperAdmin) {
-    columns.splice(3, 0, {
+    const domainsColumn = {
       key: 'domains',
       label: 'Domains',
       type: 'custom',
       formatter: (item) => {
-        if (item.domains && item.domains.length > 0) {
+        if (item.domains?.length > 0) {
           return item.domains.map(d => d.name).join(', ');
         }
-        return '<span class="text-gray-500 dark:text-gray-400">None</span>';
+        return '<span class="text-gray-400 dark:text-gray-500">No domains</span>';
       }
-    });
+    };
+    columns.splice(3, 0, domainsColumn);
   }
 
   return {

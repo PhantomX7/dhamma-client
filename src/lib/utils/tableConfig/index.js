@@ -4,16 +4,27 @@
  */
 
 /**
+ * Base column factory function
+ * @param {string} key - The data key
+ * @param {string} label - The column label
+ * @param {string} type - Column type
+ * @param {Object} options - Additional options
+ * @returns {Object} Column configuration
+ */
+function createColumn(key, label, type, options = {}) {
+  return {
+    key,
+    label,
+    type,
+    ...options
+  };
+}
+
+/**
  * Creates a standard ID column configuration
  * @returns {Object} Column configuration for ID field
  */
-export function createIdColumn() {
-  return {
-    key: 'id',
-    label: 'ID',
-    type: 'text'
-  };
-}
+export const createIdColumn = () => createColumn('id', 'ID', 'text');
 
 /**
  * Creates a standard date column configuration
@@ -21,13 +32,15 @@ export function createIdColumn() {
  * @param {string} label - The column label
  * @returns {Object} Column configuration for date field
  */
-export function createDateColumn(key, label) {
-  return {
-    key,
-    label,
-    type: 'date'
-  };
-}
+export const createDateColumn = (key, label) => createColumn(key, label, 'date');
+
+/**
+ * Creates a standard text column configuration
+ * @param {string} key - The data key for the text field
+ * @param {string} label - The column label
+ * @returns {Object} Column configuration for text field
+ */
+export const createTextColumn = (key, label) => createColumn(key, label, 'text');
 
 /**
  * Creates a standard badge column configuration
@@ -38,28 +51,19 @@ export function createDateColumn(key, label) {
  * @param {Function} getColor - Function to dynamically determine badge color
  * @returns {Object} Column configuration for badge field
  */
-export function createBadgeColumn(key, label, formatter, color = 'gray', getColor = null) {
-  return {
-    key,
-    label,
-    type: 'badge',
-    formatter,
-    color,
-    getColor
-  };
-}
+export const createBadgeColumn = (key, label, formatter, color = 'gray', getColor = null) => 
+  createColumn(key, label, 'badge', { formatter, color, getColor });
 
 /**
- * Creates a standard text column configuration
- * @param {string} key - The data key for the text field
- * @param {string} label - The column label
- * @returns {Object} Column configuration for text field
+ * Base action factory function
+ * @param {string} label - Action label
+ * @param {Object} options - Action options
+ * @returns {Object} Action configuration
  */
-export function createTextColumn(key, label) {
+function createAction(label, options = {}) {
   return {
-    key,
     label,
-    type: 'text'
+    ...options
   };
 }
 
@@ -69,40 +73,13 @@ export function createTextColumn(key, label) {
  * @param {string} permission - The permission required for the view action
  * @returns {Object} Action configuration for view
  */
-export function createViewAction(baseUrl, permission) {
-  return {
-    label: 'View',
+export const createViewAction = (baseUrl, permission) => 
+  createAction('View', {
     icon: 'view',
     color: 'alternative',
     href: `${baseUrl}/{id}`,
     permission
-  };
-}
-
-/**
- * Creates a custom action configuration
- * @param {string} label - The action label
- * @param {string} color - The button color
- * @param {string} url - The action URL (optional if using onclick)
- * @param {string} permission - The permission required for the action
- * @param {string} onclick - Optional onclick handler for form submissions
- * @returns {Object} Action configuration for custom action
- */
-export function createCustomAction(label, color, url, permission, onclick = null) {
-  const action = {
-    label,
-    color,
-    permission
-  };
-  
-  if (onclick) {
-    action.onclick = onclick;
-  } else {
-    action.href = url;
-  }
-  
-  return action;
-}
+  });
 
 /**
  * Creates a standard edit action configuration
@@ -110,24 +87,47 @@ export function createCustomAction(label, color, url, permission, onclick = null
  * @param {string} permission - The permission required for the edit action
  * @returns {Object} Action configuration for edit
  */
-export function createEditAction(baseUrl, permission) {
-  return {
-    label: 'Edit',
+export const createEditAction = (baseUrl, permission) => 
+  createAction('Edit', {
     icon: 'edit',
     color: 'primary',
     href: `${baseUrl}/{id}/edit`,
     permission
-  };
-}
+  });
+
+/**
+ * Creates a custom action configuration
+ * @param {string} label - The action label
+ * @param {string} color - The button color
+ * @param {string} url - The action URL (optional if using onclick)
+ * @param {string} permission - The permission required for the action
+ * @param {string|Function} onclick - Optional onclick handler for form submissions
+ * @returns {Object} Action configuration for custom action
+ */
+export const createCustomAction = (label, color, url, permission, onclick = null) => 
+  createAction(label, {
+    color,
+    permission,
+    ...(onclick ? { onclick } : { href: url })
+  });
 
 /**
  * Creates a conditional column that only shows for super admins
  * @param {Object} column - The column configuration
  * @returns {Object} Column with super admin condition
  */
-export function createSuperAdminColumn(column) {
-  return {
-    ...column,
-    condition: (user) => user.is_super_admin
-  };
-}
+export const createSuperAdminColumn = (column) => ({
+  ...column,
+  condition: (user) => user.is_super_admin
+});
+
+/**
+ * Creates a domain column for super admin views
+ * @returns {Object} Domain column configuration
+ */
+export const createDomainColumn = () => ({
+  key: 'domain',
+  label: 'Domain',
+  type: 'custom',
+  formatter: (item) => item.domain?.name || '<span class="text-gray-400 dark:text-gray-500">N/A</span>'
+});

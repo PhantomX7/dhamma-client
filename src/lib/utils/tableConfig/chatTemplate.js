@@ -5,6 +5,7 @@ import {
 	createViewAction,
 	createEditAction,
 	createCustomAction,
+	createDomainColumn
 } from './index.js';
 // import { Badge, Tooltip } from 'flowbite-svelte';
 // import { MessageDotsOutline, CodeBranchOutline } from 'flowbite-svelte-icons';
@@ -38,17 +39,7 @@ export function getChatTemplateTableConfig(isSuperAdmin = false) {
 				</div>
 			`
 		},
-		...(isSuperAdmin
-			? [
-					{
-						key: 'domain',
-						label: 'Domain',
-						type: 'custom',
-						formatter: (item) =>
-							item.domain?.name || '<span class="text-gray-400 dark:text-gray-500">N/A</span>'
-					}
-				]
-			: []),
+		...(isSuperAdmin ? [createDomainColumn()] : []),
 		{
 			key: 'description',
 			label: 'Description',

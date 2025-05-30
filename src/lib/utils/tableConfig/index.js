@@ -79,6 +79,15 @@ export function createViewAction(baseUrl, permission) {
   };
 }
 
+export function createCustomAction(label, color, url, permission) {
+  return {
+    label,
+    color,
+    href: `${url}`,
+    permission
+  };
+}
+
 /**
  * Creates a standard edit action configuration
  * @param {string} baseUrl - The base URL for the edit action

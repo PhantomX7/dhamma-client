@@ -3,7 +3,8 @@ import {
 	createDateColumn,
 	createBadgeColumn,
 	createViewAction,
-	createEditAction
+	createEditAction,
+	createCustomAction,
 } from './index.js';
 // import { Badge, Tooltip } from 'flowbite-svelte';
 // import { MessageDotsOutline, CodeBranchOutline } from 'flowbite-svelte-icons';
@@ -120,7 +121,8 @@ export function getChatTemplateTableConfig(isSuperAdmin = false) {
 
 	const actions = [
 		createViewAction('/admin/chat-template', 'chat-template/show'),
-		createEditAction('/admin/chat-template', 'chat-template/update')
+		createEditAction('/admin/chat-template', 'chat-template/update'),
+		createCustomAction('Set Default', 'green', '/admin/chat-template/{id}/default', 'chat-template/set-as-default'),
 	];
 
 	return {

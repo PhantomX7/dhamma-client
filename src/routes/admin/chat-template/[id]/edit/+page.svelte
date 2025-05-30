@@ -19,9 +19,7 @@
 	const chatTemplate = $derived(data.chatTemplate);
 
 	// Derived state for showing domain select
-	const showDomainSelect = $derived(
-		currentUser().is_super_admin && data.tenant === 'main'
-	);
+	const showDomainSelect = $derived(currentUser().is_super_admin && data.tenant === 'main');
 
 	const { form, enhance, errors, submitting, delayed } = superForm(data.form, {
 		dataType: 'json',
@@ -33,16 +31,16 @@
 	// Define breadcrumb items
 	const breadcrumbItems = $derived([
 		{ href: '/admin/chat-template', label: 'Chat Templates' },
-		{ href: `/admin/chat-template/${chatTemplate?.id}`, label: chatTemplate?.name || 'Template Details' },
+		{
+			href: `/admin/chat-template/${chatTemplate?.id}`,
+			label: chatTemplate?.name || 'Template Details'
+		},
 		{ label: 'Edit' }
 	]);
 </script>
 
 <!-- Use Container component -->
-<Container
-	breadcrumb={breadcrumbItems}
-	title={`Edit Chat Template: ${chatTemplate?.name || ''}`}
->
+<Container breadcrumb={breadcrumbItems} title={`Edit Chat Template: ${chatTemplate?.name || ''}`}>
 	{#snippet headerActions()}
 		<div class="flex flex-shrink-0 gap-2">
 			<Button color="light" href={`/admin/chat-template/${chatTemplate?.id}`}>
@@ -70,16 +68,6 @@
 					required
 					placeholder="Enter template name"
 				/>
-
-				<!-- Category -->
-				<FormInput
-					label="Category"
-					name="category"
-					bind:value={$form.category}
-					error={$errors.category}
-					required
-					placeholder="Enter category (e.g., greeting, support, etc.)"
-				/>
 			</div>
 
 			<!-- Description -->
@@ -103,32 +91,26 @@
 				rows={8}
 			/>
 
-			<div class="grid gap-6 md:grid-cols-2">
-				<!-- Domain Selection (for super admin only) -->
-				{#if showDomainSelect}
-					<FormSearchSelect
-						label="Domain"
-						name="domain_id"
-						bind:value={$form.domain_id}
-						error={$errors.domain_id}
-						options={data.domains || []}
-						optionLabel="name"
-						optionValue="id"
-						placeholder="Select domain"
-						required
-					/>
-				{/if}
+			<!-- Active Status -->
+			<div class="md:col-span-2">
+				<FormToggle
+					label="Active Status"
+					name="is_active"
+					bind:value={$form.is_active}
+					helperText="Enable this template for use in chat applications"
+					error={$errors.is_active}
+				/>
+			</div>
 
-				<!-- Active Status -->
-				<div class="flex items-center space-x-4">
-					<FormToggle
-						label="Active Status"
-						name="is_active"
-						bind:checked={$form.is_active}
-						error={$errors.is_active}
-						description="Enable or disable this chat template"
-					/>
-				</div>
+			<!-- Set Default Status -->
+			<div class="md:col-span-2">
+				<FormToggle
+					label="Set as Default"
+					name="is_default"
+					bind:value={$form.is_default}
+					helperText="Set this template as the default for new chats"
+					error={$errors.is_default}
+				/>
 			</div>
 
 			<!-- Submit Button -->
@@ -136,9 +118,7 @@
 				<Button color="alternative" href={`/admin/chat-template/${chatTemplate?.id}`}>
 					Cancel
 				</Button>
-				<FormButton {submitting} {delayed}>
-					Update Template
-				</FormButton>
+				<FormButton {submitting} {delayed}>Update Template</FormButton>
 			</div>
 		</form>
 	</Card>

@@ -1,6 +1,6 @@
 <script>
 	import { Badge, Button, Card } from 'flowbite-svelte';
-	import { ListOutline, EditOutline, MessageDotsOutline } from 'flowbite-svelte-icons';
+	import { ListOutline, EditOutline } from 'flowbite-svelte-icons';
 	import { formatDate } from '$lib/utils';
 	import { Container, DetailItem } from '$lib/components/layout';
 	import { hasPermission } from '$lib/utils/permissions';
@@ -41,12 +41,7 @@
 
 	<!-- Template Details Card -->
 	<Card size="xl" class="mb-8 p-6">
-		<div class="mb-6 flex items-center gap-3">
-			<MessageDotsOutline class="h-8 w-8 text-blue-500" />
-			<h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-				{chatTemplate?.name || 'Chat Template'}
-			</h2>
-		</div>
+		<h2 class="mb-6 text-xl font-semibold text-gray-900 dark:text-white">General Information</h2>
 
 		<div class="grid gap-6 md:grid-cols-2">
 			<!-- Basic Information -->
@@ -67,9 +62,6 @@
 						<span class="font-medium">{chatTemplate?.domain?.name || 'N/A'}</span>
 					</DetailItem>
 				{/if}
-				<DetailItem label="Category">
-					<Badge color="blue" class="text-xs">{chatTemplate?.category || 'N/A'}</Badge>
-				</DetailItem>
 				<DetailItem label="Status">
 					<Badge color={chatTemplate?.is_active ? 'green' : 'red'} class="text-xs">
 						{chatTemplate?.is_active ? 'Active' : 'Inactive'}
@@ -80,13 +72,19 @@
 			<!-- Metadata -->
 			<div class="space-y-4">
 				<DetailItem label="Created At">
-					<span class="text-gray-700 dark:text-gray-300">{formatDate(chatTemplate?.created_at)}</span>
+					<span class="text-gray-700 dark:text-gray-300"
+						>{formatDate(chatTemplate?.created_at)}</span
+					>
 				</DetailItem>
 				<DetailItem label="Updated At">
-					<span class="text-gray-700 dark:text-gray-300">{formatDate(chatTemplate?.updated_at)}</span>
+					<span class="text-gray-700 dark:text-gray-300"
+						>{formatDate(chatTemplate?.updated_at)}</span
+					>
 				</DetailItem>
 				<DetailItem label="Description">
-					<span class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{chatTemplate?.description || 'No description provided'}</span>
+					<span class="whitespace-pre-wrap text-gray-700 dark:text-gray-300"
+						>{chatTemplate?.description || 'No description provided'}</span
+					>
 				</DetailItem>
 			</div>
 		</div>

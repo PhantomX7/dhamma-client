@@ -120,7 +120,7 @@
 					<FormToggle
 						label="Active Status"
 						name="is_active"
-						bind:checked={$form.is_active}
+						bind:value={$form.is_active}
 						helperText="Enable this template for use in chat applications"
 						error={$errors.is_active}
 					/>
@@ -131,7 +131,7 @@
 					<FormToggle
 						label="Set as Default"
 						name="is_default"
-						bind:checked={$form.is_default}
+						bind:value={$form.is_default}
 						helperText="Set this template as the default for new chats"
 						error={$errors.is_default}
 					/>

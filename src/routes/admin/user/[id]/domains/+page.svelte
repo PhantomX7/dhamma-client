@@ -95,7 +95,7 @@
 									>{domain.code}</TableBodyCell
 								>
 								<TableBodyCell class="px-6 py-4">
-									<Badge large rounded color={domain.is_active ? 'green' : 'gray'}>
+									<Badge color={domain.is_active ? 'green' : 'gray'}>
 										{domain.is_active ? 'Active' : 'Inactive'}
 									</Badge>
 								</TableBodyCell>

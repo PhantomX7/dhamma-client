@@ -56,13 +56,13 @@
 			</DetailItem>
 
 			<DetailItem label="Type">
-				<Badge large rounded color={permission?.type === 'API' ? 'indigo' : 'purple'}>
+				<Badge color={permission?.type === 'API' ? 'indigo' : 'purple'}>
 					{permission?.type}
 				</Badge>
 			</DetailItem>
 
 			<DetailItem label="Domain Specific">
-				<Badge large rounded color={permission?.is_domain_specific ? 'blue' : 'gray'}>
+				<Badge color={permission?.is_domain_specific ? 'blue' : 'gray'}>
 					{permission?.is_domain_specific ? 'Yes' : 'No'}
 				</Badge>
 			</DetailItem>

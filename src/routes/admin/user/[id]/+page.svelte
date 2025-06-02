@@ -112,14 +112,14 @@
 			</DetailItem>
 
 			<DetailItem label="Status">
-				<Badge large rounded color={user?.is_active ? 'green' : 'gray'}>
+				<Badge color={user?.is_active ? 'green' : 'gray'}>
 					{user?.is_active ? 'Active' : 'Inactive'}
 				</Badge>
 			</DetailItem>
 
 			{#if currentUser().is_super_admin}
 				<DetailItem label="Super Admin">
-					<Badge large rounded color={user?.is_super_admin ? 'purple' : 'gray'}>
+					<Badge color={user?.is_super_admin ? 'purple' : 'gray'}>
 						{user?.is_super_admin ? 'Yes' : 'No'}
 					</Badge>
 				</DetailItem>

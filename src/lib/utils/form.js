@@ -14,9 +14,20 @@ export function getChangedFields(original, updated) {
 	return changedFields;
 }
 
+// sample of validation error
+// {
+// 	code: 'E1001',
+// 	details: {
+// 	  fields: { code: 'Value must be unique', name: 'Value must be unique' },
+// 	  total_errors: 2
+// 	},
+// 	message: 'Validation failed',
+// 	request_id: '94973b2e-e417-4bdd-91d3-ff0ff4998c0f',
+// 	type: 'VALIDATION_ERROR'
+//   }
 export function setErrors(form, errors) {
 	let structuredError = {};
-	Object.entries(errors).forEach(function ([key, val]) {
+	Object.entries(errors.details?.fields).forEach(function ([key, val]) {
 		structuredError[key] = [val];
 	});
 

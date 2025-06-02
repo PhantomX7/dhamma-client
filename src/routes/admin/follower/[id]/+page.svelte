@@ -89,13 +89,13 @@
 			</DetailItem>
 
 			<DetailItem label="Is Blood Donor?">
-				<Badge large rounded color={follower?.is_blood_donor ? 'green' : 'red'}>
+				<Badge color={follower?.is_blood_donor ? 'green' : 'red'}>
 					{follower?.is_blood_donor ? 'Yes' : 'No'}
 				</Badge>
 			</DetailItem>
 
 			<DetailItem label="Is Muda Mudi?">
-				<Badge large rounded color={follower?.is_youth ? 'green' : 'red'}>
+				<Badge color={follower?.is_youth ? 'green' : 'red'}>
 					{follower?.is_youth ? 'Yes' : 'No'}
 				</Badge>
 			</DetailItem>

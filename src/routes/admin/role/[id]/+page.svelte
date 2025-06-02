@@ -98,7 +98,7 @@
 			<DetailItem label="Role Name">{role?.name}</DetailItem>
 			<DetailItem label="Description">{role?.description || 'N/A'}</DetailItem>
 			<DetailItem label="Active">
-				<Badge large rounded color={role?.is_active ? 'green' : 'red'}>
+				<Badge color={role?.is_active ? 'green' : 'red'}>
 					{role?.is_active ? 'Active' : 'Inactive'}
 				</Badge>
 			</DetailItem>

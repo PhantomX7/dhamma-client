@@ -48,7 +48,7 @@
 			</DetailItem>
 
 			<DetailItem label="Status">
-				<Badge large rounded color={domain?.is_active ? 'green' : 'red'}>
+				<Badge color={domain?.is_active ? 'green' : 'red'}>
 					{domain?.is_active ? 'Active' : 'Inactive'}
 				</Badge>
 			</DetailItem>

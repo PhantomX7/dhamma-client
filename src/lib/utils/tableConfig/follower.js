@@ -10,7 +10,7 @@ import {
 	createDateColumn,
 	createViewAction,
 	createEditAction,
-	createDomainColumn
+	createDomainColumn,
 } from './index.js';
 
 /**
@@ -59,7 +59,7 @@ export function getFollowerTableConfig(isSuperAdmin = false) {
 		columns,
 		actions: [
 			createViewAction('/admin/follower', 'follower/show'),
-			createEditAction('/admin/follower', 'follower/edit')
+			createEditAction('/admin/follower', 'follower/edit'),
 		],
 		emptyMessage: 'No followers found.'
 	};

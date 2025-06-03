@@ -4,18 +4,8 @@ import {
 	createBadgeColumn,
 	createViewAction,
 	createEditAction,
-	createCustomAction,
 	createDomainColumn
 } from './index.js';
-// import { Badge, Tooltip } from 'flowbite-svelte';
-// import { MessageDotsOutline, CodeBranchOutline } from 'flowbite-svelte-icons';
-
-// Helper function to extract template variables
-function extractTemplateVariables(content) {
-	if (!content) return [];
-	const matches = content.match(/{{\s*([^}]+)\s*}}/g);
-	return matches ? matches.map((match) => match.replace(/[{}\s]/g, '')) : [];
-}
 
 // Helper function to get content preview
 function getContentPreview(content) {
@@ -60,40 +50,7 @@ export function getChatTemplateTableConfig(isSuperAdmin = false) {
 				</div>
 			`
 		},
-		{
-			key: 'content',
-			label: 'Variables',
-			type: 'custom',
-			formatter: (item) => {
-				const variables = extractTemplateVariables(item.content);
-				if (variables.length === 0) {
-					return '<span class="text-gray-400 text-xs">No variables</span>';
-				}
-
-				const displayVars = variables.slice(0, 3);
-				const extraCount = variables.length - 3;
-
-				let html = '<div class="flex flex-wrap gap-1">';
-				displayVars.forEach((variable) => {
-					html += `
-						<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300">
-							<svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-							</svg>
-							${variable}
-						</span>
-					`;
-				});
-
-				if (extraCount > 0) {
-					html += `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">+${extraCount}</span>`;
-				}
-
-				html += '</div>';
-				return html;
-			}
-		},
-    createBadgeColumn(
+		createBadgeColumn(
 			'is_default',
 			'Set as default',
 			(value) => (value ? 'Yes' : 'No'),
@@ -110,10 +67,10 @@ export function getChatTemplateTableConfig(isSuperAdmin = false) {
 		createDateColumn('created_at', 'Created')
 	];
 
+	// Remove the custom action - it will be handled in the component
 	const actions = [
 		createViewAction('/admin/chat-template', 'chat-template/show'),
-		createEditAction('/admin/chat-template', 'chat-template/update'),
-		createCustomAction('Set Default', 'green', null, 'chat-template/set-as-default', 'setDefault'),
+		createEditAction('/admin/chat-template', 'chat-template/update')
 	];
 
 	return {

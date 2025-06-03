@@ -19,7 +19,13 @@
 	 * @param {Array} data - Array of data objects to display
 	 * @param {Object} config - Table configuration object defining columns and actions
 	 */
-	let { data, config } = $props();
+	/**
+	 * Enhanced props to support dynamic actions
+	 * @param {Array} data - Array of data objects to display
+	 * @param {Object} config - Table configuration object
+	 * @param {Array} additionalActions - Additional actions to inject
+	 */
+	let { data, config, additionalActions = [] } = $props();
 
 	// Get current user context for permission checks
 	const currentUser = getContext('user');
@@ -32,14 +38,14 @@
 	 */
 	function renderCellContent(item, column) {
 		const value = item[column.key];
-		
+
 		switch (column.type) {
 			case 'date':
 				return formatDate(value);
 			case 'badge':
 				return {
 					text: column.formatter ? column.formatter(value) : value,
-					color: column.getColor ? column.getColor(value) : (column.color || 'gray')
+					color: column.getColor ? column.getColor(value) : column.color || 'gray'
 				};
 			case 'custom':
 				return column.formatter ? column.formatter(item) : value;
@@ -50,17 +56,19 @@
 
 	// Pre-filter columns and actions for better performance
 	const visibleColumns = $derived(
-		config.columns.filter(column => 
-			!column.condition || column.condition(currentUser())
+		config.columns.filter((column) => !column.condition || column.condition(currentUser()))
+	);
+
+	// Enhanced actions filtering with additional actions support
+	const visibleActions = $derived([
+		...(config.actions?.filter(
+			(action) => !action.permission || hasPermission(currentUser(), action.permission)
+		) || []),
+		...additionalActions.filter(
+			(action) => !action.permission || hasPermission(currentUser(), action.permission)
 		)
-	);
-	
-	const visibleActions = $derived(
-		config.actions?.filter(action => 
-			!action.permission || hasPermission(currentUser(), action.permission)
-		) || []
-	);
-	
+	]);
+
 	const totalColumns = $derived(visibleColumns.length + (visibleActions.length > 0 ? 1 : 0));
 
 	/**
@@ -70,9 +78,12 @@
 	 */
 	function getActionIcon(iconType) {
 		switch (iconType) {
-			case 'view': return EyeOutline;
-			case 'edit': return EditOutline;
-			default: return null;
+			case 'view':
+				return EyeOutline;
+			case 'edit':
+				return EditOutline;
+			default:
+				return null;
 		}
 	}
 </script>
@@ -90,14 +101,16 @@
 			<TableHeadCell>Actions</TableHeadCell>
 		{/if}
 	</TableHead>
-	
+
 	<!-- Table body containing data -->
 	<TableBody class="divide-y divide-gray-200 dark:divide-gray-700">
 		{#each data as item (item.id)}
 			<TableBodyRow class="bg-white dark:bg-gray-800">
 				{#each visibleColumns as column}
 					<TableBodyCell
-						class={column.key === 'id' ? 'px-6 py-4 font-medium whitespace-nowrap text-gray-900 dark:text-white' : 'px-6 py-4'}
+						class={column.key === 'id'
+							? 'px-6 py-4 font-medium whitespace-nowrap text-gray-900 dark:text-white'
+							: 'px-6 py-4'}
 					>
 						{#if column.type === 'badge'}
 							{@const badgeData = renderCellContent(item, column)}
@@ -111,12 +124,13 @@
 						{/if}
 					</TableBodyCell>
 				{/each}
-				
+
 				{#if visibleActions.length > 0}
 					<TableBodyCell class="px-6 py-4">
 						<div class="flex space-x-2">
 							{#each visibleActions as action}
 								<Button
+									class="cursor-pointer"
 									size="xs"
 									color={action.color || 'alternative'}
 									href={action.href ? action.href.replace('{id}', item.id) : undefined}

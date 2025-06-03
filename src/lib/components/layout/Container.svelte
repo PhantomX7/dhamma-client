@@ -13,8 +13,8 @@
 		showSuccessAlert = false,
 		showErrorAlert = false,
 		alertMessage = '',
-		onCloseSuccessAlert = null,
-		onCloseErrorAlert = null
+		onCloseSuccessAlert = () => {},
+		onCloseErrorAlert = () => {}
 	} = $props();
 
 	/**

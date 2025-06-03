@@ -76,6 +76,7 @@ export function createFormActionHandler({
 /**
  * Common form action configurations
  */
+// Add to commonActions object
 export const commonActions = {
 	/**
 	 * Generic action configuration with customizable form data
@@ -111,11 +112,11 @@ export const commonActions = {
 		validationErrorMessage: options.validationErrorMessage
 	}),
 	/**
-	 * Set default action configuration
-	 * @param {string} itemType - Type of item (e.g., 'template', 'user')
+	 * Set default action specifically for chat templates
+	 * @param {string} itemType - Type of item (e.g., 'template')
 	 * @returns {Object} Action configuration
 	 */
-	setDefault: (itemType = 'item') => ({
+	setDefaultTemplate: (itemType = 'template') => ({
 		action: 'setDefault',
 		getFormData: (item) => {
 			const formData = new FormData();
@@ -129,35 +130,53 @@ export const commonActions = {
 	}),
 
 	/**
-	 * Toggle status action configuration
+	 * Generic action factory for common table actions
+	 * @param {string} actionType - Type of action ('setDefault', 'toggleStatus', 'delete')
 	 * @param {string} itemType - Type of item
+	 * @param {Object} customConfig - Custom configuration overrides
 	 * @returns {Object} Action configuration
 	 */
-	toggleStatus: (itemType = 'item') => ({
-		action: 'toggleStatus',
-		getFormData: (item) => {
-			const formData = new FormData();
-			formData.append('id', item.id);
-			return formData;
-		},
-		successMessage: `${itemType} status updated successfully`,
-		errorMessage: `Failed to update ${itemType} status`
-	}),
+	createTableAction: (actionType, itemType = 'item', customConfig = {}) => {
+		const baseConfigs = {
+			setDefault: {
+				action: 'setDefault',
+				getFormData: (item) => {
+					const formData = new FormData();
+					formData.append('templateId', item.id);
+					return formData;
+				},
+				validateItem: (item) => !item.is_default
+			},
+			toggleStatus: {
+				action: 'toggleStatus',
+				getFormData: (item) => {
+					const formData = new FormData();
+					formData.append('id', item.id);
+					return formData;
+				}
+			},
+			delete: {
+				action: 'delete',
+				method: 'DELETE',
+				getFormData: (item) => {
+					const formData = new FormData();
+					formData.append('id', item.id);
+					return formData;
+				}
+			}
+		};
 
-	/**
-	 * Delete action configuration
-	 * @param {string} itemType - Type of item
-	 * @returns {Object} Action configuration
-	 */
-	delete: (itemType = 'item') => ({
-		action: 'delete',
-		method: 'DELETE',
-		getFormData: (item) => {
-			const formData = new FormData();
-			formData.append('id', item.id);
-			return formData;
-		},
-		successMessage: `${itemType} deleted successfully`,
-		errorMessage: `Failed to delete ${itemType}`
-	})
+		const baseConfig = baseConfigs[actionType];
+		if (!baseConfig) {
+			throw new Error(`Unknown action type: ${actionType}`);
+		}
+
+		return {
+			...baseConfig,
+			successMessage: `${itemType} ${actionType} completed successfully`,
+			errorMessage: `Failed to ${actionType} ${itemType}`,
+			validationErrorMessage: customConfig.validationErrorMessage,
+			...customConfig
+		};
+	}
 };

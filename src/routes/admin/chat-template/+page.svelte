@@ -20,32 +20,14 @@
 
 	// Configuration for the DataTable filter component
 	const filterConfig = $derived({
-		name: {
-			type: FilterType.STRING,
-			label: 'Name'
-		},
+		name: { type: FilterType.STRING, label: 'Name' },
 		...(currentUser()?.is_super_admin && {
-			domain_name: {
-				type: FilterType.STRING,
-				label: 'Domain Name'
-			}
+			domain_name: { type: FilterType.STRING, label: 'Domain Name' }
 		}),
-		description: {
-			type: FilterType.STRING,
-			label: 'Description'
-		},
-		is_default: {
-			type: FilterType.BOOL,
-			label: 'Default Template'
-		},
-		is_active: {
-			type: FilterType.BOOL,
-			label: 'Status Active'
-		},
-		created_at: {
-			type: FilterType.DATE,
-			label: 'Created Date'
-		},
+		description: { type: FilterType.STRING, label: 'Description' },
+		is_default: { type: FilterType.BOOL, label: 'Default Template' },
+		is_active: { type: FilterType.BOOL, label: 'Status Active' },
+		created_at: { type: FilterType.DATE, label: 'Created Date' }
 	});
 
 	// Alert state
@@ -60,47 +42,22 @@
 		setAlertMessage: (value) => alertMessage = value
 	});
 
-	// Create setDefault action
-	const setDefault = actionHandler(commonActions.setDefault('template'));
+	// Create setDefault action using the simplified approach
+	const setDefault = actionHandler(commonActions.createTableAction('setDefault', 'template'));
 
-	// Table configuration with setDefault action handler
+	// Simplified table configuration
 	const tableConfig = $derived({
 		...getChatTemplateTableConfig(currentUser()?.is_super_admin),
-		actions: getChatTemplateTableConfig(currentUser()?.is_super_admin).actions.map(action => {
-			if (action.onclick === 'setDefault') {
-				return { ...action, onclick: setDefault };
+		actions: [
+			...getChatTemplateTableConfig(currentUser()?.is_super_admin).actions,
+			{
+				label: 'Set Default',
+				color: 'green',
+				onclick: setDefault,
+				permission: 'chat-template/set-as-default',
 			}
-			return action;
-		})
+		]
 	});
-
-	/**
-	 * Extract template variables from content using regex
-	 * @param {string} content - Template content
-	 * @returns {string[]} Array of variable names
-	 */
-	function extractTemplateVariables(content) {
-		if (!content) return [];
-		const regex = /\{\{\s*([^}]+)\s*\}\}/g;
-		const variables = [];
-		let match;
-		while ((match = regex.exec(content)) !== null) {
-			variables.push(match[1].trim());
-		}
-		return [...new Set(variables)]; // Remove duplicates
-	}
-
-	/**
-	 * Get preview of template content with highlighted variables
-	 * @param {string} content - Template content
-	 * @returns {string} Truncated content for preview
-	 */
-	function getContentPreview(content) {
-		if (!content) return 'No content';
-		return content.length > 100 ? content.substring(0, 100) + '...' : content;
-	}
-
-	const tableColspan = $derived(currentUser().is_super_admin ? 12 : 11);
 </script>
 
 <!-- Use Container component -->

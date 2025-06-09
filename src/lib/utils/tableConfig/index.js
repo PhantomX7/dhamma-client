@@ -12,12 +12,12 @@
  * @returns {Object} Column configuration
  */
 function createColumn(key, label, type, options = {}) {
-  return {
-    key,
-    label,
-    type,
-    ...options
-  };
+	return {
+		key,
+		label,
+		type,
+		...options
+	};
 }
 
 /**
@@ -51,21 +51,44 @@ export const createTextColumn = (key, label) => createColumn(key, label, 'text')
  * @param {Function} getColor - Function to dynamically determine badge color
  * @returns {Object} Column configuration for badge field
  */
-export const createBadgeColumn = (key, label, formatter, color = 'gray', getColor = null) => 
-  createColumn(key, label, 'badge', { formatter, color, getColor });
+export const createBadgeColumn = (key, label, formatter, color = 'gray', getColor = null) =>
+	createColumn(key, label, 'badge', { formatter, color, getColor });
 
 /**
- * Base action factory function
- * @param {string} label - Action label
- * @param {Object} options - Action options
+ * Creates a flexible action configuration that can conditionally render as link or button
+ * @param {string} label - The action label
+ * @param {string} color - The button color
+ * @param {Object} config - Configuration object
+ * @param {string} config.permission - The permission required for the action
+ * @param {string|Function} config.href - Static URL or function that returns URL based on item
+ * @param {Function} config.onclick - Click handler function
+ * @param {Function} config.condition - Function to determine if action should be link or button
+ * @param {string} config.icon - Optional icon type
  * @returns {Object} Action configuration
  */
-function createAction(label, options = {}) {
-  return {
-    label,
-    ...options
-  };
-}
+export const createFlexibleAction = (label, color, config) => {
+	return {
+		label,
+		color,
+		permission: config.permission,
+		icon: config.icon,
+		// Dynamic behavior based on item data
+		getActionType: (item) => {
+			if (config.condition) {
+				return config.condition(item) ? 'link' : 'button';
+			}
+			return config.href ? 'link' : 'button';
+		},
+		// Dynamic href generation
+		getHref: (item) => {
+			if (typeof config.href === 'function') {
+				return config.href(item);
+			}
+			return config.href?.replace('{id}', item.id);
+		},
+		onclick: config.onclick
+	};
+};
 
 /**
  * Creates a standard view action configuration
@@ -73,13 +96,12 @@ function createAction(label, options = {}) {
  * @param {string} permission - The permission required for the view action
  * @returns {Object} Action configuration for view
  */
-export const createViewAction = (baseUrl, permission) => 
-  createAction('View', {
-    icon: 'view',
-    color: 'alternative',
-    href: `${baseUrl}/{id}`,
-    permission
-  });
+export const createViewAction = (baseUrl, permission) =>
+	createFlexibleAction('View', 'alternative', {
+		icon: 'view',
+		href: `${baseUrl}/{id}`,
+		permission
+	});
 
 /**
  * Creates a standard edit action configuration
@@ -87,29 +109,33 @@ export const createViewAction = (baseUrl, permission) =>
  * @param {string} permission - The permission required for the edit action
  * @returns {Object} Action configuration for edit
  */
-export const createEditAction = (baseUrl, permission) => 
-  createAction('Edit', {
-    icon: 'edit',
-    color: 'primary',
-    href: `${baseUrl}/{id}/edit`,
-    permission
-  });
+export const createEditAction = (baseUrl, permission) =>
+	createFlexibleAction('Edit', 'primary', {
+		icon: 'edit',
+		href: `${baseUrl}/{id}/edit`,
+		permission
+	});
 
 /**
- * Creates a custom action configuration
+ * Simplified custom action that auto-detects behavior
  * @param {string} label - The action label
  * @param {string} color - The button color
- * @param {string} url - The action URL (optional if using onclick)
- * @param {string} permission - The permission required for the action
- * @param {string|Function} onclick - Optional onclick handler for form submissions
- * @returns {Object} Action configuration for custom action
+ * @param {string|Function} urlOrCondition - URL string, URL function, or condition function
+ * @param {string} permission - The permission required
+ * @param {Function} onclick - Optional click handler
+ * @returns {Object} Action configuration
  */
-export const createCustomAction = (label, color, url, permission, onclick = null) => 
-  createAction(label, {
-    color,
-    permission,
-    ...(onclick ? { onclick } : { href: url })
-  });
+export const createSmartAction = (label, color, urlOrCondition, permission, onclick = null) => {
+	const isFunction = typeof urlOrCondition === 'function';
+	const isString = typeof urlOrCondition === 'string';
+
+	return createFlexibleAction(label, color, {
+		permission,
+		href: isString ? urlOrCondition : null,
+		onclick,
+		condition: isFunction ? urlOrCondition : null
+	});
+};
 
 /**
  * Creates a conditional column that only shows for super admins
@@ -117,8 +143,8 @@ export const createCustomAction = (label, color, url, permission, onclick = null
  * @returns {Object} Column with super admin condition
  */
 export const createSuperAdminColumn = (column) => ({
-  ...column,
-  condition: (user) => user.is_super_admin
+	...column,
+	condition: (user) => user.is_super_admin
 });
 
 /**
@@ -126,8 +152,9 @@ export const createSuperAdminColumn = (column) => ({
  * @returns {Object} Domain column configuration
  */
 export const createDomainColumn = () => ({
-  key: 'domain',
-  label: 'Domain',
-  type: 'custom',
-  formatter: (item) => item.domain?.name || '<span class="text-gray-400 dark:text-gray-500">N/A</span>'
+	key: 'domain',
+	label: 'Domain',
+	type: 'custom',
+	formatter: (item) =>
+		item.domain?.name || '<span class="text-gray-400 dark:text-gray-500">N/A</span>'
 });

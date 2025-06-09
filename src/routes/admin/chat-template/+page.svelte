@@ -9,7 +9,7 @@
 	import { hasPermission } from '$lib/utils/permissions';
 	import { getChatTemplateTableConfig } from '$lib/utils/tableConfig/chatTemplate.js';
 	import { createFormActionHandler, commonActions } from '$lib/utils/formActionHandler.js';
-	import { createCustomAction } from '$lib/utils/tableConfig/index.js';
+	import { createSmartAction } from '$lib/utils/tableConfig/index.js';
 
 	const currentUser = getContext('user');
 
@@ -51,7 +51,7 @@
 		...getChatTemplateTableConfig(currentUser()?.is_super_admin),
 		actions: [
 			...getChatTemplateTableConfig(currentUser()?.is_super_admin).actions,
-			createCustomAction('Set Default', 'green', null, 'chat-template/set-as-default', setDefault)
+			createSmartAction('Set Default', 'green', null, 'chat-template/set-as-default', setDefault)
 		]
 	});
 </script>

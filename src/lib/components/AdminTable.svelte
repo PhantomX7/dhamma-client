@@ -125,16 +125,28 @@
 					</TableBodyCell>
 				{/each}
 
+				<!-- In the actions rendering section -->
 				{#if visibleActions.length > 0}
 					<TableBodyCell class="px-6 py-4">
 						<div class="flex space-x-2">
 							{#each visibleActions as action}
+								{@const actionType = action.getActionType
+									? action.getActionType(item)
+									: action.href
+										? 'link'
+										: 'button'}
+								{@const dynamicHref = action.getHref
+									? action.getHref(item)
+									: action.href?.replace('{id}', item.id)}
+
 								<Button
 									class="cursor-pointer"
 									size="xs"
 									color={action.color || 'alternative'}
-									href={action.href ? action.href.replace('{id}', item.id) : undefined}
-									onclick={action.onclick ? () => action.onclick(item) : undefined}
+									href={actionType === 'link' ? dynamicHref : undefined}
+									onclick={actionType === 'button' && action.onclick
+										? () => action.onclick(item)
+										: undefined}
 									title={action.title}
 								>
 									{@const IconComponent = getActionIcon(action.icon)}

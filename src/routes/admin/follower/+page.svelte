@@ -9,7 +9,7 @@
 	import { hasPermission } from '$lib/utils/permissions';
 	import { getFollowerTableConfig } from '$lib/utils/tableConfig/follower.js';
 	import { createFormActionHandler } from '$lib/utils/formActionHandler.js';
-	import { createCustomAction } from '$lib/utils/tableConfig/index.js';
+	import { createSmartAction } from '$lib/utils/tableConfig/index.js';
 
 	const currentUser = getContext('user');
 
@@ -102,7 +102,7 @@
 		...getFollowerTableConfig(currentUser()?.is_super_admin),
 		actions: [
 			...getFollowerTableConfig(currentUser()?.is_super_admin).actions,
-			createCustomAction('Chat', 'green', null, 'chat-template/get-default', chatWhatsApp)
+			createSmartAction('Chat', 'green', null, 'chat-template/get-default', chatWhatsApp)
 		]
 	});
 </script>

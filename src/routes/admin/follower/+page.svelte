@@ -9,6 +9,7 @@
 	import { hasPermission } from '$lib/utils/permissions';
 	import { getFollowerTableConfig } from '$lib/utils/tableConfig/follower.js';
 	import { createFormActionHandler } from '$lib/utils/formActionHandler.js';
+	import { createCustomAction } from '$lib/utils/tableConfig/index.js';
 
 	const currentUser = getContext('user');
 
@@ -84,7 +85,7 @@
 
 			// Clean phone number (remove non-digits)
 			// const cleanPhone = follower.phone.replace(/\D/g, '');
-			const cleanPhone = follower.phone
+			const cleanPhone = follower.phone;
 
 			// Create WhatsApp URL
 			const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
@@ -101,12 +102,7 @@
 		...getFollowerTableConfig(currentUser()?.is_super_admin),
 		actions: [
 			...getFollowerTableConfig(currentUser()?.is_super_admin).actions,
-			{
-				label: 'Chat',
-				color: 'green',
-				onclick: chatWhatsApp,
-				permission: 'chat-template/get-default'
-			}
+			createCustomAction('Chat', 'green', null, 'chat-template/get-default', chatWhatsApp)
 		]
 	});
 </script>

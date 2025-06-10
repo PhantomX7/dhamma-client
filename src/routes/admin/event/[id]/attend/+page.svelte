@@ -4,19 +4,26 @@
 	import {
 		ArrowLeftOutline,
 		ExclamationCircleSolid,
-		CheckCircleSolid
+		CheckCircleSolid,
+		UserAddOutline
 	} from 'flowbite-svelte-icons';
 	import { superForm } from 'sveltekit-superforms/client';
 	import { FormInput, FormButton } from '$lib/components/form';
 	import { Container } from '$lib/components/layout';
+	import ManualAttendModal from '$lib/components/modal/ManualAttendModal.svelte';
 
 	// Component props
 	let { data } = $props();
 	const event = $derived(data.event);
-	const eventId = $derived(data.eventId);
+	const eventId = $derived(data.event.id);
 
 	// Force focus variables
 	let shouldMaintainFocus = $state(true);
+
+	let scanButtonElement;
+
+	// Modal state
+	let isManualAttendModalOpen = $state(false);
 
 	// Initialize SuperForm for client-side form handling
 	const { form, errors, enhance, submitting, delayed, message, submit } = superForm(data.form, {
@@ -63,7 +70,7 @@
 		debounceTimer = setTimeout(() => {
 			const value = e.target.value.trim();
 			if (value && !$submitting && !$delayed) {
-				submit(); // Submit the form
+				submit(scanButtonElement); // Submit the form
 			}
 		}, 500); // 500ms delay - adjust if needed for your RFID scanner
 	}
@@ -122,16 +129,31 @@
 			document.removeEventListener('click', handleDocumentClick);
 		};
 	});
+
+	// Form submission handler with data refresh
+	function handleSubmit() {
+		return async ({ result, update }) => {
+			if (result.type === 'success') {
+				await invalidateAll();
+				await update({ invalidateAll: true });
+				isManualAttendModalOpen = false;
+			}
+		};
+	}
 </script>
 
 <Container breadcrumb={breadcrumbItems} title={`Record Attendance for: ${event?.name || 'Event'}`}>
 	{#snippet headerActions()}
-		<Button color="alternative" href={`/admin/event/${eventId}`}>
-			<ArrowLeftOutline class="me-2 h-4 w-4" />
-			Back to Event Details
-		</Button>
-
-		<!-- Toggle button for force focus -->
+		<div class="flex gap-2">
+			<Button color="green" onclick={() => (isManualAttendModalOpen = true)}>
+				<UserAddOutline class="me-2 h-4 w-4" />
+				Manual Attend
+			</Button>
+			<Button color="alternative" href={`/admin/event/${eventId}`}>
+				<ArrowLeftOutline class="me-2 h-4 w-4" />
+				Back to Event Details
+			</Button>
+		</div>
 	{/snippet}
 
 	<Card size="xl" class="mb-8 p-4">
@@ -167,6 +189,16 @@
 				bind:elementRef
 			/>
 
+			<button
+				type="submit"
+				bind:this={scanButtonElement}
+				formaction="?/attend"
+				class="hidden"
+				aria-hidden="true"
+			>
+				Scan Submit
+			</button>
+
 			<div class="flex items-center justify-end space-x-3 pt-2">
 				<Button
 					color={shouldMaintainFocus ? 'red' : 'green'}
@@ -179,4 +211,12 @@
 			</div>
 		</form>
 	</Card>
+
+	<!-- Manual Attendance Modal -->
+	<ManualAttendModal
+		bind:open={isManualAttendModalOpen}
+		{eventId}
+		domainId={event.domain.id}
+		{handleSubmit}
+	/>
 </Container>

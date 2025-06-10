@@ -6,11 +6,15 @@ import api from '$lib/api';
 import { fail } from '@sveltejs/kit';
 import { setFlash } from 'sveltekit-flash-message/server';
 import { runPromise } from '$lib/utils';
-import { setErrors } from '$lib/utils/form';
 
 // Schema for the attendance form (just card_code)
 const attendanceSchema = z.object({
 	card_code: z.string().min(1, { message: 'Card code is required.' })
+});
+
+// Schema for manual attendance by follower ID
+const attendByIdSchema = z.object({
+	follower_id: z.string().min(1, { message: 'Follower ID is required.' })
 });
 
 /**
@@ -45,7 +49,7 @@ export const actions = {
 	/**
 	 * Handles the form submission for attending an event.
 	 */
-	default: async (event) => {
+	attend: async (event) => {
 		const { request, params, cookies } = event;
 		const eventId = params.id;
 
@@ -59,17 +63,7 @@ export const actions = {
 		// API call to record attendance
 		// Assumes an API endpoint: POST /api/event/{eventId}/attend
 		const [response, fetchError] = await runPromise(
-			api.fetch(
-				`event/${eventId}/attend`,
-				{
-					method: 'POST',
-					body: JSON.stringify(form.data),
-					headers: {
-						'Content-Type': 'application/json'
-					}
-				},
-				event
-			)
+			api.post(`event/${eventId}/attend`, form.data, event)
 		);
 
 		form.data.card_code = ''; // Clear the card code field
@@ -84,21 +78,81 @@ export const actions = {
 
 		const responseData = response.data;
 
-		if (!response.ok) {
+		if (!response.ok || !responseData || !responseData.status) {
 			const errorMessage =
-				responseData?.message ||
-				'Failed to record attendance. The card code might be invalid or already used for this event.';
-			if (responseData?.error) {
-				setErrors(form, responseData.error); // Populate form errors if available
+				responseData?.error?.message ||
+				'Failed to record attendance. The card code might be invalid.';
+			if (response.status > 500) {
+				console.error(
+					'API error recording attendance:',
+					response.status,
+					errorMessage,
+					responseData?.error
+				);
 			}
-			setFlash({ type: 'error', message: errorMessage }, cookies);
-			return fail(response.status || 400, { form, error: errorMessage });
+			setFlash({ type: 'error', message: `${errorMessage}` }, cookies);
+			return fail(response.status === 422 ? 422 : 400, { form });
 		}
 
 		// Set success flash message
 		setFlash({ type: 'success', message: 'Attendance recorded successfully!' }, cookies);
 
 		// Return success without redirecting, and reset the form
+		return {
+			form,
+			success: true
+		};
+	},
+
+	/**
+	 * Handles manual attendance by follower ID.
+	 */
+	attendById: async (event) => {
+		const { request, params, cookies } = event;
+		const eventId = params.id;
+
+		const form = await superValidate(request, zod(attendByIdSchema));
+
+		if (!form.valid) {
+			setFlash({ type: 'error', message: 'Invalid data. Please check the form.' }, cookies);
+			return fail(400, { form });
+		}
+
+		// API call to record attendance by follower ID
+		// Uses the attend-by-id endpoint as requested
+		const [response, fetchError] = await runPromise(
+			api.post(`event/${eventId}/attend-by-id`, form.data, event)
+		);
+
+		if (fetchError || !response) {
+			setFlash(
+				{ type: 'error', message: fetchError?.message || 'Failed to connect to the server.' },
+				cookies
+			);
+			return fail(500, { form });
+		}
+
+		const responseData = response.data;
+
+		if (!response.ok || !responseData || !responseData.status) {
+			const errorMessage =
+				responseData?.error?.message ||
+				'Failed to record attendance. The card code might be invalid.';
+			if (response.status > 500) {
+				console.error(
+					'API error recording attendance by ID:',
+					response.status,
+					errorMessage,
+					responseData?.error
+				);
+			}
+			setFlash({ type: 'error', message: `${errorMessage}. Please check your data.` }, cookies);
+			return fail(response.status === 422 ? 422 : 400, { form });
+		}
+
+		// Set success flash message
+		setFlash({ type: 'success', message: 'Attendance recorded successfully!' }, cookies);
+
 		return {
 			form,
 			success: true

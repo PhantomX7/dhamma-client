@@ -58,10 +58,7 @@
 
 <!-- Use Container component -->
 <Container
-	breadcrumb={[
-		{ name: 'Dashboard', href: '/admin' },
-		{ name: 'Chat Templates', href: '/admin/chat-template' }
-	]}
+	breadcrumb={breadcrumbItems}
 	title="Chat Templates"
 	{showSuccessAlert}
 	{showErrorAlert}

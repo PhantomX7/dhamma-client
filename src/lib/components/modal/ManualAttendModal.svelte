@@ -138,9 +138,8 @@
 				bind:value={searchTerm}
 				oninput={onSearchInput}
 				placeholder="Search by name, phone number, or email..."
-				class="pl-10"
+				size="md"
 			>
-				<SearchOutline slot="left" class="h-4 w-4 text-gray-500" />
 			</Search>
 			{#if searchTerm.length > 0 && searchTerm.length < 2}
 				<div
@@ -242,17 +241,13 @@
 										</div>
 									</TableBodyCell>
 									<TableBodyCell class="px-4 py-4 text-center">
-										<form
-											method="POST"
-											action="?/attendById"
-											use:enhance={handleSubmit}
-										>
+										<form method="POST" action="?/attendById" use:enhance={handleSubmit}>
 											<input type="hidden" name="follower_id" value={follower.id} />
 											<Button
 												type="submit"
 												size="sm"
 												color="green"
-												class="cursor-pointer min-w-[80px]"
+												class="min-w-[80px] cursor-pointer"
 												disabled={isSubmitting}
 											>
 												{#if isSubmitting}

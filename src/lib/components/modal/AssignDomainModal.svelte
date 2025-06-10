@@ -141,11 +141,9 @@
 			<Search
 				bind:value={searchTerm}
 				oninput={onSearchInput}
+				size="lg"
 				placeholder="Search by domain code or name..."
-				class="pl-10"
-			>
-				<SearchOutline slot="left" class="h-4 w-4 text-gray-500" />
-			</Search>
+			></Search>
 		</div>
 	</div>
 
@@ -256,7 +254,7 @@
 												type="submit"
 												size="sm"
 												color="green"
-												class="cursor-pointer min-w-[80px]"
+												class="min-w-[80px] cursor-pointer"
 												disabled={isSubmitting}
 											>
 												{#if isSubmitting}

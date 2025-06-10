@@ -112,18 +112,6 @@
 		searchTerm = event.target.value;
 		handleSearch();
 	}
-
-	/**
-	 * Enhanced form submission handler
-	 */
-	function enhancedSubmit(followerName) {
-		return ({ formElement, formData, action, result, update }) => {
-			isSubmitting = true;
-			return handleSubmit({ formElement, formData, action, result, update }).finally(() => {
-				isSubmitting = false;
-			});
-		};
-	}
 </script>
 
 <Modal
@@ -264,7 +252,7 @@
 												type="submit"
 												size="sm"
 												color="green"
-												class="min-w-[80px]"
+												class="cursor-pointer min-w-[80px]"
 												disabled={isSubmitting}
 											>
 												{#if isSubmitting}

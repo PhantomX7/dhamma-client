@@ -34,7 +34,9 @@
 	// Form submission handler with data refresh
 	function handleSubmit() {
 		return async ({ result, update }) => {
-			if (result.type === 'success') {
+			console.log("heeee")
+
+			if (result.type) {
 				await invalidateAll();
 				await update({ invalidateAll: true });
 				showModal = false;

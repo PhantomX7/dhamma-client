@@ -260,6 +260,7 @@
 				type="submit"
 				disabled={!selectedDomainId || !selectedRoleId || isLoading}
 				aria-label="Assign selected role"
+				class="cursor-pointer"
 			>
 				{#if isLoading}
 					<Spinner class="me-2" size="4" /> Assigning...

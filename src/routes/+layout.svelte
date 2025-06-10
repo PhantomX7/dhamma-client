@@ -85,26 +85,24 @@
 		</section>
 	{:else}
 		{#if $flash}
-			<div
-				class="fixed top-20 right-4 z-50 max-w-md"
-				in:fly={{ y: -20, duration: 300 }}
-				out:fade={{ duration: 200 }}
+			<Toast
+				transition={fly}
+				params={{ x: 200 }}
+				position="top-right"
+				dismissable
+				simple
+				color={getFlashColor($flash.type)}
+				class="border border-gray-100 shadow-lg top-20 right-4 z-50"
 			>
-				<Toast
-					dismissable
-					simple
-					color={getFlashColor($flash.type)}
-					class="border border-gray-100 shadow-lg"
-				>
-					{#snippet icon()}
-						{@const FlashIcon = getFlashIcon($flash.type)}
-						<FlashIcon class="h-5 w-5" />
-					{/snippet}
-					<div class="ml-3 text-sm font-normal">
-						{$flash.message}
-					</div>
-				</Toast>
-			</div>
+				{#snippet icon()}
+					{@const FlashIcon = getFlashIcon($flash.type)}
+					<FlashIcon class="h-5 w-5" />
+				{/snippet}
+				<div class="ml-3 text-sm font-normal">
+					{$flash.message}
+				</div>
+			</Toast>
+			<!-- </div> -->
 		{/if}
 		{@render children()}
 	{/if}

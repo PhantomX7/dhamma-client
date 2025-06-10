@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+	import { invalidateAll } from '$app/navigation'; // Add this import
 	import { Button, Card, Alert } from 'flowbite-svelte';
 	import {
 		ArrowLeftOutline,
@@ -133,11 +134,12 @@
 	// Form submission handler with data refresh
 	function handleSubmit() {
 		return async ({ result, update }) => {
-			if (result.type === 'success') {
+			if (result.type) {
 				await invalidateAll();
 				await update({ invalidateAll: true });
 				isManualAttendModalOpen = false;
 			}
+
 		};
 	}
 </script>

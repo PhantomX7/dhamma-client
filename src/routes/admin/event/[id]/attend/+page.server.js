@@ -14,7 +14,7 @@ const attendanceSchema = z.object({
 
 // Schema for manual attendance by follower ID
 const attendByIdSchema = z.object({
-	follower_id: z.string().min(1, { message: 'Follower ID is required.' })
+	follower_id: z.number().int().min(1, { message: 'Follower ID is required.' })
 });
 
 /**
@@ -146,7 +146,7 @@ export const actions = {
 					responseData?.error
 				);
 			}
-			setFlash({ type: 'error', message: `${errorMessage}. Please check your data.` }, cookies);
+			setFlash({ type: 'error', message: `${errorMessage}` }, cookies);
 			return fail(response.status === 422 ? 422 : 400, { form });
 		}
 

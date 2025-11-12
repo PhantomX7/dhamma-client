@@ -2,6 +2,7 @@ dev:
 	npm run dev
 
 build:
+	rm -rf build
 	npm run build
 
 start-production:

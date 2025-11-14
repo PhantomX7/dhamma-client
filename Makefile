@@ -1,8 +1,6 @@
-# Run the development server dengan host pjm.localhost
 dev:
-	npm run dev -- --host pjm.localhost
+	npm run dev
 
-# Build the project dengan host pjm.localhost
 build:
 	rm -rf build
 	npm run build
